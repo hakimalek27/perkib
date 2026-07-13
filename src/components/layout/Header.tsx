@@ -58,6 +58,9 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
+  // Sembunyikan chrome awam pada panel admin & Studio (UI tersendiri).
+  const hideChrome = pathname.startsWith("/admin") || pathname.startsWith("/studio");
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -75,6 +78,8 @@ export function Header() {
   // Header solid (teks gelap) apabila telah skrol ATAU pada laluan tanpa hero
   // gelap (admin) supaya teks nav sentiasa boleh dibaca.
   const solid = scrolled || pathname.startsWith("/admin");
+
+  if (hideChrome) return null;
 
   return (
     <header

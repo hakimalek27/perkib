@@ -21,6 +21,14 @@ export default {
       type: "boolean",
       initialValue: false,
     },
+    {
+      name: "hadMaksimum",
+      title: "Had Maksimum Permohonan (seumur hidup)",
+      type: "number",
+      description:
+        "Berapa kali seorang pegawai boleh memohon jenis ini. Kosongkan = tiada had. Contoh: Cahayamata = 6.",
+      validation: (R: Rule) => R.min(1).integer(),
+    },
     { name: "catatan", title: "Catatan", type: "text", rows: 2 },
     { name: "aktif", title: "Aktif", type: "boolean", initialValue: true },
   ],

@@ -20,6 +20,20 @@ export default {
     },
     { name: "lokasi", title: "Lokasi / Alamat", type: "string" },
     {
+      name: "jenisTempat",
+      title: "Jenis Tempat",
+      type: "string",
+      options: {
+        list: [
+          { title: "Masjid", value: "masjid" },
+          { title: "Surau", value: "surau" },
+          { title: "Pejabat", value: "pejabat" },
+        ],
+      },
+      initialValue: "masjid",
+      description: "Direktori masjid awam hanya papar 'masjid'. Surau/pejabat untuk Posting Khas.",
+    },
+    {
       name: "isInduk",
       title: "Masjid Induk Zon",
       type: "boolean",

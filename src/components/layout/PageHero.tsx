@@ -14,10 +14,11 @@ export function PageHero({
   breadcrumb?: { label: string; href?: string }[];
 }) {
   return (
-    <section className="relative overflow-hidden bg-primary-deep pattern-geometric-dark pt-[112px]">
+    <section className="relative overflow-hidden mesh-royal noise pt-[112px]">
+      <div className="pointer-events-none absolute inset-0 pattern-geometric-dark opacity-40" aria-hidden />
       {/* Cahaya latar */}
-      <div className="pointer-events-none absolute -right-32 -top-24 size-96 rounded-full bg-accent/10 blur-3xl" />
-      <div className="pointer-events-none absolute -left-24 bottom-0 size-80 rounded-full bg-primary-light/20 blur-3xl" />
+      <div className="aurora-blob -right-32 -top-24 size-96 bg-accent/15" aria-hidden />
+      <div className="aurora-blob -left-24 bottom-0 size-80 bg-primary-light/25 [animation-delay:-6s]" aria-hidden />
       <div className="container-wide relative py-16 md:py-20">
         {breadcrumb && breadcrumb.length > 0 && (
           <nav className="mb-5 flex flex-wrap items-center gap-1.5 text-xs text-white/60">

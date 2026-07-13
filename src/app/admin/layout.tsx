@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { Toaster } from "sonner";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { LogoutButton } from "./LogoutButton";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
 export const metadata: Metadata = {
   title: "Panel Admin PERKIB",
@@ -13,25 +12,24 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const authed = await isAdminAuthenticated();
+
+  // Halaman login (tidak authed) — tanpa sidebar.
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-bg-alt">
+        {children}
+        <Toaster richColors position="top-center" />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-bg-alt pt-[88px]">
-      {authed && (
-        <div className="bg-primary-deep text-white shadow-elev">
-          <div className="container-wide flex h-14 items-center justify-between">
-            <Link href="/admin/saguhati" className="flex items-center gap-2 font-display text-lg">
-              <ShieldCheck className="size-5 text-accent-bright" />
-              PERKIB Admin
-            </Link>
-            <div className="flex items-center gap-3">
-              <Link href="/" className="text-xs text-white/70 hover:text-white">
-                Laman Utama
-              </Link>
-              <LogoutButton />
-            </div>
-          </div>
-        </div>
-      )}
-      {children}
+    <div className="min-h-screen bg-bg-alt">
+      <AdminSidebar />
+      <div className="lg:pl-60">
+        <main className="mx-auto max-w-6xl p-4 md:p-8">{children}</main>
+      </div>
+      <Toaster richColors position="top-right" />
     </div>
   );
 }

@@ -9,7 +9,8 @@ export default {
       name: "nombor",
       title: "Nombor Zon",
       type: "number",
-      validation: (R: Rule) => R.required().integer().min(1).max(8),
+      description: "1–8 zon JAWI; 9 = Posting Khas (Istana Negara / Ibu Pejabat MAIWP).",
+      validation: (R: Rule) => R.required().integer().min(1).max(9),
     },
     {
       name: "nama",
@@ -28,6 +29,7 @@ export default {
           { title: "WP Kuala Lumpur", value: "kl" },
           { title: "WP Putrajaya", value: "putrajaya" },
           { title: "WP Labuan", value: "labuan" },
+          { title: "Posting Khas", value: "khas" },
         ],
       },
       initialValue: "kl",

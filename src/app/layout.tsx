@@ -3,6 +3,7 @@ import "./globals.css";
 import { manrope, marcellus, amiri } from "./fonts";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { SiteFooterGate } from "@/components/layout/SiteFooterGate";
 import { JsonLd } from "@/components/JsonLd";
 import { getSiteSettings } from "@/lib/sanity";
 import { siteInfo } from "@/content/site";
@@ -55,7 +56,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <main id="main" className="flex-1">
           {children}
         </main>
-        <Footer settings={settings} />
+        <SiteFooterGate>
+          <Footer settings={settings} />
+        </SiteFooterGate>
       </body>
     </html>
   );

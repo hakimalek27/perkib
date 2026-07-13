@@ -28,6 +28,7 @@ async function main() {
       lokasi: m.lokasi,
       isInduk: m.isInduk,
       isNegeri: m.isNegeri,
+      jenisTempat: m.jenisTempat,
       zon: { _type: "reference", _ref: `zon-${m.zonNombor}` },
     });
   }

@@ -8,6 +8,11 @@ import counter from "./counter";
 import program from "./program";
 import faq from "./faq";
 import siteSettings from "./siteSettings";
+import yuranTetapan from "./yuranTetapan";
+import yuranTahunan from "./yuranTahunan";
+import notifikasiTetapan from "./notifikasiTetapan";
+import auditLog from "./auditLog";
+import waOutbox from "./waOutbox";
 
 export const schemaTypes = [
   permohonanSaguhati,
@@ -16,8 +21,13 @@ export const schemaTypes = [
   zon,
   ajkEntry,
   jenisSaguhati,
+  yuranTahunan,
+  yuranTetapan,
+  notifikasiTetapan,
   program,
   faq,
   siteSettings,
+  auditLog,
+  waOutbox,
   counter,
 ];

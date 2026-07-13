@@ -67,22 +67,42 @@ export default {
     },
     // ── Medan sulit — TIDAK diproject ke halaman awam ──
     {
-      name: "telefon",
-      title: "No. Telefon",
-      type: "string",
-      group: "sulit",
-      description: "Tidak dipaparkan kepada umum.",
-    },
-    {
       name: "icLast4",
       title: "4 Digit Akhir Kad Pengenalan",
       type: "string",
       group: "sulit",
       readOnly: true,
-      description: "Untuk pengesahan permohonan saguhati sahaja. IC penuh TIDAK disimpan.",
+      description: "Untuk pengesahan permohonan saguhati sahaja. IC penuh disimpan terenkripsi.",
     },
     { name: "bahagian", title: "Bahagian", type: "string", group: "sulit" },
     { name: "statusPerjawatan", title: "Status Perjawatan", type: "string", group: "sulit" },
+    // ── Medan terenkripsi (AES-256-GCM) — diurus HANYA melalui panel admin ──
+    // Disembunyikan dari Studio supaya editor tidak merosakkan sifer.
+    {
+      name: "noKpEnc",
+      title: "No. KP (terenkripsi)",
+      type: "string",
+      group: "sulit",
+      readOnly: true,
+      hidden: true,
+    },
+    {
+      name: "telefonEnc",
+      title: "No. Telefon (terenkripsi)",
+      type: "string",
+      group: "sulit",
+      readOnly: true,
+      hidden: true,
+    },
+    // Medan telefon plain LAMA — dikekalkan supaya migrasi boleh unset; jangan guna.
+    {
+      name: "telefon",
+      title: "No. Telefon (lama — jangan guna)",
+      type: "string",
+      group: "sulit",
+      readOnly: true,
+      hidden: true,
+    },
   ],
   orderings: [
     { title: "Nama (A-Z)", name: "byNama", by: [{ field: "nama", direction: "asc" }] },

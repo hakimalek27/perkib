@@ -11,29 +11,31 @@ export const siteInfo = {
   authority: "Majlis Agama Islam Wilayah Persekutuan (MAIWP)",
   rosNumber: "PPM-013-14-08022021",
   foundedYear: 2021,
+  // Alamat: Ibu Pejabat MAIWP (Bangunan PERKIM), di bawah naungan MAIWP.
   address: {
-    line1: "Blok F1, Tingkat Bawah, Unit 2",
-    line2: "Taman Melati Kawasan 8, Wangsa Maju",
-    postcode: "53100",
+    line1: "Aras 1, 7, 9–11, Bangunan PERKIM",
+    line2: "No. 150, Jalan Ipoh",
+    postcode: "51200",
     city: "Kuala Lumpur",
     state: "W.P. Kuala Lumpur",
     country: "Malaysia",
   },
-  // Telefon rasmi masih placeholder dalam brief (03-0000 0000). Dibiarkan
-  // kosong supaya UI papar "akan dikemas kini" — admin isi kemudian.
+  // Telefon rasmi masih placeholder dalam brief. Dibiarkan kosong supaya UI
+  // papar "akan dikemas kini" — admin isi kemudian.
   phone: "",
-  email: "azanmalek@maiwp.gov.my",
+  email: "admin@perkib.my",
   facebook:
     "https://www.facebook.com/p/Pertubuhan-Kebajikan-Imam-Bilal-MAIWP-Perkib-100075687771921/",
-  geo: { lat: 3.2107, lng: 101.7395 },
-  googleMaps: "https://www.google.com/maps?q=3.2107,101.7395",
+  geo: { lat: 3.1796, lng: 101.6872 },
+  googleMaps: "https://www.google.com/maps?q=3.1796,101.6872",
   bank: {
     name: "Bank Rakyat",
     account: "11-0175647-7",
     holder: "PERTUBUHAN KEBAJIKAN IMAM BILAL MAIWP",
     duitNowRef: "PERKIB-MAIWP",
   },
-  officeHours: [{ day: "Isnin – Jumaat", time: "8:00 pagi – 5:00 petang" }],
+  // Waktu pejabat tidak dipaparkan (atas permintaan).
+  officeHours: [] as { day: string; time: string }[],
 } as const;
 
 export type SiteInfo = typeof siteInfo;

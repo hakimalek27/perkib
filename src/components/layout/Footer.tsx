@@ -104,12 +104,14 @@ export function Footer({ settings }: { settings: SiteSettings }) {
                 <span>{settings.phone}</span>
               </li>
             ) : null}
-            <li className="flex gap-3">
-              <Clock className="mt-0.5 size-4 shrink-0 text-accent" />
-              <span>
-                {settings.officeHours.map((h) => `${h.day}: ${h.time}`).join(" · ")}
-              </span>
-            </li>
+            {settings.officeHours.length > 0 && (
+              <li className="flex gap-3">
+                <Clock className="mt-0.5 size-4 shrink-0 text-accent" />
+                <span>
+                  {settings.officeHours.map((h) => `${h.day}: ${h.time}`).join(" · ")}
+                </span>
+              </li>
+            )}
             <li className="flex gap-3">
               <FacebookIcon className="mt-0.5 size-4 shrink-0 text-accent" />
               <a href={siteInfo.facebook} target="_blank" rel="noreferrer" className="hover:text-white">

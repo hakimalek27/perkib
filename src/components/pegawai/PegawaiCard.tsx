@@ -12,7 +12,7 @@ const KATEGORI_TONE: Record<string, string> = {
 export function PegawaiCard({ pegawai }: { pegawai: PegawaiView }) {
   const tone = KATEGORI_TONE[pegawai.kategori] ?? "bg-muted text-muted-foreground";
   return (
-    <article className="card-hover group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
+    <article className="hover-glow group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
       {/* Foto / avatar */}
       <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-primary/8 to-accent/8">
         {pegawai.photoUrl ? (

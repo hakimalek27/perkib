@@ -61,7 +61,25 @@ export default {
       of: [{ type: "file" }],
       readOnly: true,
     },
+    // ── Maklumat bank pemohon (untuk pembayaran saguhati) ──
+    { name: "bankNama", title: "Nama Bank", type: "string", readOnly: true },
+    // No. akaun disimpan terenkripsi; disembunyikan dari Studio.
+    { name: "bankAkaunEnc", title: "No. Akaun (terenkripsi)", type: "string", readOnly: true, hidden: true },
+    { name: "telefonPemohonEnc", title: "Telefon Pemohon (terenkripsi)", type: "string", readOnly: true, hidden: true },
+    // Kunci idempotency — elak permohonan berganda pada double-submit.
+    { name: "idemKey", title: "Kunci Idempotency", type: "string", readOnly: true, hidden: true },
     { name: "catatanAdmin", title: "Catatan Admin", type: "text", rows: 3 },
+    // ── Butiran pembayaran (diisi admin bila status = dibayar) ──
+    {
+      name: "bankTransfer",
+      title: "Butiran Pembayaran",
+      type: "object",
+      fields: [
+        { name: "bank", title: "Bank Ditransfer", type: "string" },
+        { name: "tarikh", title: "Tarikh Transfer", type: "date" },
+        { name: "rujukan", title: "No. Rujukan Transaksi", type: "string" },
+      ],
+    },
     { name: "tarikhMohon", title: "Tarikh Mohon", type: "datetime", readOnly: true },
     { name: "tarikhKemaskini", title: "Tarikh Kemas Kini", type: "datetime" },
   ],

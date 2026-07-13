@@ -12,7 +12,7 @@ export function AjkPersonCard({
   return (
     <div
       className={cn(
-        "card-hover flex flex-col items-center rounded-2xl border bg-card p-5 text-center shadow-soft",
+        "hover-glow flex flex-col items-center rounded-2xl border bg-card p-5 text-center shadow-soft",
         featured ? "border-accent/50 gold-topline" : "border-border"
       )}
     >

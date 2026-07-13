@@ -10,6 +10,7 @@ import {
   zoneByNombor,
   type Zon,
   type Wilayah,
+  type JenisTempat,
 } from "@/content/zon-masjid";
 import {
   pegawaiFallback,
@@ -33,12 +34,23 @@ export { kategoriLabel, ajkKumpulanLabel };
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
 const apiVersion = "2025-01-01";
+// Token baca (server-sahaja). WAJIB apabila dataset ditetapkan PRIVATE —
+// tanpa token, dataset private balas kosong secara senyap. Bila token wujud,
+// useCdn mesti false (permintaan bertoken tidak melalui CDN).
+const readToken = process.env.SANITY_API_TOKEN ?? process.env.SANITY_WRITE_TOKEN;
 
 let _client: SanityClient | null = null;
 function getClient(): SanityClient | null {
   if (!projectId) return null;
   if (_client) return _client;
-  _client = createClient({ projectId, dataset, apiVersion, useCdn: true, perspective: "published" });
+  _client = createClient({
+    projectId,
+    dataset,
+    apiVersion,
+    useCdn: !readToken,
+    perspective: "published",
+    ...(readToken ? { token: readToken } : {}),
+  });
   return _client;
 }
 
@@ -47,7 +59,14 @@ let _freshClient: SanityClient | null = null;
 function getFreshClient(): SanityClient | null {
   if (!projectId) return null;
   if (_freshClient) return _freshClient;
-  _freshClient = createClient({ projectId, dataset, apiVersion, useCdn: false, perspective: "published" });
+  _freshClient = createClient({
+    projectId,
+    dataset,
+    apiVersion,
+    useCdn: false,
+    perspective: "published",
+    ...(readToken ? { token: readToken } : {}),
+  });
   return _freshClient;
 }
 
@@ -84,6 +103,7 @@ export type MasjidView = {
   lokasi: string;
   isInduk: boolean;
   isNegeri: boolean;
+  jenisTempat: JenisTempat;
   zonNombor: number;
   zonNama: string;
   wilayah: Wilayah;
@@ -98,6 +118,7 @@ function masjidFallback(): MasjidView[] {
       lokasi: m.lokasi,
       isInduk: m.isInduk,
       isNegeri: m.isNegeri,
+      jenisTempat: m.jenisTempat,
       zonNombor: m.zonNombor,
       zonNama: z?.nama ?? `Zon ${m.zonNombor}`,
       wilayah: z?.wilayah ?? "kl",
@@ -116,13 +137,14 @@ export async function getMasjids(): Promise<MasjidView[]> {
         lokasi?: string;
         isInduk?: boolean;
         isNegeri?: boolean;
+        jenisTempat?: JenisTempat;
         zonNombor?: number;
         zonNama?: string;
         wilayah?: Wilayah;
       }>
     >(
       `*[_type=="masjid"]|order(zon->nombor asc, isInduk desc, nama asc){
-         "id": _id, nama, lokasi, isInduk, isNegeri,
+         "id": _id, nama, lokasi, isInduk, isNegeri, jenisTempat,
          "zonNombor": zon->nombor, "zonNama": zon->nama, "wilayah": zon->wilayah
        }`
     );
@@ -133,6 +155,7 @@ export async function getMasjids(): Promise<MasjidView[]> {
       lokasi: m.lokasi ?? "",
       isInduk: m.isInduk ?? false,
       isNegeri: m.isNegeri ?? false,
+      jenisTempat: m.jenisTempat ?? "masjid",
       zonNombor: m.zonNombor ?? 0,
       zonNama: m.zonNama ?? `Zon ${m.zonNombor ?? "-"}`,
       wilayah: m.wilayah ?? "kl",
@@ -141,6 +164,12 @@ export async function getMasjids(): Promise<MasjidView[]> {
     console.error("getMasjids: fetch gagal, guna fallback", err);
     return masjidFallback();
   }
+}
+
+// Hanya masjid awam sebenar (jenisTempat "masjid", Zon 1–8) untuk direktori umum.
+export async function getMasjidsAwam(): Promise<MasjidView[]> {
+  const all = await getMasjids();
+  return all.filter((m) => m.jenisTempat === "masjid" && m.zonNombor <= 8);
 }
 
 // ── Pegawai ──────────────────────────────────────────────────────────
@@ -352,7 +381,7 @@ export async function getJenisSaguhati(): Promise<JenisSaguhati[]> {
   try {
     const rows = await client.fetch<JenisSaguhati[]>(
       `*[_type=="jenisSaguhati" && aktif != false]|order(bil asc){
-         "id": _id, kod, bil, nama, kadar, dokumenSokongan, oneOff, catatan
+         "id": _id, kod, bil, nama, kadar, dokumenSokongan, oneOff, catatan, hadMaksimum
        }`
     );
     return rows && rows.length > 0 ? rows : jenisSaguhatiList;
@@ -366,6 +395,26 @@ export async function getJenisSaguhatiByKod(
 ): Promise<JenisSaguhati | undefined> {
   const all = await getJenisSaguhati();
   return all.find((j) => j.kod === kod);
+}
+
+// Kiraan permohonan sedia ada per jenis (kod) untuk seorang pegawai.
+// Kira semua status KECUALI "tolak" (permohonan ditolak tidak mengira had).
+export async function getSaguhatiUsage(
+  employeeNo: string
+): Promise<Record<string, number>> {
+  const client = getFreshClient();
+  if (!client) return {};
+  try {
+    const rows = await client.fetch<Array<{ jenisKod: string }>>(
+      `*[_type=="permohonanSaguhati" && employeeNo==$emp && status != "tolak"]{ jenisKod }`,
+      { emp: employeeNo }
+    );
+    const kira: Record<string, number> = {};
+    for (const r of rows) if (r.jenisKod) kira[r.jenisKod] = (kira[r.jenisKod] ?? 0) + 1;
+    return kira;
+  } catch {
+    return {};
+  }
 }
 
 // ── Tetapan Laman (footer, telefon, bank, QR) ────────────────────────

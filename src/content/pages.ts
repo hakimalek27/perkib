@@ -7,7 +7,7 @@ export const profil = {
   perenggan: [
     "Pertubuhan Kebajikan Imam dan Bilal Majlis Agama Islam Wilayah Persekutuan (PERKIB) ialah sebuah pertubuhan kebajikan bagi Naqib Masjid, Imam dan Bilal lantikan Majlis Agama Islam Wilayah Persekutuan yang bertugas di masjid-masjid Wilayah Persekutuan.",
     "Didaftarkan pada tahun 2021 (No. Pendaftaran ROS: PPM-013-14-08022021), PERKIB berperanan merancang, mempromosi, mengurus dan melaksanakan agenda kebajikan serta pembangunan modal insan ahli.",
-    "Beralamat di Blok F1, Tingkat Bawah, Unit 2, Taman Melati Kawasan 8, 53100 Wangsa Maju, Wilayah Persekutuan Kuala Lumpur, pertubuhan ini komited memartabatkan peranan pegawai masjid sebagai pemacu inovasi dan perkhidmatan kontemporari kepada masyarakat.",
+    "Beralamat di Ibu Pejabat MAIWP, Bangunan PERKIM, No. 150, Jalan Ipoh, 51200 Kuala Lumpur, pertubuhan ini komited memartabatkan peranan pegawai masjid sebagai pemacu inovasi dan perkhidmatan kontemporari kepada masyarakat.",
   ],
   fakta: [
     { label: "Nama Penuh", value: "Pertubuhan Kebajikan Imam dan Bilal Majlis Agama Islam Wilayah Persekutuan" },
@@ -74,7 +74,7 @@ export const keahlian = {
     "Jaringan sokongan sesama pegawai masjid seluruh Wilayah Persekutuan.",
     "Peluang menyertai agenda dakwah, sosial dan ekonomi pertubuhan.",
   ],
-  hubungi: "Urus Setia PERKIB — azanmalek@maiwp.gov.my",
+  hubungi: "Urus Setia PERKIB — admin@perkib.my",
 };
 
 export const sukarelawan = {
@@ -86,5 +86,5 @@ export const sukarelawan = {
     { bidang: "Program Dakwah & Pendidikan", komitmen: "Fleksibel", icon: "BookOpen" },
     { bidang: "Kebajikan & Bantuan Masyarakat", komitmen: "Mengikut program", icon: "HeartHandshake" },
   ],
-  hubungi: "Urus Setia PERKIB — azanmalek@maiwp.gov.my",
+  hubungi: "Urus Setia PERKIB — admin@perkib.my",
 };

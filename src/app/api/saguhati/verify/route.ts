@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { rateLimit, clientIp } from "@/lib/rate-limit";
-import { isCmsEnabled, getPegawaiForVerify } from "@/lib/sanity";
+import { fixedWindow, clientIp } from "@/lib/rate-limit";
+import { isCmsEnabled, getPegawaiForVerify, getSaguhatiUsage } from "@/lib/sanity";
 import { mintToken } from "@/lib/saguhati-token";
+import { verifyCaptcha } from "@/lib/captcha";
 
 const schema = z.object({
   employeeNo: z.string().min(1).max(10),
   icLast4: z.string().regex(/^\d{4}$/),
+  captchaToken: z.string().min(1),
+  captchaAnswer: z.union([z.string(), z.number()]),
+  // Honeypot — mesti kosong (medan tersembunyi; bot cenderung mengisinya).
+  namaPenuh: z.string().max(0).optional().or(z.literal("")),
 });
 
 // Ralat seragam elak enumerasi (tidak dedah sama ada no. pekerja wujud).
@@ -21,12 +26,14 @@ export async function POST(req: Request) {
   }
 
   const ip = clientIp(req);
-  const rlIp = rateLimit(`verify-ip:${ip}`, { capacity: 10, windowMs: 15 * 60 * 1000 });
+  // 5 percubaan / 5 minit, kemudian sejuk 5 minit (spek Hakim).
+  const rlIp = fixedWindow(`verify-ip:${ip}`, {
+    limit: 10,
+    windowMs: 5 * 60 * 1000,
+    cooldownMs: 5 * 60 * 1000,
+  });
   if (!rlIp.allowed) {
-    return NextResponse.json(
-      { ok: false, error: "Terlalu banyak percubaan. Sila cuba semula sebentar lagi." },
-      { status: 429, headers: { "Retry-After": String(Math.ceil((rlIp.resetAt - Date.now()) / 1000)) } }
-    );
+    return tooMany(rlIp.retryAfterMs);
   }
 
   let payload: unknown;
@@ -38,8 +45,21 @@ export async function POST(req: Request) {
   const parsed = schema.safeParse(payload);
   if (!parsed.success) {
     return NextResponse.json(
-      { ok: false, error: "Sila masukkan No. Pekerja dan 4 digit akhir kad pengenalan yang sah." },
+      { ok: false, error: "Sila lengkapkan borang dengan betul (termasuk soalan pengesahan)." },
       { status: 400 }
+    );
+  }
+
+  // Honeypot terisi → layan sebagai jaya-palsu senyap (jangan beri petunjuk).
+  if (parsed.data.namaPenuh) {
+    return NextResponse.json({ ok: false, error: MISMATCH }, { status: 401 });
+  }
+
+  // Captcha mesti betul.
+  if (!verifyCaptcha(parsed.data.captchaToken, parsed.data.captchaAnswer)) {
+    return NextResponse.json(
+      { ok: false, error: "Jawapan pengesahan salah. Sila cuba soalan baharu." },
+      { status: 400, headers: { "X-Captcha": "fail" } }
     );
   }
 
@@ -47,13 +67,14 @@ export async function POST(req: Request) {
   const employeeNo = parsed.data.employeeNo.replace(/\D/g, "").padStart(4, "0");
   const icLast4 = parsed.data.icLast4;
 
-  // Had kadar tambahan per-employeeNo (elak brute-force 4 digit IC).
-  const rlEmp = rateLimit(`verify-emp:${employeeNo}`, { capacity: 5, windowMs: 15 * 60 * 1000 });
+  // Had kadar per-employeeNo: 5 / 5 minit + sejuk 5 minit (anti brute-force IC).
+  const rlEmp = fixedWindow(`verify-emp:${employeeNo}`, {
+    limit: 5,
+    windowMs: 5 * 60 * 1000,
+    cooldownMs: 5 * 60 * 1000,
+  });
   if (!rlEmp.allowed) {
-    return NextResponse.json(
-      { ok: false, error: "Terlalu banyak percubaan. Sila cuba semula sebentar lagi." },
-      { status: 429, headers: { "Retry-After": String(Math.ceil((rlEmp.resetAt - Date.now()) / 1000)) } }
-    );
+    return tooMany(rlEmp.retryAfterMs);
   }
 
   let pegawai;
@@ -68,10 +89,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: MISMATCH }, { status: 401 });
   }
 
+  // Kuota jenis (permohonan sedia ada per kod, tidak termasuk yang ditolak).
+  const usage = await getSaguhatiUsage(employeeNo);
+
   const token = mintToken(employeeNo);
   return NextResponse.json({
     ok: true,
     token,
+    usage,
     pegawai: {
       employeeNo: pegawai.employeeNo,
       nama: pegawai.nama,
@@ -82,4 +107,12 @@ export async function POST(req: Request) {
       masjidZonNama: pegawai.masjidZonNama ?? null,
     },
   });
+}
+
+function tooMany(retryAfterMs: number) {
+  const mins = Math.max(1, Math.ceil(retryAfterMs / 60000));
+  return NextResponse.json(
+    { ok: false, error: `Terlalu banyak percubaan. Sila cuba semula dalam ${mins} minit.` },
+    { status: 429, headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) } }
+  );
 }

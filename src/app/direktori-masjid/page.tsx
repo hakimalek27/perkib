@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/PageHero";
 import { MasjidExplorer } from "./MasjidExplorer";
-import { getMasjids, getZones } from "@/lib/sanity";
+import { getMasjidsAwam, getZones } from "@/lib/sanity";
 
 export const metadata: Metadata = {
   title: "Direktori Masjid WP",
@@ -12,7 +12,9 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function DirektoriMasjidPage() {
-  const [masjids, zones] = await Promise.all([getMasjids(), Promise.resolve(getZones())]);
+  const [masjids, allZones] = await Promise.all([getMasjidsAwam(), Promise.resolve(getZones())]);
+  // Direktori awam: hanya Zon 1–8 (Zon 9 Posting Khas tidak dipapar di sini).
+  const zones = allZones.filter((z) => z.nombor <= 8);
 
   return (
     <>

@@ -90,16 +90,16 @@ export default async function HomePage() {
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { icon: MapPinned, tajuk: "8 Zon JAWI", teks: "Direktori masjid tersusun mengikut lapan zon rasmi JAWI di KL, Putrajaya & Labuan.", href: "/direktori-masjid" },
-              { icon: Building2, tajuk: "89 Masjid", teks: "Senarai lengkap masjid Wilayah Persekutuan di bawah seliaan JAWI.", href: "/direktori-masjid" },
-              { icon: Users2, tajuk: "91 Pegawai", teks: "Maklumat Ketua Imam, Timbalan Ketua Imam dan Bilal mengikut zon.", href: "/pegawai" },
+              { icon: Building2, tajuk: "94 Masjid", teks: "Senarai lengkap masjid Wilayah Persekutuan di bawah seliaan JAWI.", href: "/direktori-masjid" },
+              { icon: Users2, tajuk: "92 Pegawai", teks: "Maklumat Ketua Imam, Timbalan Ketua Imam dan Bilal mengikut zon.", href: "/pegawai" },
               { icon: HeartHandshake, tajuk: "9 Saguhati", teks: "Saguhati kebajikan untuk detik penting dan musibah ahli.", href: "/saguhati" },
             ].map((c, i) => (
               <Reveal key={c.tajuk} delay={i * 0.08}>
                 <Link
                   href={c.href}
-                  className="card-hover group flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-soft"
+                  className="hover-glow group flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-soft"
                 >
-                  <span className="flex size-12 items-center justify-center rounded-xl bg-primary/8 text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+                  <span className="flex size-12 items-center justify-center rounded-xl bg-primary/8 text-primary transition-colors group-hover:bg-primary group-hover:text-white group-hover:shadow-gold">
                     <c.icon className="size-6" />
                   </span>
                   <h3 className="font-display mt-5 text-lg font-semibold text-ink">{c.tajuk}</h3>

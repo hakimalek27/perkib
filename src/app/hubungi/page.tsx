@@ -79,21 +79,23 @@ export default async function HubungiPage() {
                 </div>
               </div>
             )}
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-              <div className="flex gap-4">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
-                  <Clock className="size-5" />
-                </span>
-                <div>
-                  <h3 className="font-semibold text-ink">Waktu Pejabat</h3>
-                  {settings.officeHours.map((h) => (
-                    <p key={h.day} className="mt-1 text-sm text-muted-foreground">
-                      {h.day}: {h.time}
-                    </p>
-                  ))}
+            {settings.officeHours.length > 0 && (
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
+                <div className="flex gap-4">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
+                    <Clock className="size-5" />
+                  </span>
+                  <div>
+                    <h3 className="font-semibold text-ink">Waktu Pejabat</h3>
+                    {settings.officeHours.map((h) => (
+                      <p key={h.day} className="mt-1 text-sm text-muted-foreground">
+                        {h.day}: {h.time}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Borang */}

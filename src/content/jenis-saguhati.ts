@@ -10,6 +10,7 @@ export type JenisSaguhati = {
   dokumenSokongan: string[];
   oneOff: boolean;
   catatan?: string;
+  hadMaksimum?: number | null; // maks permohonan seumur hidup; null/tiada = tanpa had
 };
 
 export const jenisSaguhatiList: JenisSaguhati[] = [

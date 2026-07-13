@@ -38,27 +38,30 @@ async function main() {
 
   await tx.commit();
 
-  // siteSettings — jangan timpa suntingan admin.
-  await client.createIfNotExists({
-    _id: "siteSettings",
-    _type: "siteSettings",
-    footerDescription:
-      "Pertubuhan kebajikan bagi Naqib Masjid, Imam dan Bilal lantikan MAIWP yang berkhidmat di masjid-masjid Wilayah Persekutuan.",
-    phone: siteInfo.phone,
-    email: siteInfo.email,
-    facebookUrl: siteInfo.facebook,
-    bankInfo: {
-      name: siteInfo.bank.name,
-      account: siteInfo.bank.account,
-      holder: siteInfo.bank.holder,
-      duitNowRef: siteInfo.bank.duitNowRef,
-    },
-    officeHours: siteInfo.officeHours.map((h) => ({
-      _key: h.day.replace(/\s+/g, "-").toLowerCase(),
-      day: h.day,
-      time: h.time,
-    })),
-  });
+  // siteSettings — cipta jika belum ada, kemudian PATCH medan kanonik
+  // (emel, waktu pejabat, footer, bank, facebook). Telefon + QR kekal
+  // (suntingan admin) — tidak ditimpa.
+  await client.createIfNotExists({ _id: "siteSettings", _type: "siteSettings" });
+  await client
+    .patch("siteSettings")
+    .set({
+      footerDescription:
+        "Pertubuhan kebajikan bagi Naqib Masjid, Imam dan Bilal lantikan MAIWP yang berkhidmat di masjid-masjid Wilayah Persekutuan.",
+      email: siteInfo.email,
+      facebookUrl: siteInfo.facebook,
+      bankInfo: {
+        name: siteInfo.bank.name,
+        account: siteInfo.bank.account,
+        holder: siteInfo.bank.holder,
+        duitNowRef: siteInfo.bank.duitNowRef,
+      },
+      officeHours: siteInfo.officeHours.map((h) => ({
+        _key: h.day.replace(/\s+/g, "-").toLowerCase(),
+        day: h.day,
+        time: h.time,
+      })),
+    })
+    .commit();
 
   console.log(
     `✓ Seed ${programList.length} program + ${faqList.length} FAQ + tetapan laman selesai.`

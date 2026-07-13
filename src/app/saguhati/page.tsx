@@ -54,7 +54,7 @@ export default async function SaguhatiPage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {jenis.map((j, i) => (
               <Reveal key={j.id} delay={Math.min(i * 0.05, 0.3)}>
-                <article className="card-hover flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-soft">
+                <article className="hover-glow flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-soft">
                   <div className="flex items-start justify-between gap-3">
                     <span className="flex size-11 items-center justify-center rounded-xl bg-primary/8 font-display text-lg font-semibold text-primary">
                       {j.bil}

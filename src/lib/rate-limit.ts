@@ -56,6 +56,67 @@ function maybeGc(now: number, windowMs: number) {
 }
 
 /**
+ * Kaunter tetingkap-tetap dengan tempoh sejuk (cooldown) — semantik
+ * "N cubaan setiap tetingkap, kemudian kunci selama cooldown".
+ * Lebih sesuai untuk had "5 kali / 5 minit" berbanding token-bucket yang
+ * mengisi semula berterusan (spek Hakim untuk semak no. pekerja + login admin).
+ */
+type Window = { count: number; windowStart: number; lockedUntil: number };
+const WINDOWS: Map<string, Window> = new Map();
+
+export type FixedWindowResult = {
+  allowed: boolean;
+  remaining: number;
+  retryAfterMs: number; // > 0 jika disekat
+};
+
+export function fixedWindow(
+  key: string,
+  { limit, windowMs, cooldownMs }: { limit: number; windowMs: number; cooldownMs?: number }
+): FixedWindowResult {
+  const now = Date.now();
+  const cool = cooldownMs ?? windowMs;
+  const w = WINDOWS.get(key);
+
+  // GC ringan: guna semula laluan maybeGc STORE tidak meliputi WINDOWS, jadi
+  // buang entri lapuk secara oportunistik bila diakses.
+  if (w && now - w.windowStart > windowMs && now >= w.lockedUntil) {
+    WINDOWS.delete(key);
+  }
+
+  const cur = WINDOWS.get(key);
+  if (!cur) {
+    WINDOWS.set(key, { count: 1, windowStart: now, lockedUntil: 0 });
+    return { allowed: true, remaining: limit - 1, retryAfterMs: 0 };
+  }
+
+  if (now < cur.lockedUntil) {
+    return { allowed: false, remaining: 0, retryAfterMs: cur.lockedUntil - now };
+  }
+
+  // Tetingkap tamat → set semula.
+  if (now - cur.windowStart > windowMs) {
+    cur.count = 1;
+    cur.windowStart = now;
+    cur.lockedUntil = 0;
+    return { allowed: true, remaining: limit - 1, retryAfterMs: 0 };
+  }
+
+  if (cur.count >= limit) {
+    cur.lockedUntil = now + cool;
+    return { allowed: false, remaining: 0, retryAfterMs: cool };
+  }
+
+  cur.count += 1;
+  return { allowed: true, remaining: limit - cur.count, retryAfterMs: 0 };
+}
+
+/** Reset manual (mis. selepas login admin berjaya, buang kiraan gagal). */
+export function fixedWindowReset(key: string): void {
+  WINDOWS.delete(key);
+}
+
+/**
  * IP klien terbaik dari header proksi. Utamakan cf-connecting-ip (Cloudflare),
  * kemudian x-real-ip (nginx), akhir sekali hop TERAKHIR x-forwarded-for.
  */

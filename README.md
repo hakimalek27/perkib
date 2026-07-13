@@ -10,7 +10,10 @@ Laman web rasmi **Pertubuhan Kebajikan Imam dan Bilal Majlis Agama Islam Wilayah
 - **Carta Organisasi AJK** — 3 lapis (Majlis Tertinggi, Perwakilan Zon, AJK Kluster), 24 ahli sesi 2025/2026.
 - **Direktori Masjid** — 89 masjid Wilayah Persekutuan mengikut **8 zon rasmi JAWI** (KL, Putrajaya, Labuan), dengan penapis + carian + lencana Masjid Induk/Negeri.
 - **Maklumat Pegawai** — 91 pegawai (Ketua Imam, Timbalan Ketua Imam, Bilal) mengikut zon; admin tetapkan penugasan masjid melalui Studio. Paparan awam patuh PDPA (tiada telefon/IC).
-- **Sistem Permohonan Saguhati** — 9 jenis saguhati kebajikan. Ahli sahkan identiti (No. Pekerja + 4 digit akhir IC) → pilih jenis → muat naik dokumen sokongan → terima nombor rujukan. Semak status dalam talian. Panel admin untuk urus permohonan.
+- **Sistem Permohonan Saguhati** — 9 jenis. Ahli sahkan identiti (No. Pekerja + 4 digit IC + **captcha**) → pilih jenis → **maklumat bank + telefon** → muat naik dokumen → nombor rujukan. Cegah double-submit (idempotency), had per jenis, semak status dalam talian.
+- **Notifikasi WhatsApp** (wassap.wehdah.my) — pemohon & admin/group terima notifikasi automatik pada permohonan baharu dan perubahan status (lulus/tolak/dibayar).
+- **Panel Admin berfungsi penuh (tanpa Sanity Studio)** — dashboard; urus status saguhati + butiran transfer; **penugasan pegawai↔masjid seret-lepas**; **modul yuran bendahari** (kadar per gred, matriks bulanan, eksport CSV); direktori pegawai (IC/telefon/wa.me/sejarah); carian 1,121 staf MAIWP lain; tetapan notifikasi.
+- **Keselamatan & PDPA** — IC/telefon/bank **terenkripsi AES-256-GCM at-rest**; captcha + honeypot + had kadar; CSP + kuki strict; log audit.
 
 ## 🧱 Teknologi
 

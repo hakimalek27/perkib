@@ -131,7 +131,7 @@ export function MasjidExplorer({
                   {list.map((m) => (
                     <article
                       key={m.id}
-                      className="card-hover flex flex-col rounded-xl border border-border bg-card p-5 shadow-soft"
+                      className="hover-glow flex flex-col rounded-xl border border-border bg-card p-5 shadow-soft"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="font-display text-base font-semibold leading-tight text-ink">

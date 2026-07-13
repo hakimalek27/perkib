@@ -11,8 +11,14 @@ function password(): string | null {
   return process.env.ADMIN_PASSWORD ?? null;
 }
 
+// Rahsia tandatangan kuki diasingkan drpd kata laluan supaya menukar
+// ADMIN_PASSWORD tidak membatalkan semua sesi (dan sebaliknya).
 function secret(): string {
-  return process.env.ADMIN_PASSWORD ?? "perkib-dev-admin-secret";
+  return (
+    process.env.ADMIN_SESSION_SECRET ??
+    process.env.ADMIN_PASSWORD ??
+    "perkib-dev-admin-secret"
+  );
 }
 
 function b64url(buf: Buffer): string {

@@ -1,8 +1,11 @@
-// Direktori 8 zon JAWI + 89 masjid Wilayah Persekutuan (KL, Putrajaya, Labuan).
-// Sumber: "Senarai Masjid di Tiga Wilayah Persekutuan mengikut Zon JAWI".
-// Fail ini menjadi sumber tunggal untuk seed Sanity DAN fallback statik.
+// Direktori zon JAWI + masjid Wilayah Persekutuan (KL, Putrajaya, Labuan) +
+// Zon 9 "Posting Khas" (Istana Negara / Ibu Pejabat MAIWP).
+// Sumber: "Senarai Masjid di Tiga Wilayah Persekutuan mengikut Zon JAWI" +
+// penugasan rasmi MAIWP (xlsx 2026-07-13). Sumber tunggal untuk seed & fallback.
 
-export type Wilayah = "kl" | "putrajaya" | "labuan";
+export type Wilayah = "kl" | "putrajaya" | "labuan" | "khas";
+
+export type JenisTempat = "masjid" | "surau" | "pejabat";
 
 export type Zon = {
   id: string;
@@ -20,6 +23,7 @@ export type Masjid = {
   lokasi: string;
   isInduk: boolean;
   isNegeri: boolean;
+  jenisTempat: JenisTempat;
 };
 
 export function slugifyMasjid(s: string): string {
@@ -95,11 +99,20 @@ export const zones: Zon[] = [
     wilayah: "labuan",
     masjidInduk: "Masjid Jamek An-Nur",
   },
+  {
+    id: "zon-9",
+    nombor: 9,
+    nama: "Posting Khas — Istana Negara / Ibu Pejabat MAIWP",
+    kawasan: "Istana Negara, Ibu Pejabat MAIWP",
+    wilayah: "khas",
+    masjidInduk: "Surau Utama Istana Negara",
+  },
 ];
 
-type MasjidSeed = Omit<Masjid, "id" | "isInduk" | "isNegeri"> & {
+type MasjidSeed = Omit<Masjid, "id" | "isInduk" | "isNegeri" | "jenisTempat"> & {
   isInduk?: boolean;
   isNegeri?: boolean;
+  jenisTempat?: JenisTempat;
 };
 
 const masjidSeed: MasjidSeed[] = [
@@ -126,10 +139,11 @@ const masjidSeed: MasjidSeed[] = [
   { nama: "Masjid Saidina Ali KW", zonNombor: 2, lokasi: "Kampung Padang Balang, Sentul" },
   { nama: "Masjid Zaid bin Haritsah", zonNombor: 2, lokasi: "KM 8, Jalan Gombak" },
 
-  // ── ZON 3 — Bandar / Kampung Baru / Kampung Pandan (10) ──
+  // ── ZON 3 — Bandar / Kampung Baru / Kampung Pandan (12) ──
   { nama: "Masjid Al-Imam Ash-Shafie", zonNombor: 3, lokasi: "Jalan Perkasa, Taman Maluri, Kampung Pandan", isInduk: true },
   { nama: "Masjid Al-Bukhary", zonNombor: 3, lokasi: "Jalan Hang Tuah" },
   { nama: "Masjid Ar-Rahimah", zonNombor: 3, lokasi: "Kampung Pandan" },
+  { nama: "Masjid As-Sodiqin", zonNombor: 3, lokasi: "Kampung Pandan Dalam" },
   { nama: "Masjid Asy-Syakirin", zonNombor: 3, lokasi: "Menara Berkembar Petronas, KLCC" },
   { nama: "Masjid Bukit Aman", zonNombor: 3, lokasi: "Jalan Bukit Aman" },
   { nama: "Masjid India", zonNombor: 3, lokasi: "Jalan Melayu" },
@@ -137,6 +151,7 @@ const masjidSeed: MasjidSeed[] = [
   { nama: "Masjid Jamek Kampung Baru", zonNombor: 3, lokasi: "Jalan Raja Alang, Kampung Baru" },
   { nama: "Masjid Jamek Pakistan", zonNombor: 3, lokasi: "Jalan Raja Muda Abd. Aziz" },
   { nama: "Masjid Jamek Sultan Abdul Samad", zonNombor: 3, lokasi: "Jalan Tun Perak" },
+  { nama: "Masjid Nurul Islam", zonNombor: 3, lokasi: "Kampung Pandan" },
 
   // ── ZON 4 — Keramat / Setiawangsa / Titiwangsa / Wangsa Maju (12) ──
   { nama: "Masjid Usamah bin Zaid", zonNombor: 4, lokasi: "Wangsa Maju, Setapak", isInduk: true },
@@ -152,14 +167,16 @@ const masjidSeed: MasjidSeed[] = [
   { nama: "Masjid Solehin", zonNombor: 4, lokasi: "Pusat Latihan Polis Depoh, Jalan Semarak" },
   { nama: "Masjid Universiti Teknologi Malaysia", zonNombor: 4, lokasi: "Jalan Semarak" },
 
-  // ── ZON 5 — Sri Petaling / Bandar Tun Razak / Cheras Selatan / Sungai Besi (16) ──
+  // ── ZON 5 — Sri Petaling / Bandar Tun Razak / Cheras Selatan / Sungai Besi (18) ──
   { nama: "Masjid Al-Muqarrabin", zonNombor: 5, lokasi: "Bandar Tasik Selatan", isInduk: true },
   { nama: "Masjid Abdul Rahman bin Auf", zonNombor: 5, lokasi: "Batu 5½ Jalan Puchong" },
   { nama: "Masjid Abdullah bin Zubair", zonNombor: 5, lokasi: "Jalan Lapangan Terbang Lama" },
   { nama: "Masjid Al-Imam At-Tirmizi", zonNombor: 5, lokasi: "Taman Sri Sentosa, Jalan Klang Lama" },
   { nama: "Masjid Al-Khasyi'in", zonNombor: 5, lokasi: "Taman Desa Petaling" },
+  { nama: "Masjid Al-Mubarakah", zonNombor: 5, lokasi: "Bandar Tun Razak, Cheras" },
   { nama: "Masjid Al-Muhsinin", zonNombor: 5, lokasi: "Taman Desa, off Jalan Klang Lama" },
-  { nama: "Masjid Al-Mukhlisin", zonNombor: 5, lokasi: "Taman Alam Damai, Cheras" },
+  { nama: "Masjid Al-Mukhlisin", zonNombor: 5, lokasi: "Cheras" },
+  { nama: "Masjid Al-Mukhlisin (Alam Damai)", zonNombor: 5, lokasi: "Taman Alam Damai, Cheras" },
   { nama: "Masjid Al-Najihin", zonNombor: 5, lokasi: "Bandar Seri Permaisuri, Cheras" },
   { nama: "Masjid Az-Zubair Ibnu Awwam", zonNombor: 5, lokasi: "KM 6 Jalan Cheras" },
   { nama: "Masjid Jamek Bandar Baru Sri Petaling", zonNombor: 5, lokasi: "Bandar Baru Sri Petaling" },
@@ -190,9 +207,10 @@ const masjidSeed: MasjidSeed[] = [
   // ── ZON 7 — WP Putrajaya (1) ──
   { nama: "Masjid Mahmoodiah", zonNombor: 7, lokasi: "Presint 18, Putrajaya", isInduk: true },
 
-  // ── ZON 8 — WP Labuan (16) ──
+  // ── ZON 8 — WP Labuan (17) ──
   { nama: "Masjid Jamek An-Nur", zonNombor: 8, lokasi: "Bandar Labuan", isInduk: true, isNegeri: true },
   { nama: "Masjid Jamek Adam", zonNombor: 8, lokasi: "Kampung Lajau" },
+  { nama: "Masjid Jamek Layang-Layangan", zonNombor: 8, lokasi: "Kampung Layang-Layangan" },
   { nama: "Masjid Al-Muttakin", zonNombor: 8, lokasi: "Taman 10FC, Kampung Kerupang 2" },
   { nama: "Masjid Al-Munawwar", zonNombor: 8, lokasi: "Kampung Pohon Batu" },
   { nama: "Masjid Al-Ehsan", zonNombor: 8, lokasi: "Kampung Sungai Labu" },
@@ -207,6 +225,12 @@ const masjidSeed: MasjidSeed[] = [
   { nama: "Masjid Sultan Muhammad V", zonNombor: 8, lokasi: "Jalan Pohon Batu, Kampung Lajau" },
   { nama: "Masjid Al-Sultan Abdullah", zonNombor: 8, lokasi: "Kampung Sungai Bedaun" },
   { nama: "Masjid Al-Hijrah", zonNombor: 8, lokasi: "Kampung Sungai Miri" },
+
+  // ── ZON 9 — Posting Khas (Istana Negara / Ibu Pejabat MAIWP) ──
+  // Bukan masjid awam; tidak dipapar dalam Direktori Masjid.
+  { nama: "Surau Utama Istana Negara", zonNombor: 9, lokasi: "Istana Negara, Jalan Tuanku Abdul Halim", isInduk: true, jenisTempat: "surau" },
+  { nama: "Surau Istana Negara (Lama)", zonNombor: 9, lokasi: "Istana Negara Lama, Jalan Istana", jenisTempat: "surau" },
+  { nama: "Ibu Pejabat MAIWP", zonNombor: 9, lokasi: "Bangunan PERKIM, No. 150, Jalan Ipoh, 51200 KL", jenisTempat: "pejabat" },
 ];
 
 export const masjids: Masjid[] = masjidSeed.map((m) => ({
@@ -216,7 +240,13 @@ export const masjids: Masjid[] = masjidSeed.map((m) => ({
   lokasi: m.lokasi,
   isInduk: m.isInduk ?? false,
   isNegeri: m.isNegeri ?? false,
+  jenisTempat: m.jenisTempat ?? "masjid",
 }));
+
+// Hanya masjid awam sebenar (Zon 1–8, jenisTempat "masjid") untuk direktori umum.
+export const masjidsAwam: Masjid[] = masjids.filter(
+  (m) => m.jenisTempat === "masjid" && m.zonNombor <= 8
+);
 
 export const zoneByNombor = (n: number): Zon | undefined =>
   zones.find((z) => z.nombor === n);

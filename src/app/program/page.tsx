@@ -26,7 +26,7 @@ export default async function ProgramPage() {
         <div className="container-wide grid gap-6 md:grid-cols-2">
           {programs.map((p, i) => (
             <Reveal key={p.id} delay={i * 0.08}>
-              <article className="card-hover gold-topline flex h-full flex-col rounded-2xl border border-border bg-card p-8 shadow-soft">
+              <article className="hover-glow gold-topline flex h-full flex-col rounded-2xl border border-border bg-card p-8 shadow-soft">
                 <div className="flex items-center gap-4">
                   <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-primary/8 text-primary">
                     <Icon name={p.icon} className="size-8" />

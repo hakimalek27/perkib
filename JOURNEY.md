@@ -64,10 +64,54 @@ Laman web rasmi PERKIB dibina dari kosong dalam satu sesi pembangunan berpandu, 
 
 Selepas ujian, artifak ujian dibersihkan → data pristine (0 permohonan, 91 pegawai belum ditugaskan, kaunter reset).
 
-## Baki tindakan (bukan penghalang)
+## Baki tindakan v1 (bukan penghalang)
 
 - Tukar `ADMIN_PASSWORD` sebelum pengeluaran.
-- Admin assign 91 pegawai ke masjid dalam Studio.
-- Telefon pejabat masih placeholder — isi dalam Studio → Tetapan Laman.
 - Domain & deployment belum diputuskan (folder `deploy/` sedia).
 - Resend API key untuk emel hubungi sebenar.
+
+---
+
+# Perjalanan v2 — Platform Admin Berfungsi Penuh + Redesign (13–14 Julai 2026)
+
+Naik taraf besar daripada laman maklumat → **platform pentadbiran**. 13 milestone, setiap satu `npm run build` hijau sebelum ke seterusnya.
+
+## Sumber data baharu
+- `senarai_ketua_imam_timbalan_bilal_maiwp.xlsx` (sheet "Senarai Penuh Ikut Zon") — 92 pegawai + penugasan masjid + IC penuh + telefon + gred sebenar (S1/S5/S9).
+- `rekod_staff_lain_enriched.csv` — 1,121 staf MAIWP lain (IC/telefon/foto).
+- API `wassap.wehdah.my` (dari projek Whatsapp Multi Tenant) untuk notifikasi.
+
+## 13 Milestone v2
+| # | Milestone | Hasil |
+|---|---|---|
+| M1 | Asas keselamatan — `crypto.ts` (AES-256-GCM), rate-limit fixed-window 5/5min+lockout, CSP/headers, kuki strict | ✓ |
+| M2 | Skema Sanity v2 — Zon 9, `jenisTempat`, medan `*Enc` (hidden), had jenis, yuran/notifikasi/audit/outbox | ✓ |
+| M3 | Sync penugasan xlsx — 92 pegawai + masjid baharu + Zon 9 + Anuar(1692) + enkripsi IC/telefon (unset plain) | ✓ |
+| M4 | Stor staf lain — 1,121 → `private-data/staf-lain.enc.json` (gitignored) + route foto admin | ✓ |
+| M5 | Saguhati v2 — captcha matematik, medan bank+telefon (enkrip), idempotency, had per jenis, consent PDPA | ✓ |
+| M6 | WhatsApp — `lib/whatsapp.ts` (normalisasi, retry 429, dry-run, outbox), templat BM, cetusan `after()` | ✓ |
+| M7 | Admin shell v2 — sidebar, dashboard, sonner, auditLog | ✓ |
+| M8 | Admin saguhati penuh — tukar status + transfer → WhatsApp; had per jenis; proksi dokumen | ✓ |
+| M9 | Penugasan seret-lepas (`pragmatic-drag-and-drop`) + fallback dropdown | ✓ |
+| M10 | Yuran bendahari — kadar per gred, matriks toggle, tanda setahun, jumlah, eksport CSV | ✓ |
+| M11 | Admin pegawai (IC dekripsi/wa.me/sejarah/yuran) + carian staf lain | ✓ |
+| M12 | Redesign "Royal Glass" (mesh, kaca, glow emas, shimmer) + kandungan (emel/alamat HQ MAIWP/buang waktu) | ✓ |
+| M13 | E2E Chrome MCP + adversarial + commit/push + deploy + docs | ✓ |
+
+## Keputusan reka bentuk v2
+- **Enkripsi at-rest** dipilih atas percaya-dataset-private semata: walau dataset public + repo public, IC/telefon/bank kekal ciphertext.
+- **Staf lain di luar Sanity/repo** — blob terenkripsi tempatan; foto distrim via route berdaftar admin.
+- **Idempotency** `_id` deterministik dari `idemKey` + `createIfNotExists` + mutex — double-submit = 1 rekod.
+- **Yuran** medan bulan BERNAMA (`m01..m12`) bukan array — elak race `_key`.
+- **pragmatic-drag-and-drop** dipilih atas @dnd-kit (penyelenggaraan aktif, serasi React 19).
+- **exceljs** (bukan npm `xlsx` — terbengkalai + CVE) untuk baca xlsx.
+
+## Cabaran & penyelesaian v2
+- **Resolusi masjid xlsx→kanonik** — peta ALIAS eksplisit + laporan; sahkan 2 masjid "Al-Mukhlisin" berbeza (plain 2126 vs Alam Damai 1889).
+- **Env dibaca peringkat modul** (isu susunan import) — tukar baca env lazy dalam fungsi (whatsapp).
+- **ref semasa render** (lint) — tukar ke `useCallback` + monitor dep.
+- **Sembunyi chrome awam di /admin** — early-return Header + gate Footer (`SiteFooterGate`) via usePathname.
+- **Laluan Windows** `path.resolve("C:", …)` ≠ `C:\` — guna literal `C:/…`.
+
+## Keputusan E2E v2 (Chrome MCP, data langsung)
+Homepage Royal Glass (statistik 92·8·94·24) · pegawai awam 92, taburan 31/33/28, Zon 9(7), 0 belum ditugaskan, TIADA IC/telefon bocor · **saguhati: captcha→verify(1991/5053)→bank→submit; double-submit=1 rekod (refNo sama, created=false)** · captcha salah→400 · **anon GROQ: noKpEnc ciphertext `v1:`, telefon plain tiada** · CSP/X-Frame/nosniff hadir · admin login+dashboard · **detail pegawai: IC 900911145053 dekripsi + wa.me + foto**. Artifak ujian dibersihkan → pristine (92 pegawai, 0 permohonan).

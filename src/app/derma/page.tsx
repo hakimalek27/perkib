@@ -32,7 +32,7 @@ export default async function DermaPage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {dermaKategori.map((d, i) => (
               <Reveal key={d.id} delay={i * 0.08}>
-                <div className="card-hover flex h-full flex-col rounded-2xl border border-border bg-card p-6 text-center shadow-soft">
+                <div className="hover-glow flex h-full flex-col rounded-2xl border border-border bg-card p-6 text-center shadow-soft">
                   <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-accent/12 text-accent-deep">
                     <Icon name={d.icon} className="size-7" />
                   </span>

@@ -95,9 +95,67 @@ export const structure = (S: StructureBuilder, _context: StructureResolverContex
         .title("Soalan Lazim")
         .child(S.documentTypeList("faq").title("Soalan Lazim")),
       S.divider(),
+      // Yuran keahlian
+      S.listItem()
+        .id("yuran")
+        .title("💵 Yuran Keahlian")
+        .icon(() => "💵")
+        .child(
+          S.list()
+            .title("Yuran Keahlian")
+            .items([
+              S.listItem()
+                .id("yuranTahunan")
+                .title("Rekod Yuran Tahunan")
+                .child(
+                  S.documentTypeList("yuranTahunan")
+                    .title("Rekod Yuran Tahunan")
+                    .defaultOrdering([{ field: "tahun", direction: "desc" }])
+                ),
+              S.listItem()
+                .id("yuranTetapan")
+                .title("Kadar Yuran (mengikut gred)")
+                .child(S.document().schemaType("yuranTetapan").documentId("yuranTetapan")),
+            ])
+        ),
+      S.divider(),
       // siteSettings — singleton
       S.listItem()
         .id("siteSettings")
         .title("⚙️ Tetapan Laman")
         .child(S.document().schemaType("siteSettings").documentId("siteSettings")),
+      S.listItem()
+        .id("notifikasiTetapan")
+        .title("📲 Tetapan Notifikasi WhatsApp")
+        .child(
+          S.document().schemaType("notifikasiTetapan").documentId("notifikasiTetapan")
+        ),
+      S.divider(),
+      // Sistem — rujukan sahaja (diurus melalui panel admin)
+      S.listItem()
+        .id("sistem")
+        .title("🛠️ Sistem")
+        .icon(() => "🛠️")
+        .child(
+          S.list()
+            .title("Sistem")
+            .items([
+              S.listItem()
+                .id("auditLog")
+                .title("Log Audit")
+                .child(
+                  S.documentTypeList("auditLog")
+                    .title("Log Audit")
+                    .defaultOrdering([{ field: "masa", direction: "desc" }])
+                ),
+              S.listItem()
+                .id("waOutbox")
+                .title("Outbox WhatsApp")
+                .child(
+                  S.documentTypeList("waOutbox")
+                    .title("Outbox WhatsApp")
+                    .defaultOrdering([{ field: "masa", direction: "desc" }])
+                ),
+            ])
+        ),
     ]);

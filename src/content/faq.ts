@@ -46,7 +46,7 @@ export const faqList: FaqEntry[] = [
     kategori: "umum",
     soalan: "Bagaimana untuk menghubungi PERKIB?",
     jawapan:
-      "Hubungi urus setia PERKIB melalui emel azanmalek@maiwp.gov.my atau borang hubungan di laman ini.",
+      "Hubungi urus setia PERKIB melalui emel admin@perkib.my atau borang hubungan di laman ini.",
     order: 5,
   },
 ];

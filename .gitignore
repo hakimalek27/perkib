@@ -26,6 +26,9 @@ yarn-error.log*
 .env*.local
 .env.local
 
+# data peribadi terenkripsi (staf lain 1,122) — JANGAN commit
+/private-data/
+
 # typescript
 *.tsbuildinfo
 
