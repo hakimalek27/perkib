@@ -6,11 +6,11 @@
 - **URL:** https://perkib.my (Cloudflare → nginx :80 → pm2 `perkib` port **3005**).
 - **Pelayan:** `ubuntu@43.133.34.55` (Tencent VM-0-13; kongsi dgn wassap.wehdah.my + 4 laman lain — semua tidak terganggu).
 - **Lokasi app:** `/var/www/perkib/.next/standalone/` (Next standalone). Env: `.env.local` dlm dir itu (chmod 600).
-- **Diuji LIVE:** homepage/pegawai/saguhati/studio 200 · data Sanity langsung (92 pegawai) · captcha API + CSP hadir · **admin login + IC `900911145053` dekripsi + wa.me** (kunci enkripsi server PADAN).
-- **Deploy semula:** `DEPLOY_HOST=ubuntu@43.133.34.55 REMOTE_DIR=/var/www/perkib ./deploy/deploy.sh` (atau tar-pipe standalone → swap → `pm2 restart perkib`).
-- **Rollback:** `/var/www/perkib/.next/standalone.v1old/` + `standalone-v1-*.tgz`.
-- **WASSAP_DRY_RUN=0** (WhatsApp LIVE). **Foto staf (363M) BELUM dipindah** — carian staf berfungsi, foto 404 sehingga `rsync` ke `/var/www/perkib/staf-foto/`.
-- ⚠️ **TUKAR `ADMIN_PASSWORD`** dalam `/var/www/perkib/.next/standalone/.env.local` → `pm2 restart perkib`.
+- **Diuji LIVE:** homepage/pegawai/saguhati/studio 200 · data Sanity langsung (92 pegawai) · captcha API + CSP hadir · **admin login + IC `900911145053` dekripsi + wa.me** (kunci enkripsi server PADAN) · **WhatsApp app-level dihantar** (baru-pemohon → 0189030363, SENT) · **foto staf 1122 dihidang** (route berdaftar admin 200, tanpa-auth 401).
+- **Endpoint WhatsApp:** wassap.wehdah.my guna `/v1/messages/send` (BUKAN `/api/v1`) — dibetulkan dlm `whatsapp.ts`. `WASSAP_DRY_RUN=0` (LIVE).
+- **Foto staf:** 1122 fail (362M) di `/var/www/perkib/staf-foto/`.
+- **Kata laluan admin:** sudah DITUKAR (bukan lagi default). Disimpan dlm `.env.local` server.
+- **Deploy semula:** tar-pipe standalone → `cp .env.local` (kekal produksi) → swap → `pm2 restart perkib`. Rollback: `standalone.v2old/` + tgz.
 
 Naik taraf besar (v2) daripada laman maklumat statik → **platform admin berfungsi penuh**: enkripsi data,
 sistem saguhati lengkap (captcha, bank, notifikasi WhatsApp), panel admin tanpa Studio (status, penugasan
