@@ -1,5 +1,6 @@
 // Integrasi WhatsApp melalui wassap.wehdah.my (projek Whatsapp Multi Tenant).
-// POST {base}/api/v1/messages/send  header X-API-Key: sk_...  body {to, message}.
+// POST {base}/v1/messages/send  header X-API-Key: sk_...  body {to, message}.
+// (Nota: deployment live wassap.wehdah.my guna prefix /v1, bukan /api/v1.)
 // `to` = nombor 60xxxxxxxxxx ATAU JID group ...@g.us.
 // Kegagalan TIDAK PERNAH menggagalkan permohonan (fire-and-forget + log outbox).
 // Server-only.
@@ -44,7 +45,7 @@ async function postSend(to: string, message: string, retriesLeft = 1): Promise<S
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 10_000);
   try {
-    const res = await fetch(`${apiUrl()}/api/v1/messages/send`, {
+    const res = await fetch(`${apiUrl()}/v1/messages/send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-API-Key": apiKey() },
       body: JSON.stringify({ to, message }),
