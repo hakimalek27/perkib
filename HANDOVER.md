@@ -1,6 +1,16 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-14 · **Status:** ✅ v2 SIAP & diuji E2E (Chrome MCP) dengan Sanity langsung.
+**Kemas kini:** 2026-07-14 · **Status:** ✅ v2 **DEPLOYED & LIVE di https://perkib.my** + diuji E2E dengan Sanity langsung.
+
+## 🚀 PENGELUARAN (LIVE)
+- **URL:** https://perkib.my (Cloudflare → nginx :80 → pm2 `perkib` port **3005**).
+- **Pelayan:** `ubuntu@43.133.34.55` (Tencent VM-0-13; kongsi dgn wassap.wehdah.my + 4 laman lain — semua tidak terganggu).
+- **Lokasi app:** `/var/www/perkib/.next/standalone/` (Next standalone). Env: `.env.local` dlm dir itu (chmod 600).
+- **Diuji LIVE:** homepage/pegawai/saguhati/studio 200 · data Sanity langsung (92 pegawai) · captcha API + CSP hadir · **admin login + IC `900911145053` dekripsi + wa.me** (kunci enkripsi server PADAN).
+- **Deploy semula:** `DEPLOY_HOST=ubuntu@43.133.34.55 REMOTE_DIR=/var/www/perkib ./deploy/deploy.sh` (atau tar-pipe standalone → swap → `pm2 restart perkib`).
+- **Rollback:** `/var/www/perkib/.next/standalone.v1old/` + `standalone-v1-*.tgz`.
+- **WASSAP_DRY_RUN=0** (WhatsApp LIVE). **Foto staf (363M) BELUM dipindah** — carian staf berfungsi, foto 404 sehingga `rsync` ke `/var/www/perkib/staf-foto/`.
+- ⚠️ **TUKAR `ADMIN_PASSWORD`** dalam `/var/www/perkib/.next/standalone/.env.local` → `pm2 restart perkib`.
 
 Naik taraf besar (v2) daripada laman maklumat statik → **platform admin berfungsi penuh**: enkripsi data,
 sistem saguhati lengkap (captcha, bank, notifikasi WhatsApp), panel admin tanpa Studio (status, penugasan
