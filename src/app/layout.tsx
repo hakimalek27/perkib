@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { manrope, marcellus, amiri } from "./fonts";
+import { bricolage, jakarta, amiri } from "./fonts";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SiteFooterGate } from "@/components/layout/SiteFooterGate";
@@ -42,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html
       lang="ms"
-      className={`${manrope.variable} ${marcellus.variable} ${amiri.variable} h-full antialiased`}
+      className={`${bricolage.variable} ${jakarta.variable} ${amiri.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <a

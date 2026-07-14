@@ -1,20 +1,20 @@
-import { Manrope, Marcellus, Amiri } from "next/font/google";
+import { Bricolage_Grotesque, Plus_Jakarta_Sans, Amiri } from "next/font/google";
 
-// Body — Manrope (moden, kemas, mudah dibaca).
-export const manrope = Manrope({
+// Display / tajuk — Bricolage Grotesque (moden, berkarakter, tegas).
+// Variable --font-bricolage (BUKAN --font-display supaya tak berlanggar token @theme).
+export const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-manrope",
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-bricolage",
   display: "swap",
 });
 
-// Display / tajuk — Marcellus (klasik, berwibawa).
-export const marcellus = Marcellus({
+// Body — Plus Jakarta Sans (kemas, mudah dibaca, neutral).
+export const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-marcellus",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-jakarta",
   display: "swap",
-  preload: false,
 });
 
 // Hiasan tipografi Arab sahaja — JANGAN jana teks Arab sendiri.
