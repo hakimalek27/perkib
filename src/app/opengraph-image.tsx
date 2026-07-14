@@ -15,18 +15,33 @@ export default function OgImage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #0A2340 0%, #17457A 100%)",
+          background: "linear-gradient(160deg, #0D1117 0%, #171C24 55%, #0D1117 100%)",
           color: "white",
           fontFamily: "sans-serif",
           padding: 80,
+          position: "relative",
         }}
       >
+        {/* Outline arch hiasan */}
+        <svg
+          width={340}
+          height={408}
+          viewBox="0 0 100 120"
+          style={{ position: "absolute", right: -40, top: -20, opacity: 0.08 }}
+        >
+          <path
+            d="M2,120 L2,48 C2,20 22,4 47,1 L50,0 L53,1 C78,4 98,20 98,48 L98,120"
+            stroke="#D9BC82"
+            strokeWidth={2}
+            fill="none"
+          />
+        </svg>
         <div
           style={{
             display: "flex",
             fontSize: 34,
             letterSpacing: 8,
-            color: "#E4BD63",
+            color: "#D9BC82",
             textTransform: "uppercase",
             fontWeight: 700,
           }}
@@ -61,7 +76,7 @@ export default function OgImage() {
             display: "flex",
             width: 120,
             height: 4,
-            background: "#C99A3E",
+            background: "#C6A25D",
             marginTop: 36,
             borderRadius: 4,
           }}
