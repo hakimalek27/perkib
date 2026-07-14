@@ -22,7 +22,7 @@ export default async function MohonPage() {
       <PageHero
         eyebrow="Permohonan"
         title="Mohon Saguhati Kebajikan"
-        description="Lengkapkan tiga langkah mudah — sahkan identiti, pilih jenis saguhati dan muat naik dokumen sokongan."
+        description="Lengkapkan lima langkah mudah — sahkan identiti, pilih jenis saguhati, isi maklumat, muat naik dokumen dan hantar."
         breadcrumb={[{ label: "Saguhati", href: "/saguhati" }, { label: "Mohon" }]}
       />
 

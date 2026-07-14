@@ -25,6 +25,66 @@ const STATUS_TONE: Record<string, string> = {
   dibayar: "bg-success/20 text-success",
 };
 
+// Peringkat timeline (spek §8.6). Indeks tertinggi "dicapai" per status sebenar.
+const STAGES = [
+  { label: "Dihantar", desc: "Permohonan diterima sistem" },
+  { label: "Dalam Semakan", desc: "Sedang diproses oleh urus setia" },
+  { label: "Keputusan", desc: "Diluluskan atau tidak diluluskan" },
+  { label: "Pembayaran", desc: "Saguhati dikreditkan ke akaun" },
+];
+const REACHED: Record<string, number> = { baru: 0, diproses: 1, lulus: 2, tolak: 2, dibayar: 3 };
+
+function StatusTimeline({ status }: { status: string }) {
+  const reached = REACHED[status] ?? 0;
+  const rejected = status === "tolak";
+  const terminal = status === "tolak" || status === "dibayar";
+  return (
+    <ol className="mt-6 space-y-0">
+      {STAGES.map((s, i) => {
+        const done = i <= reached;
+        const current = !terminal && i === reached + 1;
+        const isKeputusanTolak = rejected && i === 2;
+        const skipped = rejected && i === 3; // pembayaran tidak berkenaan bila ditolak
+        const last = i === STAGES.length - 1;
+        return (
+          <li key={s.label} className="flex gap-4">
+            <div className="flex flex-col items-center">
+              <span
+                className={cn(
+                  "flex size-7 items-center justify-center text-[11px] font-bold",
+                  isKeputusanTolak
+                    ? "bg-destructive text-white"
+                    : done
+                      ? "bg-primary text-white"
+                      : current
+                        ? "animate-pulse bg-primary text-white motion-reduce:animate-none"
+                        : "bg-muted text-muted-foreground"
+                )}
+                style={{ clipPath: "url(#archClip)" }}
+              >
+                {done && !isKeputusanTolak ? "✓" : i + 1}
+              </span>
+              {!last && (
+                <span
+                  className={cn("mt-1 w-[2px] flex-1", i < reached ? "bg-accent" : "bg-border")}
+                  style={{ minHeight: "1.75rem" }}
+                />
+              )}
+            </div>
+            <div className={cn("pb-6", skipped && "opacity-40")}>
+              <p className={cn("text-sm font-semibold", done || current || isKeputusanTolak ? "text-ink" : "text-muted-foreground")}>
+                {isKeputusanTolak ? "Keputusan: Tidak Diluluskan" : s.label}
+                {current && <span className="ml-2 text-xs font-medium text-primary">· Semasa</span>}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{s.desc}</p>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 function formatTarikh(iso?: string): string {
   if (!iso) return "-";
   try {
@@ -77,7 +137,7 @@ export function SemakForm() {
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Nombor Rujukan
             </p>
-            <p className="font-display text-2xl font-semibold text-primary">{result.nomborRujukan}</p>
+            <p className="font-display text-2xl font-bold text-primary">{result.nomborRujukan}</p>
           </div>
           <span
             className={cn(
@@ -88,7 +148,11 @@ export function SemakForm() {
             {result.statusLabel}
           </span>
         </div>
-        <dl className="mt-5 space-y-4 text-sm">
+
+        {/* Timeline menegak node arch */}
+        <StatusTimeline status={result.status} />
+
+        <dl className="mt-2 space-y-4 border-t border-border pt-5 text-sm">
           <div className="flex justify-between gap-4">
             <dt className="text-muted-foreground">Jenis Saguhati</dt>
             <dd className="text-right font-medium text-ink">{result.jenisNama ?? "-"}</dd>
