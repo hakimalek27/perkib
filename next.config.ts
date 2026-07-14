@@ -16,7 +16,8 @@ const sitePolicy = [
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
-  "connect-src 'self' https://*.sanity.io",
+  // tiles.openfreemap.org: style JSON + tiles PBF + glyphs + sprite untuk peta MapLibre.
+  "connect-src 'self' https://*.sanity.io https://tiles.openfreemap.org",
   "worker-src 'self' blob:",
 ].join("; ");
 

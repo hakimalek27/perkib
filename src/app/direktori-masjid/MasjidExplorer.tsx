@@ -1,10 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Search, MapPin, Star, Landmark, Building2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
+import { Search, MapPin, Star, Landmark, Building2, List, Map as MapIcon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MasjidView } from "@/lib/sanity";
 import type { Zon } from "@/content/zon-masjid";
+
+// Peta dimuat malas (dynamic, ssr:false) — hanya bila tab Peta dibuka.
+const MasjidMap = dynamic(() => import("./MasjidMap").then((m) => m.MasjidMap), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[560px] items-center justify-center rounded-2xl border border-border bg-muted">
+      <Loader2 className="size-6 animate-spin text-primary" />
+    </div>
+  ),
+});
 
 const WILAYAH_LABEL: Record<string, string> = {
   kl: "WP Kuala Lumpur",
@@ -21,6 +32,27 @@ export function MasjidExplorer({
 }) {
   const [zon, setZon] = useState<number | "all">("all");
   const [query, setQuery] = useState("");
+  const [view, setView] = useState<"senarai" | "peta">("senarai");
+
+  // Segerak `view` dari URL (?view=peta) sekali semasa mount (deep-link boleh dikongsi).
+  useEffect(() => {
+    const v = new URL(window.location.href).searchParams.get("view");
+    if (v === "peta") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setView("peta");
+    }
+  }, []);
+
+  function changeView(v: "senarai" | "peta") {
+    setView(v);
+    try {
+      const url = new URL(window.location.href);
+      if (v === "peta") url.searchParams.set("view", "peta");
+      else url.searchParams.delete("view");
+      window.history.replaceState(null, "", url.toString());
+    } catch {}
+  }
+
 
   const counts = useMemo(() => {
     const m = new Map<number, number>();
@@ -53,15 +85,36 @@ export function MasjidExplorer({
       {/* Kawalan */}
       <div className="sticky top-[76px] z-20 -mx-4 mb-8 border-b border-border bg-background/90 px-4 py-4 backdrop-blur-lg">
         <div className="flex flex-col gap-4">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Cari masjid atau lokasi…"
-              className="h-11 w-full rounded-full border border-input bg-card pl-11 pr-4 text-sm shadow-soft focus:outline-none focus:ring-2 focus:ring-primary/40"
-            />
+          <div className="flex gap-3">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Cari masjid atau lokasi…"
+                className="h-11 w-full rounded-full border border-input bg-card pl-11 pr-4 text-sm shadow-soft focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
+            </div>
+            {/* Segmented control Senarai | Peta */}
+            <div className="flex shrink-0 rounded-full border border-border bg-card p-1 shadow-soft" role="tablist" aria-label="Mod paparan">
+              <button
+                role="tab"
+                aria-selected={view === "senarai"}
+                onClick={() => changeView("senarai")}
+                className={cn("inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors", view === "senarai" ? "bg-primary text-white" : "text-ink/70")}
+              >
+                <List className="size-3.5" /> <span className="hidden sm:inline">Senarai</span>
+              </button>
+              <button
+                role="tab"
+                aria-selected={view === "peta"}
+                onClick={() => changeView("peta")}
+                className={cn("inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors", view === "peta" ? "bg-primary text-white" : "text-ink/70")}
+              >
+                <MapIcon className="size-3.5" /> <span className="hidden sm:inline">Peta</span>
+              </button>
+            </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -95,9 +148,17 @@ export function MasjidExplorer({
 
       <p className="mb-6 text-sm text-muted-foreground">
         Memaparkan <span className="font-semibold text-primary">{filtered.length}</span> masjid
+        {view === "peta" && (
+          <span className="ml-2 text-xs">
+            ({filtered.filter((m) => typeof m.latitude === "number" && typeof m.longitude === "number").length}{" "}
+            daripada {filtered.length} mempunyai koordinat peta)
+          </span>
+        )}
       </p>
 
-      {zonList.length === 0 ? (
+      {view === "peta" ? (
+        <MasjidMap masjids={filtered} onError={() => changeView("senarai")} />
+      ) : zonList.length === 0 ? (
         <div className="mx-auto max-w-md rounded-2xl border border-border bg-card p-10 text-center shadow-soft">
           <Building2 className="mx-auto size-10 text-accent" />
           <p className="mt-4 font-display text-lg font-semibold text-ink">Tiada Padanan</p>

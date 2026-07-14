@@ -19,6 +19,8 @@
     "seed:all": "tsx scripts/sync-penugasan.ts && tsx scripts/seed-jenis-saguhati.ts && tsx scripts/seed-content.ts && tsx scripts/seed-ajk.ts",
     "sync:penugasan": "tsx scripts/sync-penugasan.ts",
     "build:staf-lain": "tsx scripts/build-staf-lain.ts",
+    "geocode:masjid": "tsx scripts/geocode-masjid.ts",
+    "geocode:apply": "tsx scripts/apply-geocode.ts",
     "validate:data": "tsx scripts/validate-data.ts"
   },
   "dependencies": {
@@ -34,6 +36,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^1.14.0",
+    "maplibre-gl": "^5.24.0",
     "next": "16.2.6",
     "next-sanity": "^12.4.5",
     "react": "19.2.4",

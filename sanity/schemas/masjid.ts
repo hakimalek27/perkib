@@ -48,6 +48,9 @@ export default {
       description: "Masjid negeri Wilayah Persekutuan.",
     },
     { name: "catatan", title: "Catatan", type: "text", rows: 2 },
+    // v3: koordinat peta (opsyenal, additive) — dijana skrip geocode + semakan manual.
+    { name: "latitude", title: "Latitude", type: "number", description: "Koordinat peta (opsyenal)." },
+    { name: "longitude", title: "Longitude", type: "number", description: "Koordinat peta (opsyenal)." },
   ],
   orderings: [
     {
