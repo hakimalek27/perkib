@@ -422,4 +422,27 @@
   }
   .animate-accordion-down { animation: accordion-down 0.25s ease-out; }
   .animate-accordion-up { animation: accordion-up 0.25s ease-out; }
+
+  /* Transisi masuk halaman (template.tsx) */
+  @keyframes page-enter {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  .page-enter { animation: page-enter 0.25s var(--ease) both; }
+
+  /* Odometer digit (Odometer.tsx) */
+  .odo { display: inline-flex; overflow: hidden; }
+  .odo-digit { height: 1em; overflow: hidden; display: block; }
+  .odo-reel { display: flex; flex-direction: column; will-change: transform; transition: transform 1.6s var(--ease); }
+  .odo-reel span { display: block; height: 1em; line-height: 1; }
+
+  /* Arch draw (ArchOutline draw) */
+  .arch-draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: arch-draw 1.2s var(--ease) forwards; }
+  @keyframes arch-draw { to { stroke-dashoffset: 0; } }
+
+  /* Tier Essential — matikan animasi spatial */
+  .tier-essential .odo-reel { transition: none; }
+  .tier-essential .reveal { opacity: 1; transform: none; transition: none; }
+  .tier-essential .page-enter { animation: none; }
+  .tier-essential .arch-draw { animation: none; stroke-dashoffset: 0; }
 }

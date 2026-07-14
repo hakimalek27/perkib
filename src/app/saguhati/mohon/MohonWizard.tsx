@@ -225,7 +225,6 @@ export function MohonWizard({ jenis }: { jenis: JenisSaguhati[] }) {
           sessionStorage.removeItem(IDEM_KEY);
         } catch {}
         setStep(4);
-        void fireConfetti();
       } else {
         setError(data.error ?? "Permohonan gagal dihantar.");
       }
@@ -681,18 +680,6 @@ export function MohonWizard({ jenis }: { jenis: JenisSaguhati[] }) {
       )}
     </div>
   );
-}
-
-async function fireConfetti() {
-  try {
-    const confetti = (await import("canvas-confetti")).default;
-    const colors = ["#17457A", "#C99A3E", "#1E7D53"];
-    confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 }, colors });
-    setTimeout(() => confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 }, colors }), 200);
-    setTimeout(() => confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 }, colors }), 350);
-  } catch {
-    // confetti pilihan sahaja
-  }
 }
 
 function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {

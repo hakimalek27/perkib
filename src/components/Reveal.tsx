@@ -1,33 +1,50 @@
 "use client";
 
-import { motion, useInView, useReducedMotion } from "framer-motion";
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
-// Pembungkus fade-in-atas semasa skrol masuk. Hormati prefers-reduced-motion.
+// Pembungkus fade-in-atas semasa skrol masuk — IntersectionObserver + kelas CSS
+// (.reveal / .in dalam globals.css), tiada framer-motion. Hormati reduced-motion
+// (dikendali oleh CSS @media dalam globals). API prop kekal sama.
 export function Reveal({
   children,
   delay = 0,
   className,
-  y = 24,
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
+  /** Dikekalkan utk keserasian API; transform kini dikendali CSS (.reveal). */
   y?: number;
 }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || shown) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            setShown(true);
+            io.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -80px 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [shown]);
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      className={className}
-      initial={reduce ? false : { opacity: 0, y }}
-      animate={inView ? { opacity: 1, y: 0 } : undefined}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={`reveal${shown ? " in" : ""}${className ? " " + className : ""}`}
+      style={delay ? { "--d": `${delay}s` } as React.CSSProperties : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

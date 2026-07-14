@@ -5,6 +5,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SiteFooterGate } from "@/components/layout/SiteFooterGate";
 import { JsonLd } from "@/components/JsonLd";
+import { ArchClipDefs } from "@/components/nadi/ArchClipDefs";
+import { TierInit } from "@/components/nadi/TierInit";
 import { getSiteSettings } from "@/lib/sanity";
 import { siteInfo } from "@/content/site";
 
@@ -45,6 +47,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${bricolage.variable} ${jakarta.variable} ${amiri.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        <ArchClipDefs />
+        <TierInit />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-white"
