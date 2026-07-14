@@ -12,7 +12,7 @@ Redesign UI penuh **ivory #F7F3EB / obsidian #0D1117 / maroon #9E1F2E / gold #C6
 - **Wizard 3→5 langkah** (API/payload BEKU) + Nadi progress + sessionStorage draf. SemakForm timeline menegak node arch.
 - Header floating dock, Footer obsidian 4-kolum, login admin split-screen, 404/loading/OG arch.
 
-**⚠️ BELUM PUSH:** 14 commit v3 setempat (`8b1821a`→`31aa48a`) + tags `pra-v3`/`kumpulan-a-siap`. Token GitHub tiada akses. Hakim: `gh auth login` → `git push origin main --tags`.
+**✅ DIPUSH:** `main @ dd254ec` (origin sync) + tags `pra-v3`/`kumpulan-a-siap`. Nota: env var harness `GH_TOKEN`+`GITHUB_TOKEN` (Process-level, expired 401) mengatasi token keyring `gho_` yang sah → push guna `env -u GH_TOKEN -u GITHUB_TOKEN git -c credential.helper='!gh auth git-credential' push`.
 
 ---
 
@@ -87,7 +87,7 @@ npm run lint && npm run build
 Homepage (statistik 92·8·94·24, reka bentuk Royal Glass) · pegawai awam 92 + taburan + 0 belum ditugaskan + TIADA IC/telefon bocor · **saguhati penuh: captcha→verify→bank→submit; double-submit=1 rekod (refNo sama)** · captcha salah 400 · **anon GROQ noKpEnc=ciphertext, telefon plain tiada** · headers hadir · admin login+dashboard · **detail pegawai: IC 900911145053 dekripsi + wa.me + foto**. Artifak ujian dibersihkan → pristine.
 
 ## Baki tindakan (untuk Hakim) — v3
-1. **GitHub push:** `gh auth login` (HTTPS, akaun hakimalek27) → `git push origin main --tags`. 14 commit v3 setempat belum push (token semasa tiada akses).
+1. ~~GitHub push~~ ✅ SIAP (`main @ dd254ec`, origin sync). Nota env token: lihat atas.
 2. **WhatsApp group:** nombor penghantar PERKIB (6019 "PERKIB NOTI MAM", tenant masjid_id 9) **belum jadi ahli** group SANTAI+JK PERKIB (milik tenant 1). Tambah 6019 ke kedua-dua group di WhatsApp → `npx tsx scripts/wa-setup.ts --send --set-target`. (Sasaran & ujian gagal buat masa ini; target dikosongkan supaya cooldown tak jejas noti pemohon.)
 3. **Peta koordinat:** `npm run geocode:masjid` → semak `scripts/output/geocode-review.json` (banding Google Maps) → `npm run geocode:apply`. Sementara: peta fallback senarai.
 4. Lighthouse perkib.my (homepage/direktori/mohon) — sahkan DoD (QA-REPORT.md).
