@@ -53,8 +53,7 @@ function isLink(item: NavItem): item is NavLink {
 }
 
 export function Header() {
-  const [scrolled, setScrolled] = useState(false); // > 24 → dock ivory
-  const [docked, setDocked] = useState(false); // > 90 → morph penuh
+  const [docked, setDocked] = useState(false); // > 90 → morph dock penuh
   const [showSticky, setShowSticky] = useState(false); // > 640 → sticky CTA
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
@@ -73,7 +72,6 @@ export function Header() {
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
-      setScrolled(y > 24);
       setDocked(y > 90);
       setShowSticky(y > 640);
     };
@@ -123,7 +121,9 @@ export function Header() {
     }
   }
 
-  const solid = scrolled; // teks gelap bila skrol; cerah bila atas hero
+  // Header Nadi sentiasa ivory (teks gelap) — hero & seksyen kini bawah dock
+  // ivory terapung (bukan transparan). `scrolled` hanya untuk morph dock.
+  const solid = true;
 
   if (hideChrome) return null;
 
