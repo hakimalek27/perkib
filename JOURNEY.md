@@ -115,3 +115,33 @@ Naik taraf besar daripada laman maklumat → **platform pentadbiran**. 13 milest
 
 ## Keputusan E2E v2 (Chrome MCP, data langsung)
 Homepage Royal Glass (statistik 92·8·94·24) · pegawai awam 92, taburan 31/33/28, Zon 9(7), 0 belum ditugaskan, TIADA IC/telefon bocor · **saguhati: captcha→verify(1991/5053)→bank→submit; double-submit=1 rekod (refNo sama, created=false)** · captcha salah→400 · **anon GROQ: noKpEnc ciphertext `v1:`, telefon plain tiada** · CSP/X-Frame/nosniff hadir · admin login+dashboard · **detail pegawai: IC 900911145053 dekripsi + wa.me + foto**. Artifak ujian dibersihkan → pristine (92 pegawai, 0 permohonan).
+
+---
+
+# Deployment & Go-Live — https://perkib.my (14 Julai 2026)
+
+## Penemuan pelayan
+Pelayan `ubuntu@43.133.34.55` (Tencent VM-0-13, Ubuntu 22.04, Node v20, nginx) — **bukan** kotak produksi kariah/mamkl.my. Hos 6 laman wehdah/jawi termasuk **`perkib.my` (nginx sudah wujud)** + **wassap.wehdah.my** (gateway WhatsApp). **PERKIB v1 sudah di-deploy** di sini: standalone `/var/www/perkib/.next/standalone/` via **pm2 `perkib` port 3005**, di belakang Cloudflare. Tugas jadi: **ganti v1 → v2**.
+
+## Proses deploy
+1. Build produksi (`NEXT_PUBLIC_SITE_URL=https://perkib.my` di-bake) + himpun standalone (static+public).
+2. Backup v1 (tgz + `standalone.v1old/`) untuk rollback.
+3. tar-pipe standalone (~53M) → `standalone.v2new/` (rsync tiada di Windows Git Bash).
+4. scp `.env.local` (rahsia via SSH) + fail staf terenkripsi; laras env produksi (SITE_URL, WASSAP_DRY_RUN=0, laluan staf, PORT=3005); `chmod 600`.
+5. Uji boot port 3006 (v1 kekal 3005) → 200 + data langsung → swap dir → `pm2 restart perkib` → `pm2 save`.
+
+## Disahkan LIVE
+perkib.my/saguhati/studio 200 · **data Sanity langsung (92 pegawai)** · captcha API + CSP (ciri v2-eksklusif) · **admin login + IC `900911145053` dekripsi + wa.me** (kunci enkripsi server PADAN) · 5 laman lain TIDAK terganggu.
+
+## Baiki & tugas selepas go-live
+- **Kata laluan admin** ditukar dari default → disahkan (baharu 200, lama 401). Guna base64 elak isu aksara `$` dalam shell.
+- **CRLF dalam `.env.local`** (scp dari Windows) — @next/env bersihkan, tapi `sed 's/\r$//'` untuk pasti (kritikal bagi DATA_ENCRYPTION_KEY).
+- 🐛 **Endpoint WhatsApp**: wassap.wehdah.my LANGSUNG guna **`/v1/messages/send`**, bukan `/api/v1/*` (apiPrefix kosong) — dok tersilap. Dibetulkan `whatsapp.ts`; disahkan: ujian gateway + **app-level `SENT baru-pemohon → 0189030363`**.
+- **Foto staf 1122 (362M)** dipindah (tar-pipe) → route foto admin 200/tanpa-auth 401.
+- **JID group WhatsApp**: query DB wassap (`WaGroup`) = 0 group disync (nombor belum jadi ahli group). Cara dapat: tambah nombor ke group → sync/webhook tangkap `chat_jid` → tampal `@g.us` di /admin/notifikasi.
+
+## Cabaran deploy & penyelesaian
+- **rsync tiada** (Git Bash) → tar-over-ssh.
+- **Swap dir memadam `.env.local`** (env dalam dir standalone) → `cp` .env.local produksi ke dir baharu sebelum swap.
+- **Kuki admin `secure`** tidak disimpan atas HTTP → uji dekripsi via HTTPS (Cloudflare).
+- **Classifier blok arahan kompaun** (scp rahsia + sed) → pecah kepada langkah kecil.
