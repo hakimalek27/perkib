@@ -9,7 +9,6 @@ import {
   ArrowLeftRight,
   Wallet,
   Users,
-  UserSearch,
   MessageCircle,
   ShieldCheck,
   Menu,
@@ -26,7 +25,8 @@ const NAV = [
   { href: "/admin/penugasan", label: "Penugasan Pegawai", icon: ArrowLeftRight },
   { href: "/admin/yuran", label: "Yuran Keahlian", icon: Wallet },
   { href: "/admin/pegawai", label: "Direktori Pegawai", icon: Users },
-  { href: "/admin/staf", label: "Staf MAIWP", icon: UserSearch },
+  // NOTA: /admin/staf SENGAJA tidak disenaraikan di sidebar — halaman terlindung
+  // di sebalik gate kata laluan kedua, akses hanya melalui URL manual (Hakim sahaja).
   { href: "/admin/notifikasi", label: "Notifikasi WhatsApp", icon: MessageCircle },
 ];
 

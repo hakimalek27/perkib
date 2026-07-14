@@ -3,14 +3,16 @@ import { Mail, MapPin } from "lucide-react";
 import { initials } from "@/lib/utils";
 import { kategoriLabel, type PegawaiView } from "@/lib/sanity";
 
+// Badge duduk ATAS foto — guna backing legap (bukan lut-sinar) supaya teks
+// sentiasa terbaca walau foto pegawai gelap/terang. Warna kategori pada teks + ring.
 const KATEGORI_TONE: Record<string, string> = {
-  "ketua-imam": "bg-primary/10 text-primary",
-  "timbalan-ketua-imam": "bg-accent/15 text-accent-deep",
-  bilal: "bg-primary-light/15 text-primary-light",
+  "ketua-imam": "text-primary ring-primary/25",
+  "timbalan-ketua-imam": "text-accent-deep ring-accent/30",
+  bilal: "text-primary-light ring-primary-light/30",
 };
 
 export function PegawaiCard({ pegawai }: { pegawai: PegawaiView }) {
-  const tone = KATEGORI_TONE[pegawai.kategori] ?? "bg-muted text-muted-foreground";
+  const tone = KATEGORI_TONE[pegawai.kategori] ?? "text-muted-foreground ring-border";
   return (
     <article className="hover-glow group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
       {/* Foto / avatar */}
@@ -31,7 +33,7 @@ export function PegawaiCard({ pegawai }: { pegawai: PegawaiView }) {
           </div>
         )}
         <span
-          className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-[11px] font-semibold ${tone}`}
+          className={`absolute left-3 top-3 z-10 inline-flex items-center rounded-full bg-card/95 px-2.5 py-1 text-[11px] font-semibold shadow-sm ring-1 backdrop-blur-sm ${tone}`}
         >
           {kategoriLabel[pegawai.kategori]}
         </span>

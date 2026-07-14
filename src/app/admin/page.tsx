@@ -7,7 +7,6 @@ import {
   MessageCircleWarning,
   ArrowLeftRight,
   Users,
-  UserSearch,
   Bell,
   Clock,
 } from "lucide-react";
@@ -67,7 +66,7 @@ export default async function AdminDashboard() {
     { href: "/admin/penugasan", label: "Penugasan Pegawai", icon: ArrowLeftRight },
     { href: "/admin/yuran", label: "Rekod Yuran", icon: Wallet },
     { href: "/admin/pegawai", label: "Cari Pegawai", icon: Users },
-    { href: "/admin/staf", label: "Cari Staf MAIWP", icon: UserSearch },
+    // /admin/staf sengaja tidak dipautkan (halaman terlindung gate — akses URL manual).
     { href: "/admin/notifikasi", label: "Tetapan Notifikasi", icon: Bell },
   ];
 

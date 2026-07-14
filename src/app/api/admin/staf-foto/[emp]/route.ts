@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isStafGateAuthenticated } from "@/lib/staf-gate";
 import { getStafLain } from "@/lib/staf-lain";
 
 export const runtime = "nodejs";
@@ -19,9 +20,12 @@ export async function GET(
   _req: Request,
   { params }: { params: Promise<{ emp: string }> }
 ) {
-  // Guard: admin sahaja.
+  // Guard berlapis: admin + gate staf (foto = data peribadi staf).
   if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Tidak dibenarkan" }, { status: 401 });
+    return NextResponse.json({ error: "admin" }, { status: 401 });
+  }
+  if (!(await isStafGateAuthenticated())) {
+    return NextResponse.json({ error: "gate" }, { status: 401 });
   }
 
   const { emp } = await params;
