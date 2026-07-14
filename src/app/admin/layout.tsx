@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminTopbar } from "@/components/admin/AdminTopbar";
 
 export const metadata: Metadata = {
   title: "Panel Admin PERKIB",
@@ -27,6 +28,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen bg-bg-alt">
       <AdminSidebar />
       <div className="lg:pl-60">
+        <AdminTopbar />
         <main className="mx-auto max-w-6xl p-4 md:p-8">{children}</main>
       </div>
       <Toaster richColors position="top-right" />

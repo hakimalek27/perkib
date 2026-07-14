@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Loader2, AlertCircle } from "lucide-react";
+import { Lock, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input, Label } from "@/components/ui/input";
+import { Label } from "@/components/ui/input";
 
 export function LoginForm() {
   const router = useRouter();
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [capsOn, setCapsOn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,12 +39,12 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 shadow-elev">
-      <div className="flex flex-col items-center text-center">
-        <span className="flex size-14 items-center justify-center rounded-2xl bg-primary/8 text-primary">
-          <Lock className="size-7" />
+    <form onSubmit={handleSubmit} className="w-full max-w-sm">
+      <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+        <span className="flex size-12 items-center justify-center rounded-2xl bg-primary/8 text-primary">
+          <Lock className="size-6" />
         </span>
-        <h1 className="font-display mt-4 text-2xl font-semibold text-primary-dark">Panel Admin</h1>
+        <h1 className="mt-4 font-display text-2xl font-bold text-ink">Panel Admin PERKIB</h1>
         <p className="mt-1 text-sm text-muted-foreground">Log masuk untuk mengurus permohonan saguhati.</p>
       </div>
 
@@ -55,25 +57,35 @@ export function LoginForm() {
 
       <div className="mt-6">
         <Label htmlFor="password">Kata Laluan</Label>
-        <Input
-          id="password"
-          type="password"
-          className="mt-1.5"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-          required
-        />
+        <div className="relative mt-1.5">
+          <input
+            id="password"
+            type={showPw ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyUp={(e) => setCapsOn(e.getModifierState?.("CapsLock") ?? false)}
+            autoComplete="current-password"
+            required
+            className="h-11 w-full rounded-lg border border-input bg-card px-3 pr-10 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPw((v) => !v)}
+            aria-label={showPw ? "Sembunyi kata laluan" : "Lihat kata laluan"}
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:text-primary"
+          >
+            {showPw ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </div>
+        {capsOn && (
+          <p className="mt-1.5 flex items-center gap-1 text-xs text-warning">
+            <AlertCircle className="size-3.5" /> Caps Lock dihidupkan.
+          </p>
+        )}
       </div>
 
       <Button type="submit" variant="primary" size="lg" disabled={loading} className="mt-6 w-full">
-        {loading ? (
-          <>
-            <Loader2 className="size-4 animate-spin" /> Log masuk…
-          </>
-        ) : (
-          "Log Masuk"
-        )}
+        {loading ? <><Loader2 className="size-4 animate-spin" /> Log masuk…</> : "Log Masuk"}
       </Button>
     </form>
   );

@@ -66,13 +66,16 @@ export function AdminSidebar() {
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "relative flex items-center gap-3 rounded-lg py-2.5 pl-4 pr-3 text-sm font-medium transition-colors",
                   active
-                    ? "bg-accent text-primary-deep shadow-sm"
-                    : "text-white/75 hover:bg-white/10 hover:text-white"
+                    ? "bg-white/8 text-white"
+                    : "text-white/70 hover:bg-white/5 hover:text-white"
                 )}
               >
-                <Icon className="size-[18px] shrink-0" />
+                {active && (
+                  <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r bg-accent" aria-hidden />
+                )}
+                <Icon className={cn("size-[18px] shrink-0", active && "text-accent-bright")} />
                 {item.label}
               </Link>
             </li>
