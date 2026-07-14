@@ -14,6 +14,10 @@ const apiUrl = () => process.env.WASSAP_API_URL || "https://wassap.wehdah.my";
 const apiKey = () => process.env.WASSAP_API_KEY || "";
 const isDryRun = () =>
   process.env.WASSAP_DRY_RUN === "1" || process.env.WASSAP_DRY_RUN === "true";
+// Pin sesi WhatsApp tertentu (nombor penghantar). Perlu bila kunci API tidak
+// terikat pada sesi DAN sasaran ialah group — penghantar mesti ahli group itu.
+// Kosong = biar gateway pilih (round-robin) seperti sedia ada.
+const sessionId = () => process.env.WASSAP_SESSION_ID || "";
 
 export function isWhatsAppConfigured(): boolean {
   return Boolean(apiKey()) || isDryRun();
@@ -45,10 +49,11 @@ async function postSend(to: string, message: string, retriesLeft = 1): Promise<S
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 10_000);
   try {
+    const sid = sessionId();
     const res = await fetch(`${apiUrl()}/v1/messages/send`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-API-Key": apiKey() },
-      body: JSON.stringify({ to, message }),
+      body: JSON.stringify(sid ? { to, message, session_id: sid } : { to, message }),
       signal: ctrl.signal,
     });
     if (res.status === 429 && retriesLeft > 0) {
