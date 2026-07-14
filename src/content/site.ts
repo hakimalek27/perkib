@@ -11,11 +11,11 @@ export const siteInfo = {
   authority: "Majlis Agama Islam Wilayah Persekutuan (MAIWP)",
   rosNumber: "PPM-013-14-08022021",
   foundedYear: 2021,
-  // Alamat: Ibu Pejabat MAIWP (Bangunan PERKIM), di bawah naungan MAIWP.
+  // Alamat: Menara MAIWP (HQ baharu, 2026), di bawah naungan MAIWP.
   address: {
-    line1: "Aras 1, 7, 9–11, Bangunan PERKIM",
-    line2: "No. 150, Jalan Ipoh",
-    postcode: "51200",
+    line1: "Menara MAIWP",
+    line2: "No. 55, Lorong Haji Hussein 2",
+    postcode: "50300",
     city: "Kuala Lumpur",
     state: "W.P. Kuala Lumpur",
     country: "Malaysia",
@@ -26,8 +26,9 @@ export const siteInfo = {
   email: "admin@perkib.my",
   facebook:
     "https://www.facebook.com/p/Pertubuhan-Kebajikan-Imam-Bilal-MAIWP-Perkib-100075687771921/",
-  geo: { lat: 3.1796, lng: 101.6872 },
-  googleMaps: "https://www.google.com/maps?q=3.1796,101.6872",
+  // Koordinat Menara MAIWP (anggaran — sahkan di Google Maps jika perlu).
+  geo: { lat: 3.1665, lng: 101.7008 },
+  googleMaps: "https://www.google.com/maps/search/?api=1&query=Menara+MAIWP+Kuala+Lumpur",
   bank: {
     name: "Bank Rakyat",
     account: "11-0175647-7",

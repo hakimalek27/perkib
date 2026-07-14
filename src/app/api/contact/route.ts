@@ -1,8 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { Resend } from "resend";
 import { z } from "zod";
 import { siteInfo } from "@/content/site";
 import { rateLimit, clientIp } from "@/lib/rate-limit";
+import { getWriteClient } from "@/lib/sanity-write";
+import { encryptValue } from "@/lib/crypto";
+import { notifyMaklumBalas } from "@/lib/notifikasi";
+
+export const runtime = "nodejs";
 
 const schema = z.object({
   name: z.string().min(2).max(100),
@@ -73,31 +78,72 @@ export async function POST(req: Request) {
   }
 
   const { name, email, phone, subject, message } = parsed.data;
-  const apiKey = process.env.RESEND_API_KEY;
 
-  if (!apiKey || apiKey === "dev") {
-    console.log("[contact] mod dev — akan hantar emel:", { name, email, phone, subject, message });
+  // ── 1. Simpan ke Sanity (rekod kekal — jaring keselamatan; PII terenkripsi). ──
+  let savedToSanity = false;
+  const client = getWriteClient();
+  if (client) {
+    try {
+      await client.create({
+        _type: "maklumBalas",
+        masa: new Date().toISOString(),
+        status: "baru",
+        dataEnc: encryptValue(
+          JSON.stringify({ nama: name, emel: email, telefon: phone, subjek: subject, mesej: message })
+        ),
+      });
+      savedToSanity = true;
+    } catch (err) {
+      console.error("[contact] gagal simpan ke Sanity:", err);
+    }
+  }
+
+  // ── 2. Emel ke admin@perkib.my (jika Resend dikonfigurasi). ──
+  let emailed = false;
+  const apiKey = process.env.RESEND_API_KEY;
+  const resendReady = Boolean(apiKey) && apiKey !== "dev";
+  if (resendReady) {
+    try {
+      const resend = new Resend(apiKey);
+      const result = await resend.emails.send({
+        from: process.env.CONTACT_FROM_EMAIL ?? "PERKIB <onboarding@resend.dev>",
+        to: [siteInfo.email],
+        replyTo: email,
+        subject: `[Maklum Balas PERKIB] ${subject}`,
+        text: `Nama: ${name}\nEmel: ${email}\nTel: ${phone}\n\n${message}`,
+      });
+      if ("error" in result && result.error) {
+        console.error("[contact] resend gagal:", result.error);
+      } else {
+        emailed = true;
+      }
+    } catch (err) {
+      console.error("[contact] resend gagal:", err);
+    }
+  }
+
+  // ── 3. Cetus WhatsApp ke sasaran admin sedia ada (fire-and-forget). ──
+  after(() =>
+    notifyMaklumBalas({
+      nama: name,
+      subjek: subject,
+      telefon: phone,
+      emel: email,
+      mesejRingkas: message.length > 500 ? message.slice(0, 500) + "…" : message,
+    })
+  );
+
+  // Berjaya jika sekurang-kurangnya satu saluran kekal terhasil (Sanity atau emel).
+  if (savedToSanity || emailed) {
+    return NextResponse.json({ ok: true });
+  }
+  // Tiada Sanity & tiada Resend = mod pembangunan (log sahaja).
+  if (!client && !resendReady) {
+    console.log("[contact] mod dev — maklum balas:", { name, email, phone, subject, message });
     return NextResponse.json({ ok: true, dev: true });
   }
-
-  try {
-    const resend = new Resend(apiKey);
-    const result = await resend.emails.send({
-      from: process.env.CONTACT_FROM_EMAIL ?? "PERKIB <onboarding@resend.dev>",
-      to: [siteInfo.email],
-      replyTo: email,
-      subject: `[Borang Hubungi PERKIB] ${subject}`,
-      text: `Nama: ${name}\nEmel: ${email}\nTel: ${phone}\n\n${message}`,
-    });
-    if ("error" in result && result.error) {
-      throw new Error(result.error.message ?? "Resend error");
-    }
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error("[contact] resend gagal:", err);
-    return NextResponse.json(
-      { ok: false, error: "Gagal menghantar emel. Sila cuba lagi." },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    { ok: false, error: "Gagal menghantar mesej. Sila cuba semula." },
+    { status: 500 }
+  );
 }

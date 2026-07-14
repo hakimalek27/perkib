@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { cn, initials } from "@/lib/utils";
 import { kategoriLabel, type AjkView } from "@/lib/sanity";
+import { Kubah } from "@/components/ui/Kubah";
 
 export function AjkPersonCard({
   member,
@@ -16,6 +17,14 @@ export function AjkPersonCard({
         featured ? "border-accent/50 gold-topline" : "border-border"
       )}
     >
+      {/* Mahkota kubah (motif dome PERKIB) */}
+      <Kubah
+        bright={featured}
+        className={cn(
+          "kubah-halo relative z-10 mx-auto shrink-0",
+          featured ? "-mb-2.5 h-6 w-7" : "-mb-2 h-5 w-6"
+        )}
+      />
       <div
         className={cn(
           "relative overflow-hidden rounded-full ring-2",

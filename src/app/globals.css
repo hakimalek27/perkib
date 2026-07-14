@@ -203,6 +203,36 @@
     background-position: 0 0, 16px 16px;
   }
 
+  /* ══════════ Corak Islamik girih + aksen kubah (v3.1) ══════════ */
+  /* Tessellation bintang-8 (khatam) — pakai atas overlay dgn kawalan opacity.
+     Latar telus supaya boleh dilapis atas ivory ATAU obsidian. */
+  .pattern-girih {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 80 80' fill='none' stroke='%23C6A25D' stroke-width='1.1'%3E%3Cpath d='M40 9 L71 40 L40 71 L9 40 Z'/%3E%3Cpath d='M18.5 18.5 H61.5 V61.5 H18.5 Z'/%3E%3Ccircle cx='40' cy='40' r='5.5'/%3E%3C/svg%3E");
+    background-size: 84px 84px;
+  }
+  .pattern-girih-dark {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 80 80' fill='none' stroke='%23D9BC82' stroke-width='1.1'%3E%3Cpath d='M40 9 L71 40 L40 71 L9 40 Z'/%3E%3Cpath d='M18.5 18.5 H61.5 V61.5 H18.5 Z'/%3E%3Ccircle cx='40' cy='40' r='5.5'/%3E%3C/svg%3E");
+    background-size: 84px 84px;
+  }
+
+  /* Halo emas lembut di belakang mahkota kubah. */
+  .kubah-halo { filter: drop-shadow(0 3px 5px color-mix(in srgb, var(--accent) 38%, transparent)); }
+
+  /* Tajuk emas berkilau — aksen "bombastik" terkawal (headings terpilih atas gelap). */
+  .text-gold-sheen {
+    background: linear-gradient(100deg, var(--accent-deep), var(--accent) 28%, var(--accent-bright) 50%, var(--accent) 72%, var(--accent-deep));
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .text-gold-sheen { animation: gold-sheen 7s linear infinite; }
+    @keyframes gold-sheen { to { background-position: 220% center; } }
+  }
+  .tier-essential .text-gold-sheen { animation: none; }
+
   /* Eyebrow — teks maroon (pill dikekalkan interim; jadi glyph+teks di M8) */
   .eyebrow {
     display: inline-flex;

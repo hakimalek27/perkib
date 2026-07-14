@@ -16,7 +16,7 @@ export function PageHero({
 }) {
   return (
     <section className="surface-obsidian relative overflow-hidden pt-[104px]">
-      <div className="pattern-star8 pointer-events-none absolute inset-0 opacity-50" aria-hidden />
+      <div className="pattern-girih-dark pointer-events-none absolute inset-0 opacity-[0.10]" aria-hidden />
       {/* Outline arch hiasan */}
       <svg
         aria-hidden="true"

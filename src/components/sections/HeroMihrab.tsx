@@ -12,7 +12,8 @@ export function HeroMihrab() {
   const { hero } = homepageContent;
   return (
     <section id="utama" className="relative overflow-hidden bg-background pt-[104px]">
-      <div className="container-wide grid items-center gap-12 py-12 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
+      <div className="pattern-girih pointer-events-none absolute inset-0 opacity-[0.05]" aria-hidden />
+      <div className="container-wide relative grid items-center gap-12 py-12 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
         {/* Kiri — teks */}
         <div className="reveal in">
           <Eyebrow>{hero.eyebrow}</Eyebrow>

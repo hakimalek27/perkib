@@ -10,6 +10,7 @@ import {
   Wallet,
   Users,
   MessageCircle,
+  Inbox,
   ShieldCheck,
   Menu,
   X,
@@ -28,6 +29,7 @@ const NAV = [
   // NOTA: /admin/staf SENGAJA tidak disenaraikan di sidebar — halaman terlindung
   // di sebalik gate kata laluan kedua, akses hanya melalui URL manual (Hakim sahaja).
   { href: "/admin/notifikasi", label: "Notifikasi WhatsApp", icon: MessageCircle },
+  { href: "/admin/maklum-balas", label: "Maklum Balas", icon: Inbox },
 ];
 
 export function AdminSidebar() {

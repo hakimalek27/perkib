@@ -1,0 +1,64 @@
+<!-- @dsCard group="Asas" name="Palet & Tipografi Nadi" subtitle="Ivory · Obsidian · Maroon · Emas · Bricolage + Jakarta" -->
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Asas — PERKIB Nadi</title>
+<style>
+  :root{
+    --ivory:#F7F3EB;--paper:#fff;--ink:#1A1F27;--maroon:#9E1F2E;--maroon-deep:#7C1622;
+    --obsidian:#0D1117;--charcoal:#171C24;--gold:#C6A25D;--gold-deep:#8F7440;--gold-bright:#D9BC82;
+    --line:#E3E5E8;--muted:#4C525E;
+    --disp:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+    --body:'Plus Jakarta Sans',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--ivory);color:var(--ink);font-family:var(--body);padding:32px;line-height:1.6}
+  .eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--maroon)}
+  .eyebrow::before{content:"";width:.5rem;height:.5rem;border-radius:2px;background:var(--gold);transform:rotate(45deg)}
+  h1{font-family:var(--disp);font-weight:800;letter-spacing:-.02em;font-size:2.4rem;margin:.4rem 0 1.5rem;line-height:1.05}
+  h2{font-family:var(--disp);font-weight:800;font-size:1.1rem;margin:2rem 0 .8rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+  .sw{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--paper)}
+  .sw .chip{height:76px}
+  .sw .meta{padding:8px 10px;font-size:.72rem}
+  .sw .meta b{display:block;font-weight:700;font-size:.8rem}
+  .sw .meta code{color:var(--muted);font-family:ui-monospace,monospace}
+  .type div{margin:.35rem 0}
+  .t-disp{font-family:var(--disp);font-weight:800;letter-spacing:-.02em}
+  .ratio{margin-top:1.4rem;display:flex;height:16px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+  <span class="eyebrow">Sistem Reka Bentuk</span>
+  <h1>PERKIB <span style="color:var(--maroon)">Nadi</span></h1>
+
+  <h2>Palet</h2>
+  <div class="grid">
+    <div class="sw"><div class="chip" style="background:#F7F3EB"></div><div class="meta"><b>Ivory</b><code>#F7F3EB</code></div></div>
+    <div class="sw"><div class="chip" style="background:#0D1117"></div><div class="meta"><b>Obsidian</b><code>#0D1117</code></div></div>
+    <div class="sw"><div class="chip" style="background:#9E1F2E"></div><div class="meta"><b>Maroon</b><code>#9E1F2E</code></div></div>
+    <div class="sw"><div class="chip" style="background:#7C1622"></div><div class="meta"><b>Maroon Deep</b><code>#7C1622</code></div></div>
+    <div class="sw"><div class="chip" style="background:#C6A25D"></div><div class="meta"><b>Emas</b><code>#C6A25D</code></div></div>
+    <div class="sw"><div class="chip" style="background:#D9BC82"></div><div class="meta"><b>Emas Cerah</b><code>#D9BC82</code></div></div>
+    <div class="sw"><div class="chip" style="background:#171C24"></div><div class="meta"><b>Charcoal</b><code>#171C24</code></div></div>
+    <div class="sw"><div class="chip" style="background:#1A1F27"></div><div class="meta"><b>Ink</b><code>#1A1F27</code></div></div>
+  </div>
+
+  <h2>Tipografi</h2>
+  <div class="type">
+    <div class="t-disp" style="font-size:2.2rem">Bricolage Grotesque — Display</div>
+    <div class="t-disp" style="font-size:1.4rem;color:var(--maroon)">Memartabatkan Pegawai Masjid</div>
+    <div style="font-size:1rem;color:var(--muted)">Plus Jakarta Sans — teks badan yang jelas &amp; kontemporari untuk kandungan institusi.</div>
+  </div>
+
+  <h2>Nisbah Warna — 90 / 7 / 2.5 / 0.5</h2>
+  <div class="ratio">
+    <span style="flex:90;background:#F7F3EB"></span>
+    <span style="flex:7;background:#0D1117"></span>
+    <span style="flex:2.5;background:#9E1F2E"></span>
+    <span style="flex:.5;background:#C6A25D"></span>
+  </div>
+</body>
+</html>

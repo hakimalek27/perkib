@@ -22,14 +22,14 @@ export default async function DermaPage() {
       <PageHero
         eyebrow="Sumbangan"
         title="Derma & Sumbangan"
-        description="Sokong agenda kebajikan, pendidikan dan bantuan asnaf PERKIB melalui sumbangan anda."
+        description="Sokong agenda kebajikan dan operasi PERKIB melalui sumbangan anda."
         breadcrumb={[{ label: "Derma" }]}
       />
 
       {/* Kategori */}
       <section className="bg-background py-16 md:py-20">
         <div className="container-wide">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto grid max-w-2xl gap-6 sm:grid-cols-2">
             {dermaKategori.map((d, i) => (
               <Reveal key={d.id} delay={i * 0.08}>
                 <div className="hover-glow flex h-full flex-col rounded-2xl border border-border bg-card p-6 text-center shadow-soft">

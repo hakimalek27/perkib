@@ -3,6 +3,7 @@ import { Mail, MapPin } from "lucide-react";
 import { initials } from "@/lib/utils";
 import { kategoriLabel, type PegawaiView } from "@/lib/sanity";
 import { ArchFrame } from "@/components/ui/ArchFrame";
+import { Kubah } from "@/components/ui/Kubah";
 
 // Warna kategori — pill dalam bahagian teks (bukan atas foto), sentiasa terbaca.
 const KATEGORI_TONE: Record<string, string> = {
@@ -15,6 +16,8 @@ export function PegawaiCard({ pegawai }: { pegawai: PegawaiView }) {
   const tone = KATEGORI_TONE[pegawai.kategori] ?? "bg-muted text-muted-foreground";
   return (
     <article className="card-lift group flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-3">
+      {/* Mahkota kubah (motif dome PERKIB) */}
+      <Kubah className="kubah-halo relative z-10 mx-auto -mb-2.5 h-6 w-7 shrink-0 transition-transform duration-500 group-hover:-translate-y-0.5" />
       {/* Foto — bingkai arch (motif tunggal PERKIB) */}
       <ArchFrame ratio="5 / 6" className="w-full bg-gradient-to-br from-primary/8 to-accent/8">
         {pegawai.photoUrl ? (

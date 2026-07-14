@@ -1,0 +1,60 @@
+<!-- @dsCard group="Komponen" name="Hero & Butang" subtitle="Hero mihrab + girih + varian butang Nadi" -->
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hero & Butang — PERKIB Nadi</title>
+<style>
+  :root{--ivory:#F7F3EB;--paper:#fff;--ink:#1A1F27;--maroon:#9E1F2E;--maroon-deep:#7C1622;--obsidian:#0D1117;--gold:#C6A25D;--gold-bright:#D9BC82;--muted:#4C525E;--line:#E3E5E8;
+    --disp:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Plus Jakarta Sans',system-ui,sans-serif;}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--ivory);font-family:var(--body);color:var(--ink);padding:0}
+  .hero{position:relative;overflow:hidden;padding:44px 32px;display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center}
+  .hero .girih{position:absolute;inset:0;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 80 80' fill='none' stroke='%23C6A25D' stroke-width='1.1'%3E%3Cpath d='M40 9 L71 40 L40 71 L9 40 Z'/%3E%3Cpath d='M18.5 18.5 H61.5 V61.5 H18.5 Z'/%3E%3Ccircle cx='40' cy='40' r='5.5'/%3E%3C/svg%3E");background-size:84px 84px}
+  .eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--maroon)}
+  .eyebrow::before{content:"";width:.5rem;height:.5rem;border-radius:2px;background:var(--gold);transform:rotate(45deg)}
+  h1{font-family:var(--disp);font-weight:800;letter-spacing:-.02em;font-size:2.6rem;line-height:1.05;margin:14px 0}
+  h1 .m{color:var(--maroon)}
+  .rule{height:1px;width:150px;background:linear-gradient(to right,var(--gold),var(--gold-bright),transparent);margin:14px 0}
+  p.lede{color:var(--muted);max-width:40ch}
+  .cta{display:flex;gap:12px;margin-top:22px;position:relative;z-index:2}
+  .arch{position:relative}
+  .arch .panel{aspect-ratio:5/6;max-width:280px;margin-left:auto;clip-path:url(#a);background-color:var(--obsidian);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 80 80' fill='none' stroke='%23D9BC82' stroke-width='1.1'%3E%3Cpath d='M40 9 L71 40 L40 71 L9 40 Z'/%3E%3Cpath d='M18.5 18.5 H61.5 V61.5 H18.5 Z'/%3E%3Ccircle cx='40' cy='40' r='5.5'/%3E%3C/svg%3E,%2384px 84px);background-size:84px 84px;display:flex;align-items:center;justify-content:center}
+  .arch .panel span{font-family:var(--disp);font-weight:800;font-size:1.6rem;color:var(--gold-bright);text-align:center;padding:0 20px}
+  .btns{padding:28px 32px;border-top:1px solid var(--line);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{min-height:46px;display:inline-flex;align-items:center;gap:8px;padding:0 22px;border-radius:12px;font-weight:700;font-size:.92rem;cursor:pointer;border:1px solid transparent}
+  .btn.primary{background:var(--maroon);color:#fff}
+  .btn.primary:hover{background:var(--maroon-deep)}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:#C9CCD2}
+  .btn.ghost:hover{border-color:var(--ink)}
+  .btn.gold{background:var(--gold);color:#1A1F27}
+  .lbl{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700;width:100%}
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs><clipPath id="a" clipPathUnits="objectBoundingBox"><path d="M0,1 L0,0.4 C0,0.16 0.22,0 0.5,0 C0.78,0 1,0.16 1,0.4 L1,1 Z"/></clipPath></defs></svg>
+
+  <section class="hero">
+    <div class="girih"></div>
+    <div style="position:relative;z-index:2">
+      <span class="eyebrow">Pertubuhan Kebajikan Imam dan Bilal MAIWP</span>
+      <h1>Memartabatkan<br><span class="m">Pegawai Masjid</span><br>Wilayah Persekutuan</h1>
+      <div class="rule"></div>
+      <p class="lede">Wadah kebajikan bagi Naqib Masjid, Imam dan Bilal lantikan MAIWP — kontemporari, telus, dalam talian.</p>
+      <div class="cta">
+        <button class="btn primary">♥ Mohon Saguhati</button>
+        <button class="btn ghost">Sertai Keahlian →</button>
+      </div>
+    </div>
+    <div class="arch"><div class="panel"><span>PERKIB</span></div></div>
+  </section>
+
+  <div class="btns">
+    <span class="lbl">Varian Butang</span>
+    <button class="btn primary">Primary</button>
+    <button class="btn ghost">Ghost</button>
+    <button class="btn gold">Emas</button>
+  </div>
+</body>
+</html>

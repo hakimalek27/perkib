@@ -13,6 +13,7 @@ import yuranTahunan from "./yuranTahunan";
 import notifikasiTetapan from "./notifikasiTetapan";
 import auditLog from "./auditLog";
 import waOutbox from "./waOutbox";
+import maklumBalas from "./maklumBalas";
 
 export const schemaTypes = [
   permohonanSaguhati,
@@ -29,5 +30,6 @@ export const schemaTypes = [
   siteSettings,
   auditLog,
   waOutbox,
+  maklumBalas,
   counter,
 ];

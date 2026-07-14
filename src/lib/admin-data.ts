@@ -2,6 +2,7 @@
 // CDN) supaya permohonan baru terus kelihatan.
 
 import { getWriteClient } from "@/lib/sanity-write";
+import { decryptValue } from "@/lib/crypto";
 
 export type PermohonanRingkas = {
   _id: string;
@@ -302,6 +303,57 @@ export async function getRecentOutbox(limit = 10): Promise<OutboxEntry[]> {
        "_id": _id, masa, peristiwa, status, toMask, ralat, refPermohonan
      }`,
     { n: limit },
+    { cache: "no-store" }
+  );
+}
+
+// ── Maklum balas (borang /hubungi) ─────────────────────────────────────
+export type MaklumBalasItem = {
+  _id: string;
+  masa: string;
+  status: string;
+  nama: string;
+  emel: string;
+  telefon: string;
+  subjek: string;
+  mesej: string;
+};
+
+export async function getMaklumBalasList(): Promise<MaklumBalasItem[]> {
+  const client = getWriteClient();
+  if (!client) return [];
+  const rows = await client.fetch<{ _id: string; masa: string; status: string; dataEnc: string }[]>(
+    `*[_type=="maklumBalas"]|order(masa desc){ "_id": _id, masa, status, dataEnc }`,
+    {},
+    { cache: "no-store" }
+  );
+  return rows.map((r) => {
+    let d: { nama?: string; emel?: string; telefon?: string; subjek?: string; mesej?: string } = {};
+    try {
+      const json = decryptValue(r.dataEnc);
+      if (json) d = JSON.parse(json);
+    } catch {
+      /* biar kosong jika nyahsulit gagal */
+    }
+    return {
+      _id: r._id,
+      masa: r.masa,
+      status: r.status ?? "baru",
+      nama: d.nama ?? "",
+      emel: d.emel ?? "",
+      telefon: d.telefon ?? "",
+      subjek: d.subjek ?? "",
+      mesej: d.mesej ?? "",
+    };
+  });
+}
+
+export async function getMaklumBalasBaruCount(): Promise<number> {
+  const client = getWriteClient();
+  if (!client) return 0;
+  return client.fetch<number>(
+    `count(*[_type=="maklumBalas" && status=="baru"])`,
+    {},
     { cache: "no-store" }
   );
 }

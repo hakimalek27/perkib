@@ -74,7 +74,8 @@ function mapKategori(jawatan: string, gred: string): Kategori {
   if (j.includes("timbalan")) return "timbalan-ketua-imam";
   if (j.includes("ketua imam")) return "ketua-imam";
   if (gred === "S1") return "bilal";
-  if (gred === "S9") return "ketua-imam";
+  const gredNum = parseInt(gred.replace(/\D/g, ""), 10);
+  if (gredNum >= 9) return "ketua-imam"; // S9/S10 ke atas = Ketua Imam tetap
   return "timbalan-ketua-imam";
 }
 

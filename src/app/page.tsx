@@ -30,7 +30,7 @@ const RAIL = [
 
 const STATS = [
   { value: 94, label: "Masjid Wilayah Persekutuan", note: "KL, Putrajaya & Labuan" },
-  { value: 92, label: "Pegawai Masjid", note: "Ketua Imam · Timbalan · Bilal" },
+  { value: 93, label: "Pegawai Masjid", note: "Ketua Imam · Timbalan · Bilal" },
   { value: 8, label: "Zon JAWI", note: "Seliaan rasmi" },
   { value: 9, label: "Jenis Saguhati", note: "Kebajikan ahli" },
 ];
@@ -60,8 +60,9 @@ export default async function HomePage() {
       <HeroMihrab />
 
       {/* (3) Strip statistik odometer — obsidian */}
-      <section id="statistik" className="surface-obsidian border-y border-line-dark py-14 md:py-16">
-        <div className="container-wide grid grid-cols-2 gap-8 text-white lg:grid-cols-4">
+      <section id="statistik" className="surface-obsidian relative overflow-hidden border-y border-line-dark py-14 md:py-16">
+        <div className="pattern-girih-dark pointer-events-none absolute inset-0 opacity-[0.08]" aria-hidden />
+        <div className="container-wide relative grid grid-cols-2 gap-8 text-white lg:grid-cols-4">
           {STATS.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.08} className="text-center">
               <p className="font-display text-[clamp(3rem,6vw,4.5rem)] font-extrabold leading-none tabular-nums text-accent-bright">
@@ -272,8 +273,9 @@ export default async function HomePage() {
       <div aria-hidden className="h-20 bg-gradient-to-b from-background to-obsidian md:h-28" />
 
       {/* (10) Saguhati 9 kad — obsidian */}
-      <section id="saguhati" className="surface-obsidian py-20 md:py-24">
-        <div className="container-wide">
+      <section id="saguhati" className="surface-obsidian relative overflow-hidden py-20 md:py-24">
+        <div className="pattern-girih-dark pointer-events-none absolute inset-0 opacity-[0.07]" aria-hidden />
+        <div className="container-wide relative">
           <SectionHead
             dark
             eyebrow="Kebajikan Ahli"
@@ -319,7 +321,7 @@ export default async function HomePage() {
               Salurkan Sumbangan Anda
             </h2>
             <p className="mt-5 leading-relaxed text-muted-foreground">
-              Sumbangan anda menyokong agenda kebajikan, pendidikan dan bantuan asnaf PERKIB.
+              Sumbangan anda menyokong agenda kebajikan dan operasi PERKIB.
               Salurkan melalui akaun Bank Rakyat atau imbas DuitNow QR rasmi.
             </p>
             <div className="mt-7">

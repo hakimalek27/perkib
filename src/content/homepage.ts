@@ -11,7 +11,7 @@ export const homepageContent = {
     secondaryCta: { label: "Sertai Keahlian", href: "/keahlian" },
   },
   stats: [
-    { value: 92, label: "Pegawai Masjid" },
+    { value: 93, label: "Pegawai Masjid" },
     { value: 8, label: "Zon JAWI" },
     { value: 94, label: "Masjid Wilayah Persekutuan" },
     { value: 24, label: "Ahli Jawatankuasa" },

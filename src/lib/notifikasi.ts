@@ -139,3 +139,27 @@ export async function notifyStatusPemohon(
   const msg = renderTemplate(cfg.templates[event], vars);
   await dispatchWhatsApp({ to: telefonPemohon, message: msg, peristiwa: event, refPermohonan: vars.refNo });
 }
+
+/** Notifikasi maklum balas baharu (borang /hubungi) → sasaran admin sedia ada. */
+export async function notifyMaklumBalas(vars: {
+  nama: string;
+  subjek: string;
+  telefon: string;
+  emel: string;
+  mesejRingkas: string;
+}): Promise<void> {
+  const cfg = await getNotifConfig();
+  if (!cfg.targets.length) return;
+  const msg =
+    `📩 *Maklum Balas Baharu — PERKIB*\n\n` +
+    `Nama: ${vars.nama}\n` +
+    `Subjek: ${vars.subjek}\n` +
+    `Telefon: ${vars.telefon}\n` +
+    `Emel: ${vars.emel}\n\n` +
+    `${vars.mesejRingkas}\n\n` +
+    `Sila semak di panel admin PERKIB (/admin/maklum-balas).`;
+  const jobs = cfg.targets.map((t) =>
+    dispatchWhatsApp({ to: t.to, message: msg, peristiwa: "maklum-balas" })
+  );
+  await Promise.allSettled(jobs);
+}

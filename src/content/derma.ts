@@ -15,18 +15,6 @@ export const dermaKategori: DermaKategori[] = [
     penerangan: "Sumbangan am untuk operasi & aktiviti.",
   },
   {
-    id: "dana-pendidikan",
-    icon: "BookOpen",
-    tajuk: "Dana Pendidikan",
-    penerangan: "Bantuan pendidikan & biasiswa.",
-  },
-  {
-    id: "bantuan-asnaf",
-    icon: "Users",
-    tajuk: "Bantuan Asnaf",
-    penerangan: "Bantuan untuk asnaf & keluarga memerlukan.",
-  },
-  {
     id: "dana-operasi",
     icon: "Building2",
     tajuk: "Dana Operasi",

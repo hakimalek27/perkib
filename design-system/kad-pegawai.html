@@ -1,0 +1,59 @@
+<!-- @dsCard group="Komponen" name="Kad Pegawai" subtitle="Mahkota kubah + bingkai arch (mihrab) + butiran PDPA" -->
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kad Pegawai — PERKIB Nadi</title>
+<style>
+  :root{--ivory:#F7F3EB;--paper:#fff;--ink:#1A1F27;--maroon:#9E1F2E;--gold:#C6A25D;--gold-deep:#8F7440;--line:#E3E5E8;--muted:#4C525E;
+    --disp:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Plus Jakarta Sans',system-ui,sans-serif;}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--ivory);font-family:var(--body);color:var(--ink);padding:32px;display:flex;gap:22px;flex-wrap:wrap}
+  .card{width:250px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 1px 2px rgba(13,17,23,.04),0 4px 14px rgba(13,17,23,.06);transition:transform .35s,box-shadow .35s,border-color .3s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 18px 40px -24px rgba(13,17,23,.28);border-color:rgba(198,162,93,.45)}
+  .kubah{display:block;margin:0 auto -10px;position:relative;z-index:2;filter:drop-shadow(0 3px 5px rgba(198,162,93,.4))}
+  .photo{aspect-ratio:5/6;clip-path:url(#arch);background:linear-gradient(135deg,rgba(158,31,46,.1),rgba(198,162,93,.12));display:flex;align-items:center;justify-content:center}
+  .photo b{font-family:var(--disp);font-weight:800;font-size:2.6rem;color:rgba(158,31,46,.4)}
+  .pill{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;padding:2px 10px;border-radius:999px;background:rgba(158,31,46,.1);color:var(--maroon)}
+  .pill.g{background:rgba(198,162,93,.18);color:var(--gold-deep)}
+  h3{font-family:var(--disp);font-weight:800;font-size:1rem;margin:8px 2px 2px}
+  .role{font-size:.78rem;color:var(--muted);margin:0 2px}
+  .meta{margin:12px 2px 2px;font-size:.74rem;color:#3a4048;display:flex;gap:6px}
+  .meta .z{color:var(--muted)}
+  .mail{margin:6px 2px 2px;font-size:.74rem;color:var(--maroon)}
+  .dot{color:var(--gold)}
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute"><defs><clipPath id="arch" clipPathUnits="objectBoundingBox"><path d="M0,1 L0,0.4 C0,0.16 0.22,0 0.5,0 C0.78,0 1,0.16 1,0.4 L1,1 Z"/></clipPath></defs></svg>
+
+  <div class="card">
+    <svg class="kubah" width="28" height="27" viewBox="0 0 48 46" fill="none">
+      <line x1="24" y1="2" x2="24" y2="8" stroke="#C6A25D" stroke-width="1.5" stroke-linecap="round"/><circle cx="24" cy="2" r="1.7" fill="#C6A25D"/>
+      <path d="M24 8 C29 14 31 18 28.5 22 C26.5 25.5 34 29 33 38 L15 38 C14 29 21.5 25.5 19.5 22 C17 18 19 14 24 8 Z" stroke="#C6A25D" stroke-width="1.7" stroke-linejoin="round" fill="rgba(198,162,93,.14)"/>
+      <path d="M14 38 H34 M16.5 42 H31.5" stroke="#C6A25D" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div class="photo"><b>AR</b></div>
+    <span class="pill">Ketua Imam</span>
+    <h3>Adam bin Abd Rashid</h3>
+    <p class="role">Pegawai Hal Ehwal Islam (Ketua Imam)</p>
+    <div class="meta"><span class="dot">◈</span><span>Masjid Amaniah<br><span class="z">Zon 1 — Kepong / Batu / Segambut</span></span></div>
+    <div class="mail">✉ adamrashid@maiwp.gov.my</div>
+  </div>
+
+  <div class="card">
+    <svg class="kubah" width="28" height="27" viewBox="0 0 48 46" fill="none">
+      <line x1="24" y1="2" x2="24" y2="8" stroke="#C6A25D" stroke-width="1.5" stroke-linecap="round"/><circle cx="24" cy="2" r="1.7" fill="#C6A25D"/>
+      <path d="M24 8 C29 14 31 18 28.5 22 C26.5 25.5 34 29 33 38 L15 38 C14 29 21.5 25.5 19.5 22 C17 18 19 14 24 8 Z" stroke="#C6A25D" stroke-width="1.7" stroke-linejoin="round" fill="rgba(198,162,93,.14)"/>
+      <path d="M14 38 H34 M16.5 42 H31.5" stroke="#C6A25D" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div class="photo"><b>HY</b></div>
+    <span class="pill g">Timbalan Ketua Imam</span>
+    <h3>Helmy bin Yahya</h3>
+    <p class="role">Pegawai Hal Ehwal Islam</p>
+    <div class="meta"><span class="dot">◈</span><span>Masjid Al-Mubarakah<br><span class="z">Zon 5 — Bandar Tun Razak</span></span></div>
+    <div class="mail">✉ helmy@maiwp.gov.my</div>
+  </div>
+</body>
+</html>

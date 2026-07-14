@@ -1,7 +1,7 @@
 // FALLBACK pegawai — dijana oleh scripts/sync-penugasan.ts daripada xlsx rasmi.
 // Hanya medan SELAMAT-AWAM (tiada IC, tiada telefon, tiada foto) + penugasan masjid.
 // Jalankan: npm run sync:penugasan
-// Jumlah rekod: 92
+// Jumlah rekod: 93
 
 export type KategoriPegawai = "ketua-imam" | "timbalan-ketua-imam" | "bilal";
 
@@ -24,6 +24,7 @@ export type PegawaiPublic = {
 };
 
 export const pegawaiFallback: PegawaiPublic[] = [
+  { employeeNo: "0033", nama: "Helmy bin Yahya", kategori: "ketua-imam", jawatanPenuh: "Pegawai Hal Ehwal Islam", emelRasmi: "helmy@maiwp.gov.my", gred: "S10", masjidNama: "Masjid Al-Mubarakah", masjidZonNombor: 5, masjidZonNama: "Zon 5 — Sri Petaling / Bandar Tun Razak / Cheras Selatan / Sungai Besi" },
   { employeeNo: "1991", nama: "Abdul Hanif bin Abdul Latif", kategori: "bilal", jawatanPenuh: "Pembantu Hal Ehwal Islam (Bilal)", emelRasmi: "abdulhaniflatif@maiwp.gov.my", gred: "S1", masjidNama: "Masjid Al-Hidayah", masjidZonNombor: 6, masjidZonNama: "Zon 6 — Bangsar / Lembah Pantai / TTDI / Bukit Damansara" },
   { employeeNo: "1909", nama: "Ahmad Faiz bin Hj Mustapa", kategori: "bilal", jawatanPenuh: "Pembantu Hal Ehwal Islam (Bilal)", emelRasmi: "ahmadfaiz@maiwp.gov.my", gred: "S1", masjidNama: "Masjid Abu Hurairah", masjidZonNombor: 1, masjidZonNama: "Zon 1 — Kepong / Batu / Segambut" },
   { employeeNo: "1768", nama: "Ahmad Rizwan Nazhif bin Zainol Ariffin", kategori: "bilal", jawatanPenuh: "Pembantu Hal Ehwal Islam (Bilal)", emelRasmi: "ahmadrizwan@maiwp.gov.my", gred: "S1", masjidNama: "Surau Istana Negara (Lama)", masjidZonNombor: 9, masjidZonNama: "Posting Khas — Istana Negara / Ibu Pejabat MAIWP" },
