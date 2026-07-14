@@ -185,3 +185,25 @@ Naik taraf UI/UX menyeluruh dari "Royal Glass" (biru #17457A + emas, Manrope/Mar
 
 ## Deployment (14 Jul, petang)
 Build `NEXT_PUBLIC_SITE_URL=https://perkib.my` → himpun standalone (52M) → tar-pipe (13MB) → server ekstrak `standalone.v3new` → cp `.env.local` (+STAF_GATE_PASSWORD via base64) → swap (`standalone.v3old` backup) → `pm2 restart perkib` + save. **Disahkan LIVE:** perkib.my 200, homepage Nadi (Memartabatkan/panel arch obsidian), CSP +tiles.openfreemap.org, route /direktori-masjid //admin/login //saguhati/mohon //pegawai semua 200, STAF_GATE_PASSWORD betul di server, 5 laman jiran (wassap/resit/dll) tidak terganggu. Rollback: `standalone.v3old` + `standalone.v2old`.
+
+---
+
+# Perjalanan v3.1 — Helmy + Kubah/Girih + Borang Maklum Balas (15 Julai 2026)
+
+Kemas kini bersasar atas v3 LIVE: satu pegawai baharu, ciri borang maklum balas berfungsi penuh, penambahbaikan reka bentuk Islamik ("bombastik"), pembetulan kandungan, dan penyediaan projek Claude Design. Semua build hijau + lint 0 ralat; `main @ 9a4118c` dipush + di-deploy.
+
+## Kerja
+- **Helmy bin Yahya (0033)** — dijumpai dalam xlsx rasmi (kini 93 baris). Ketua Imam S10 "TETAP" di Masjid Al-Mubarakah (Zon 5). Ditambah ke Sanity via skrip bersasar `add-pegawai-helmy.ts` (IC/telefon AES-256-GCM, foto dari folder staf) — **tidak menyentuh 92 rekod lain** (keselamatan produksi). Fallback `pegawai.ts` + kiraan homepage 92→93. `mapKategori` dibetulkan: S9/S10+ = Ketua Imam (dulu S10 tersalah jadi Timbalan).
+- **Borang maklum balas** — `/hubungi` sudah wujud tetapi hanya log di prod (tiada Resend). Kini `/api/contact` menyimpan ke Sanity (`maklumBalas`, PII `dataEnc` terenkripsi — selamat walau dataset public), menghantar emel ke admin@perkib.my (jika Resend), dan mencetus WhatsApp ke sasaran admin (`notifyMaklumBalas` + `dispatchWhatsApp`). Halaman admin `/admin/maklum-balas` (nyahsulit + tapis + tandai status).
+- **Reka bentuk "bombastik"** — komponen `Kubah` (dome ogee emas + finial) sebagai mahkota atas bingkai arch setiap kad → setiap kad kelihatan seperti fasad masjid mini. Corak `girih` (bintang-8 khatam, SVG data-URI) sebagai lapisan latar Islamik pada hero/PageHero/seksyen obsidian. Aksen `.text-gold-sheen`. Disahkan visual (Chrome MCP) — dome render tepat pada /pegawai.
+- **Kandungan** — alamat HQ → Menara MAIWP (Lorong Haji Hussein 2, 50300 KL); derma buang Dana Pendidikan + Bantuan Asnaf; emel organisasi disahkan admin@perkib.my (Sanity sudah bersih; skrip `fix-email-org.ts` lapor 0 perubahan diperlukan).
+- **Claude Design** — 6 fail preview design-system (`design-system/`) disync ke projek claude.ai/design guna tool `DesignSync` (create/finalize_plan/write_files).
+
+## Cabaran & penyelesaian v3.1
+- **mapKategori S10** — jawatan "Pegawai Hal Ehwal Islam" + gred S10 tidak dikendali logik lama (jatuh ke Timbalan). Dibetulkan guna `parseInt(gred)` ≥ 9 → Ketua Imam.
+- **PII maklum balas + dataset public** — enkripsi semua medan dalam satu blob `dataEnc` (corak `notifikasiTetapan`) supaya GROQ anon hanya nampak ciphertext.
+- **Emel FAQ "azanmalek"** — didapati Sanity live SUDAH bersih (0 padanan); halaman FAQ statik (SSG) lama yang di-cache tunjuk nilai lama → **redeploy** membina semula dengan data bersih (disahkan admin@perkib.my selepas deploy).
+- **Deploy hanya selepas kebenaran eksplisit** — classifier auto-mode menyekat akses pelayan produksi sehingga pengguna sahkan "deploy sekarang" (AskUserQuestion). Selepas sah: build → tar-pipe → cp `.env.local` (STAF_GATE_PASSWORD kekal) → swap `standalone.bak-20260715` → pm2 restart.
+
+## Deployment (15 Jul)
+`main @ 9a4118c` · standalone 46.4MB → tgz 12.5MB → server. **Disahkan LIVE** (Cloudflare): semua route 200, Menara MAIWP, Helmy bin Yahya, motif Kubah + `.pattern-girih` dalam HTML, CSP utuh, jiran `bpp` (57D) tidak terganggu. Rollback: `standalone.bak-20260715`.

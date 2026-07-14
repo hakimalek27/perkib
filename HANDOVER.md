@@ -1,6 +1,18 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-14 · **Status:** ✅ **v3 "Nadi" DEPLOYED & LIVE di https://perkib.my** (redesign penuh + ciri admin baharu).
+**Kemas kini:** 2026-07-15 · **Status:** ✅ **v3.1 DEPLOYED & LIVE di https://perkib.my** (Helmy + reka bentuk kubah/girih + borang maklum balas + kemas kini kandungan).
+
+## 🆕 v3.1 (15 Julai 2026) — DEPLOYED
+Deploy: `main @ 9a4118c` → build (NEXT_PUBLIC_SITE_URL=perkib.my) → tar-pipe → backup `standalone.bak-20260715` → pm2 restart. Disahkan LIVE (Cloudflare 200: /, /pegawai, /hubungi, /derma, /soalan-lazim, /admin/login; jiran `bpp` tidak terganggu).
+- **Pegawai baharu:** Helmy bin Yahya (0033, **Ketua Imam S10**, Masjid Al-Mubarakah Zon 5) — IC/telefon terenkripsi, foto dimuat naik. Jumlah pegawai **92→93** (kod + Sanity). `mapKategori` sync: **S9/S10+ → Ketua Imam**. Skrip 1-kali: `scripts/add-pegawai-helmy.ts`.
+- **Alamat HQ:** → **Menara MAIWP, No. 55, Lorong Haji Hussein 2, 50300 KL** (`site.ts`+`pages.ts` → Footer/Hubungi/JSON-LD). ⚠️ Koordinat geo anggaran — sahkan di Google Maps jika perlu.
+- **Emel organisasi:** disahkan **admin@perkib.my** (Sanity siteSettings + FAQ sudah bersih; halaman FAQ statik lama yang tunjuk azanmalek dibetulkan oleh redeploy ini). Emel **rasmi pegawai kekal**. Skrip semak: `scripts/fix-email-org.ts`.
+- **Derma:** buang **Dana Pendidikan** + **Bantuan Asnaf** (kekal Derma Am + Dana Operasi); teks derma/homepage dikemas kini.
+- **Borang maklum balas HIDUP** (`/hubungi`): `/api/contact` kini **simpan ke Sanity** (skema `maklumBalas`, PII terenkripsi `dataEnc`) + **emel admin@perkib.my** (jika `RESEND_API_KEY`) + **WhatsApp ke sasaran admin** sedia ada (NotifConfig). Halaman admin baharu **`/admin/maklum-balas`** (senarai/tapis/tandai status) + item sidebar.
+- **Reka bentuk "bombastik":** komponen **Kubah** (dome ogee emas, `src/components/ui/Kubah.tsx`) = mahkota setiap kad pegawai + AJK; corak **girih** Islamik (`.pattern-girih` / `.pattern-girih-dark`) pada hero/PageHero/seksyen obsidian; aksen `.text-gold-sheen` (hormati reduced-motion).
+- **Claude Design:** projek design-system "PERKIB Nadi" (6 preview: asas, kubah, girih, kad pegawai, kad AJK, hero+butang) di `design-system/` — disync ke claude.ai/design (projek `6e86173e…`).
+
+**Baki Hakim v3.1:** (pilihan) set `RESEND_API_KEY` + `CONTACT_FROM_EMAIL` di `.env.local` server untuk emel maklum balas sebenar (kini maklum balas tetap disimpan ke Sanity + WhatsApp walau tanpa Resend); sahkan koordinat Menara MAIWP; nombor WhatsApp 6019 masih perlu jadi ahli group untuk noti group (baki v3).
 
 ## 🎨 v3 "PERKIB Nadi" (14 milestone M0–M13)
 Redesign UI penuh **ivory #F7F3EB / obsidian #0D1117 / maroon #9E1F2E / gold #C6A25D** (font Bricolage Grotesque + Plus Jakarta Sans) menggantikan "Royal Glass" biru+emas. Motif tunggal **arch**. **framer-motion + canvas-confetti + @radix-ui/react-tabs DIBUANG** (CSS+IO+rAF sahaja); dep baharu = **maplibre-gl** sahaja. Disahkan LIVE 14 Jul: homepage Nadi, semua route 200, CSP +tiles.openfreemap.org, jiran tidak terganggu.

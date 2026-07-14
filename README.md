@@ -8,11 +8,11 @@ Laman web rasmi **Pertubuhan Kebajikan Imam dan Bilal Majlis Agama Islam Wilayah
 
 - **Halaman organisasi penuh** — Profil & makna logo, Perutusan Presiden, Visi & Misi, Program, Keahlian, Sukarelawan, Soalan Lazim, Hubungi.
 - **Carta Organisasi AJK** — 3 lapis (Majlis Tertinggi, Perwakilan Zon, AJK Kluster), 24 ahli sesi 2025/2026.
-- **Direktori Masjid** — 89 masjid Wilayah Persekutuan mengikut **8 zon rasmi JAWI** (KL, Putrajaya, Labuan), dengan penapis + carian + lencana Masjid Induk/Negeri.
-- **Maklumat Pegawai** — 91 pegawai (Ketua Imam, Timbalan Ketua Imam, Bilal) mengikut zon; admin tetapkan penugasan masjid melalui Studio. Paparan awam patuh PDPA (tiada telefon/IC).
+- **Direktori Masjid** — 94 masjid Wilayah Persekutuan mengikut **8 zon rasmi JAWI** (KL, Putrajaya, Labuan) + peta MapLibre, dengan penapis + carian + lencana Masjid Induk/Negeri.
+- **Maklumat Pegawai** — 93 pegawai (Ketua Imam, Timbalan Ketua Imam, Bilal) mengikut zon; admin urus penugasan + CRUD terus dari panel. Paparan awam patuh PDPA (tiada telefon/IC).
 - **Sistem Permohonan Saguhati** — 9 jenis. Ahli sahkan identiti (No. Pekerja + 4 digit IC + **captcha**) → pilih jenis → **maklumat bank + telefon** → muat naik dokumen → nombor rujukan. Cegah double-submit (idempotency), had per jenis, semak status dalam talian.
 - **Notifikasi WhatsApp** (wassap.wehdah.my) — pemohon & admin/group terima notifikasi automatik pada permohonan baharu dan perubahan status (lulus/tolak/dibayar).
-- **Panel Admin berfungsi penuh (tanpa Sanity Studio)** — dashboard; urus status saguhati + butiran transfer; **penugasan pegawai↔masjid seret-lepas**; **CRUD pegawai** (tambah/sunting/padam→nyahaktif); **modul yuran bendahari** (kadar per gred, matriks bulanan, eksport CSV); direktori pegawai (IC/telefon/wa.me/sejarah); carian 1,121 staf MAIWP lain (di sebalik **gate kata laluan kedua**); tetapan notifikasi.
+- **Panel Admin berfungsi penuh (tanpa Sanity Studio)** — dashboard; urus status saguhati + butiran transfer; **penugasan pegawai↔masjid seret-lepas**; **CRUD pegawai** (tambah/sunting/padam→nyahaktif); **modul yuran bendahari** (kadar per gred, matriks bulanan, eksport CSV); direktori pegawai (IC/telefon/wa.me/sejarah); carian 1,121 staf MAIWP lain (di sebalik **gate kata laluan kedua**); tetapan notifikasi; **maklum balas** (borang Hubungi → Sanity terenkripsi + emel + WhatsApp) di `/admin/maklum-balas`.
 - **Peta direktori masjid** (v3) — MapLibre GL + OpenFreeMap, toggle Senarai/Peta, marker arch, drawer butiran.
 - **Keselamatan & PDPA** — IC/telefon/bank **terenkripsi AES-256-GCM at-rest**; captcha + honeypot + had kadar; CSP + kuki strict; log audit; gate kedua `/admin/staf`.
 
@@ -22,7 +22,7 @@ Laman web rasmi **Pertubuhan Kebajikan Imam dan Bilal Majlis Agama Islam Wilayah
 - **Tailwind CSS v4** (CSS-first `@theme`)
 - **Sanity v5** — CMS + Studio terbenam di `/studio`
 - Animasi: **CSS + IntersectionObserver + rAF** sahaja (framer-motion dibuang v3); **MapLibre GL** (peta); **react-hook-form + zod** (borang), **Resend** (emel)
-- Tema **"PERKIB Nadi"** (v3): ivory `#F7F3EB` / obsidian `#0D1117` / maroon `#9E1F2E` / gold `#C6A25D`; font **Bricolage Grotesque** (display) + **Plus Jakarta Sans** (body); motif tunggal **arch**
+- Tema **"PERKIB Nadi"** (v3): ivory `#F7F3EB` / obsidian `#0D1117` / maroon `#9E1F2E` / gold `#C6A25D`; font **Bricolage Grotesque** (display) + **Plus Jakarta Sans** (body); motif **arch** + **kubah** (dome mahkota kad) + corak latar **girih** Islamik (v3.1)
 
 ## 🚀 Persediaan
 
