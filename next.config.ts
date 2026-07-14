@@ -49,6 +49,10 @@ const nextConfig: NextConfig = {
   output: "standalone",
   // Jangan dedah rangka kerja melalui header X-Powered-By.
   poweredByHeader: false,
+  // Server action lalai had 1MB — naikkan supaya muat naik foto pegawai (≤5MB) berjaya.
+  experimental: {
+    serverActions: { bodySizeLimit: "8mb" },
+  },
   images: {
     remotePatterns: [
       // CDN imej Sanity — digunakan oleh next/image bila kandungan diambil

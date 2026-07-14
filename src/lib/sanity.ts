@@ -208,7 +208,8 @@ export async function getPegawai(): Promise<PegawaiView[]> {
         masjidZonNama?: string;
       }>
     >(
-      `*[_type=="pegawai"]|order(nama asc){
+      // statusAktif != false → pegawai yang dinyahaktifkan (CRUD admin) hilang dari awam.
+      `*[_type=="pegawai" && statusAktif != false]|order(nama asc){
          employeeNo, nama, kategori, jawatanPenuh, emelRasmi, gred,
          "photo": gambar,
          "masjidNama": masjid->nama,

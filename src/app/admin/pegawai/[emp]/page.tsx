@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { redirect, notFound } from "next/navigation";
-import { ArrowLeft, Phone, Mail, User, FileText } from "lucide-react";
+import { ArrowLeft, Phone, Mail, User, FileText, Pencil } from "lucide-react";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
   getPegawaiAdminDetail,
@@ -12,6 +12,7 @@ import {
 import { decryptValue } from "@/lib/crypto";
 import { normalizePhone } from "@/lib/whatsapp";
 import { formatRM } from "@/lib/utils";
+import { PadamButton } from "./PadamButton";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Profil Pegawai — Admin PERKIB", robots: { index: false } };
@@ -43,9 +44,20 @@ export default async function PegawaiDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link href="/admin/pegawai" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-        <ArrowLeft className="size-4" /> Kembali ke direktori
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link href="/admin/pegawai" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+          <ArrowLeft className="size-4" /> Kembali ke direktori
+        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/admin/pegawai/${emp}/edit`}
+            className="inline-flex h-10 items-center gap-2 rounded-lg border border-input px-4 text-sm font-medium text-ink transition-colors hover:border-primary hover:text-primary"
+          >
+            <Pencil className="size-4" /> Sunting
+          </Link>
+          <PadamButton employeeNo={p.employeeNo} nama={p.nama} statusAktif={p.statusAktif} />
+        </div>
+      </div>
 
       {/* Profil */}
       <div className="mt-5 rounded-2xl border border-border bg-card p-6 shadow-elev md:p-8">

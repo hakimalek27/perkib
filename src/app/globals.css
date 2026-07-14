@@ -34,6 +34,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -77,6 +78,7 @@
   --accent-bright: #E4BD63;
   --destructive: #C0392B;
   --success: #1E7D53;
+  --warning: #B7791F;
   --border: #DCE5EE;
   --input: #DCE5EE;
   --ring: #17457A;

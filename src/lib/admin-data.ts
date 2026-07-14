@@ -131,6 +131,7 @@ export type PegawaiAdminDetail = PegawaiAdminRingkas & {
   bahagian: string | null;
   statusPerjawatan: string | null;
   statusAktif: boolean;
+  masjidId: string | null;
   zonNama: string | null;
   noKpEnc: string | null;
   telefonEnc: string | null;
@@ -144,6 +145,7 @@ export async function getPegawaiAdminDetail(employeeNo: string): Promise<Pegawai
     `*[_type=="pegawai" && employeeNo==$emp][0]{
        employeeNo, nama, kategori, gred, jawatanPenuh, emelRasmi, bahagian, statusPerjawatan,
        "statusAktif": statusAktif != false,
+       "masjidId": masjid._ref,
        "masjidNama": masjid->nama, "zonNombor": masjid->zon->nombor, "zonNama": masjid->zon->nama,
        "photoUrl": gambar.asset->url,
        noKpEnc, telefonEnc, icLast4
@@ -185,6 +187,26 @@ export async function getPegawaiForPenugasan(): Promise<PegawaiPenugasan[]> {
        "masjidId": masjid._ref,
        "masjidNama": masjid->nama,
        "zonNombor": masjid->zon->nombor
+     }`,
+    {},
+    { cache: "no-store" }
+  );
+}
+
+export type MasjidOption = {
+  id: string;
+  nama: string;
+  zonNombor: number | null;
+  zonNama: string | null;
+};
+
+// Senarai semua tempat (masjid/surau/pejabat) untuk dropdown penugasan dlm borang CRUD pegawai.
+export async function getMasjidOptions(): Promise<MasjidOption[]> {
+  const client = getWriteClient();
+  if (!client) return [];
+  return client.fetch(
+    `*[_type=="masjid"]|order(zon->nombor asc, nama asc){
+       "id": _id, nama, "zonNombor": zon->nombor, "zonNama": zon->nama
      }`,
     {},
     { cache: "no-store" }
