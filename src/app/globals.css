@@ -166,8 +166,7 @@
   /* ══════════ Bahan Nadi ══════════ */
 
   /* Permukaan obsidian dengan cahaya maroon dari dalam (hero/seksyen gelap) */
-  .surface-obsidian,
-  .mesh-royal {
+  .surface-obsidian {
     background-color: var(--obsidian);
     background-image:
       radial-gradient(60rem 40rem at 8% -10%, color-mix(in srgb, var(--primary) 30%, transparent), transparent 60%),
@@ -177,20 +176,11 @@
   }
 
   /* Smoked glass — HANYA panel petikan hero / dock / preview */
-  .smoked,
-  .glass-dark {
+  .smoked {
     background: color-mix(in srgb, #0D1117 55%, transparent);
     backdrop-filter: blur(6px) saturate(1.1);
     -webkit-backdrop-filter: blur(6px) saturate(1.1);
     border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
-  }
-
-  /* Kaca terang (dikekalkan nama; recolor ivory) */
-  .glass {
-    background: color-mix(in srgb, var(--card) 72%, transparent);
-    backdrop-filter: blur(12px) saturate(1.15);
-    -webkit-backdrop-filter: blur(12px) saturate(1.15);
-    border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
   }
 
   /* Corak bintang halus — atas obsidian (emas ≤ .2) */
@@ -344,71 +334,6 @@
     float: left;
     padding: 0.35rem 0.55rem 0 0;
     margin-top: 0.2rem;
-  }
-
-  /* Teks emas (dikekalkan nama; aksen kecil sahaja) */
-  .text-gradient-gold {
-    background: linear-gradient(120deg, var(--accent-bright), var(--accent), var(--accent-deep));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .text-gradient-gold-anim {
-    background: linear-gradient(100deg, var(--accent-deep), var(--accent-bright) 40%, #F3E4C4 50%, var(--accent-bright) 60%, var(--accent-deep));
-    background-size: 250% auto;
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: gold-shimmer 6s linear infinite;
-  }
-  @keyframes gold-shimmer {
-    to { background-position: -250% center; }
-  }
-
-  /* Legasi glow/aurora (dikekalkan sehingga M8; dilembutkan) */
-  .glow-gold { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), 0 14px 40px -12px color-mix(in srgb, var(--accent) 40%, transparent); }
-  .glow-primary { box-shadow: 0 14px 44px -12px color-mix(in srgb, var(--primary) 45%, transparent); }
-  .aurora-blob {
-    position: absolute;
-    border-radius: 9999px;
-    filter: blur(60px);
-    opacity: 0.35;
-    animation: aurora-float 14s ease-in-out infinite;
-  }
-  @keyframes aurora-float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(2rem, -1.5rem) scale(1.1); }
-  }
-  @keyframes float-soft {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  .animate-float { animation: float-soft 6s ease-in-out infinite; }
-  @keyframes spin-slow { to { transform: rotate(360deg); } }
-  .animate-spin-slow { animation: spin-slow 40s linear infinite; }
-
-  .gradient-border {
-    position: relative;
-    background: var(--card);
-    border-radius: var(--radius-2xl);
-  }
-  .gradient-border::before {
-    content: "";
-    position: absolute; inset: 0;
-    border-radius: inherit;
-    padding: 1.5px;
-    background: linear-gradient(135deg, var(--accent-bright), transparent 40%, transparent 60%, var(--accent));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  /* Noise (dikekalkan; halus) */
-  .noise::after {
-    content: "";
-    position: absolute; inset: 0;
-    pointer-events: none;
-    opacity: 0.4;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
   }
 
   /* Animasi accordion (Radix) */

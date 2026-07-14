@@ -2,48 +2,44 @@ import Image from "next/image";
 import { Mail, MapPin } from "lucide-react";
 import { initials } from "@/lib/utils";
 import { kategoriLabel, type PegawaiView } from "@/lib/sanity";
+import { ArchFrame } from "@/components/ui/ArchFrame";
 
-// Badge duduk ATAS foto — guna backing legap (bukan lut-sinar) supaya teks
-// sentiasa terbaca walau foto pegawai gelap/terang. Warna kategori pada teks + ring.
+// Warna kategori — pill dalam bahagian teks (bukan atas foto), sentiasa terbaca.
 const KATEGORI_TONE: Record<string, string> = {
-  "ketua-imam": "text-primary ring-primary/25",
-  "timbalan-ketua-imam": "text-accent-deep ring-accent/30",
-  bilal: "text-primary-light ring-primary-light/30",
+  "ketua-imam": "bg-primary/10 text-primary",
+  "timbalan-ketua-imam": "bg-accent/15 text-accent-deep",
+  bilal: "bg-primary-light/15 text-primary-light",
 };
 
 export function PegawaiCard({ pegawai }: { pegawai: PegawaiView }) {
-  const tone = KATEGORI_TONE[pegawai.kategori] ?? "text-muted-foreground ring-border";
+  const tone = KATEGORI_TONE[pegawai.kategori] ?? "bg-muted text-muted-foreground";
   return (
-    <article className="hover-glow group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft">
-      {/* Foto / avatar */}
-      <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-primary/8 to-accent/8">
+    <article className="card-lift group flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-3">
+      {/* Foto — bingkai arch (motif tunggal PERKIB) */}
+      <ArchFrame ratio="5 / 6" className="w-full bg-gradient-to-br from-primary/8 to-accent/8">
         {pegawai.photoUrl ? (
           <Image
             src={pegawai.photoUrl}
             alt={pegawai.nama}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center">
-            <span className="font-display text-4xl font-semibold text-primary/40">
+          <div className="flex size-full items-center justify-center">
+            <span className="font-display text-4xl font-bold text-primary/40">
               {initials(pegawai.nama)}
             </span>
           </div>
         )}
-        <span
-          className={`absolute left-3 top-3 z-10 inline-flex items-center rounded-full bg-card/95 px-2.5 py-1 text-[11px] font-semibold shadow-sm ring-1 backdrop-blur-sm ${tone}`}
-        >
-          {kategoriLabel[pegawai.kategori]}
-        </span>
-      </div>
+      </ArchFrame>
 
       {/* Butiran */}
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <h3 className="font-display text-base font-semibold leading-tight text-ink">
-          {pegawai.nama}
-        </h3>
+      <div className="flex flex-1 flex-col gap-1.5 px-2 pb-1 pt-3">
+        <span className={`inline-flex w-fit rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${tone}`}>
+          {kategoriLabel[pegawai.kategori]}
+        </span>
+        <h3 className="mt-1 font-display text-base font-bold leading-tight text-ink">{pegawai.nama}</h3>
         <p className="text-xs text-muted-foreground">{pegawai.jawatanPenuh}</p>
         <div className="mt-auto space-y-1.5 pt-2">
           <p className="flex items-start gap-1.5 text-xs text-ink/80">
@@ -52,9 +48,7 @@ export function PegawaiCard({ pegawai }: { pegawai: PegawaiView }) {
               <span>
                 {pegawai.masjidNama}
                 {pegawai.masjidZonNama ? (
-                  <span className="block text-[11px] text-muted-foreground">
-                    {pegawai.masjidZonNama}
-                  </span>
+                  <span className="block text-[11px] text-muted-foreground">{pegawai.masjidZonNama}</span>
                 ) : null}
               </span>
             ) : (
