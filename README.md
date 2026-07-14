@@ -12,16 +12,17 @@ Laman web rasmi **Pertubuhan Kebajikan Imam dan Bilal Majlis Agama Islam Wilayah
 - **Maklumat Pegawai** — 91 pegawai (Ketua Imam, Timbalan Ketua Imam, Bilal) mengikut zon; admin tetapkan penugasan masjid melalui Studio. Paparan awam patuh PDPA (tiada telefon/IC).
 - **Sistem Permohonan Saguhati** — 9 jenis. Ahli sahkan identiti (No. Pekerja + 4 digit IC + **captcha**) → pilih jenis → **maklumat bank + telefon** → muat naik dokumen → nombor rujukan. Cegah double-submit (idempotency), had per jenis, semak status dalam talian.
 - **Notifikasi WhatsApp** (wassap.wehdah.my) — pemohon & admin/group terima notifikasi automatik pada permohonan baharu dan perubahan status (lulus/tolak/dibayar).
-- **Panel Admin berfungsi penuh (tanpa Sanity Studio)** — dashboard; urus status saguhati + butiran transfer; **penugasan pegawai↔masjid seret-lepas**; **modul yuran bendahari** (kadar per gred, matriks bulanan, eksport CSV); direktori pegawai (IC/telefon/wa.me/sejarah); carian 1,121 staf MAIWP lain; tetapan notifikasi.
-- **Keselamatan & PDPA** — IC/telefon/bank **terenkripsi AES-256-GCM at-rest**; captcha + honeypot + had kadar; CSP + kuki strict; log audit.
+- **Panel Admin berfungsi penuh (tanpa Sanity Studio)** — dashboard; urus status saguhati + butiran transfer; **penugasan pegawai↔masjid seret-lepas**; **CRUD pegawai** (tambah/sunting/padam→nyahaktif); **modul yuran bendahari** (kadar per gred, matriks bulanan, eksport CSV); direktori pegawai (IC/telefon/wa.me/sejarah); carian 1,121 staf MAIWP lain (di sebalik **gate kata laluan kedua**); tetapan notifikasi.
+- **Peta direktori masjid** (v3) — MapLibre GL + OpenFreeMap, toggle Senarai/Peta, marker arch, drawer butiran.
+- **Keselamatan & PDPA** — IC/telefon/bank **terenkripsi AES-256-GCM at-rest**; captcha + honeypot + had kadar; CSP + kuki strict; log audit; gate kedua `/admin/staf`.
 
 ## 🧱 Teknologi
 
 - **Next.js 16** (App Router, output standalone) + **React 19** + **TypeScript**
 - **Tailwind CSS v4** (CSS-first `@theme`)
 - **Sanity v5** — CMS + Studio terbenam di `/studio`
-- **framer-motion** (animasi), **react-hook-form + zod** (borang), **Resend** (emel)
-- Tema: biru dalam `#17457A` + emas `#C99A3E`; font **Manrope** (body) + **Marcellus** (display)
+- Animasi: **CSS + IntersectionObserver + rAF** sahaja (framer-motion dibuang v3); **MapLibre GL** (peta); **react-hook-form + zod** (borang), **Resend** (emel)
+- Tema **"PERKIB Nadi"** (v3): ivory `#F7F3EB` / obsidian `#0D1117` / maroon `#9E1F2E` / gold `#C6A25D`; font **Bricolage Grotesque** (display) + **Plus Jakarta Sans** (body); motif tunggal **arch**
 
 ## 🚀 Persediaan
 

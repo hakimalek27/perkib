@@ -145,3 +145,43 @@ perkib.my/saguhati/studio 200 · **data Sanity langsung (92 pegawai)** · captch
 - **Swap dir memadam `.env.local`** (env dalam dir standalone) → `cp` .env.local produksi ke dir baharu sebelum swap.
 - **Kuki admin `secure`** tidak disimpan atas HTTP → uji dekripsi via HTTPS (Cloudflare).
 - **Classifier blok arahan kompaun** (scp rahsia + sed) → pecah kepada langkah kecil.
+
+---
+
+# Perjalanan v3 — Redesign "PERKIB Nadi" + Ciri Admin Baharu (14 Julai 2026)
+
+Naik taraf UI/UX menyeluruh dari "Royal Glass" (biru #17457A + emas, Manrope/Marcellus) → **"PERKIB Nadi"** (editorial institusi Islam: ivory #F7F3EB / obsidian #0D1117 / maroon #9E1F2E / gold #C6A25D, Bricolage Grotesque + Plus Jakarta Sans, motif tunggal **arch**). Rujukan: spek v2.3 + mockup cinematic. 14 milestone (M0–M13), setiap satu build hijau + lint 0 ralat + commit + tag.
+
+## Sumber & keputusan
+- Spek `SPEK-REDESIGN-PERKIB-v2.3-FINAL.md` + mockup `perkib-redesign-mockup-v2.3-cinematic.html` (token/hero/odometer/dock/rail/glyph di-port).
+- 2 ejen Explore (audit awam + admin) + 1 ejen Plan → pelan 14 milestone.
+- Keputusan Hakim: gate staf kata laluan literal `Aqizan14$****`; sasaran WA = JK PERKIB; skop = semua + deploy.
+
+## 14 Milestone
+| # | Milestone | Hasil |
+|---|---|---|
+| M0 | Baseline + tag `pra-v3` | ✓ |
+| M1 | Gate staf (kuki HMAC 2j, rate limit 5/5min) + live search + fix badge PegawaiCard + sorok dari sidebar | ✓ |
+| M2 | CRUD pegawai admin (tambah/sunting/padam→nyahaktif; encryptValue; bodySizeLimit 8mb; tapis statusAktif awam) | ✓ |
+| M3 | WhatsApp: JID group dijumpai (DB wassap) + skrip wa-setup + WASSAP_SESSION_ID; **ujian gagal (nombor 6019 bukan ahli group — baki Hakim)** | ✓ |
+| M4 | Font Bricolage/Jakarta + recolor token Nadi penuh (globals.css) | ✓ |
+| M5 | Komponen teras (Glyph/ArchFrame/Eyebrow/SectionHead/Odometer/CinematicSlot/ScrollRail/Magnetic/Tier) + template.tsx + **buang framer-motion & canvas-confetti** | ✓ |
+| M6 | Header floating dock (nav-indicator morph, sentiasa solid ivory) + Footer obsidian 4-kolum accordion | ✓ |
+| M7 | Homepage 13 seksyen sinematik (HeroMihrab arch, odometer 94·92·8·9, mosaic glyph, kepimpinan ArchFrame, saguhati 9 kad, DermaCopy, ScrollRail) | ✓ |
+| M8 | PageHero obsidian + PegawaiCard ArchFrame + hapus utiliti Royal Glass off-brand (grep 0) | ✓ |
+| M9 | Wizard 3→5 langkah (API/payload BEKU) + Nadi progress + sessionStorage draf + Edit-jump; SemakForm timeline menegak | ✓ |
+| M10 | Peta direktori (maplibre-gl + OpenFreeMap, dynamic ssr:false, marker arch, toggle Senarai\|Peta) + skema lat/lng + skrip geocode | ✓ |
+| M11 | Admin reskin minimum (login split-screen, sidebar gold-active, topbar breadcrumb) | ✓ |
+| M12 | 404/loading/OG arch + QA-REPORT.md + nyahpasang @radix-ui/react-tabs | ✓ |
+| M13 | Deploy perkib.my (tar-pipe→swap→pm2) + smoke live + docs/memori | ✓ |
+
+## Cabaran & penyelesaian v3
+- **framer-motion → CSS/IO/rAF**: Reveal.tsx + Counter.tsx tulis semula (API prop kekal, 11 pengimport tak ubah); `react-hooks/set-state-in-effect` → guna rAF/event-handler untuk setState.
+- **WhatsApp group gagal (multi-tenant)**: kunci "Perkib.my"=masjid_id 9, group=masjid_id 1; nombor 6019 bukan ahli → 500 + cooldown. Diagnosis penuh via DB wassap; target dikosongkan supaya cooldown tak jejas noti pemohon individu.
+- **Hero ivory perlu header solid**: mockup hero=ivory (bukan gelap) → Header sentiasa solid ivory (buang state transparan).
+- **Peta CSP**: +tiles.openfreemap.org connect-src; disahkan tiles 200 (style/planet/sprites).
+- **`$` dlm STAF_GATE_PASSWORD**: petikan tunggal .env.local + base64 semasa deploy ssh; disahkan panjang 13 di server.
+- **GitHub push disekat**: token keyring tiada akses/`GH_TOKEN` env tak sah → 14 commit setempat, baki Hakim `gh auth login`.
+
+## Deployment (14 Jul, petang)
+Build `NEXT_PUBLIC_SITE_URL=https://perkib.my` → himpun standalone (52M) → tar-pipe (13MB) → server ekstrak `standalone.v3new` → cp `.env.local` (+STAF_GATE_PASSWORD via base64) → swap (`standalone.v3old` backup) → `pm2 restart perkib` + save. **Disahkan LIVE:** perkib.my 200, homepage Nadi (Memartabatkan/panel arch obsidian), CSP +tiles.openfreemap.org, route /direktori-masjid //admin/login //saguhati/mohon //pegawai semua 200, STAF_GATE_PASSWORD betul di server, 5 laman jiran (wassap/resit/dll) tidak terganggu. Rollback: `standalone.v3old` + `standalone.v2old`.

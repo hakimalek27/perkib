@@ -1,6 +1,21 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-14 · **Status:** ✅ v2 **DEPLOYED & LIVE di https://perkib.my** + diuji E2E dengan Sanity langsung.
+**Kemas kini:** 2026-07-14 · **Status:** ✅ **v3 "Nadi" DEPLOYED & LIVE di https://perkib.my** (redesign penuh + ciri admin baharu).
+
+## 🎨 v3 "PERKIB Nadi" (14 milestone M0–M13)
+Redesign UI penuh **ivory #F7F3EB / obsidian #0D1117 / maroon #9E1F2E / gold #C6A25D** (font Bricolage Grotesque + Plus Jakarta Sans) menggantikan "Royal Glass" biru+emas. Motif tunggal **arch**. **framer-motion + canvas-confetti + @radix-ui/react-tabs DIBUANG** (CSS+IO+rAF sahaja); dep baharu = **maplibre-gl** sahaja. Disahkan LIVE 14 Jul: homepage Nadi, semua route 200, CSP +tiles.openfreemap.org, jiran tidak terganggu.
+
+**Ciri BAHARU:**
+- **Gate kata laluan KEDUA `/admin/staf`** (env `STAF_GATE_PASSWORD='Aqizan14$****'`, disahkan di server) — halaman DISOROK dari sidebar, akses URL manual + kata laluan. Rate limit 5/5min. Live search (taip terus, `/api/admin/staf-cari`).
+- **CRUD pegawai** (`/admin/pegawai`): + Tambah / Sunting / Padam (delete-with-references → Nyahaktif). `next.config` bodySizeLimit 8mb.
+- **Peta direktori** (maplibre + OpenFreeMap): toggle Senarai|Peta (`?view=`), marker arch, drawer. Koordinat via `npm run geocode:masjid`→semak→`geocode:apply`.
+- **Wizard 3→5 langkah** (API/payload BEKU) + Nadi progress + sessionStorage draf. SemakForm timeline menegak node arch.
+- Header floating dock, Footer obsidian 4-kolum, login admin split-screen, 404/loading/OG arch.
+
+**⚠️ BELUM PUSH:** 14 commit v3 setempat (`8b1821a`→`31aa48a`) + tags `pra-v3`/`kumpulan-a-siap`. Token GitHub tiada akses. Hakim: `gh auth login` → `git push origin main --tags`.
+
+---
+
 
 ## 🚀 PENGELUARAN (LIVE)
 - **URL:** https://perkib.my (Cloudflare → nginx :80 → pm2 `perkib` port **3005**).
@@ -24,6 +39,8 @@ seret-lepas, yuran bendahari, direktori pegawai + staf MAIWP), dan reka bentuk "
 - `SAGUHATI_TOKEN_SECRET` (HMAC 15 min token verify).
 - **WhatsApp:** `WASSAP_API_URL=https://wassap.wehdah.my`, `WASSAP_API_KEY=sk_...` (skop `messages:send`), `WASSAP_DRY_RUN=1` (mod ujian; tetapkan `0` untuk hantar sebenar).
 - **Staf lain:** `STAF_DATA_FILE=private-data/staf-lain.enc.json`, `STAF_PHOTO_DIR=C:\MAIWP_Staff_Lain_2026-07-07\gambar`.
+- **v3: `STAF_GATE_PASSWORD`** (gate kedua `/admin/staf`; nilai literal `Aqizan14$****` — BALUT petikan tunggal dlm .env.local kerana ada `$`; server guna base64 semasa deploy). Disahkan di server (panjang 13).
+- **v3: `WASSAP_SESSION_ID`** (kosong = round-robin; pin sesi penghantar bila kunci tak terikat & sasaran group).
 - `CAPTCHA_BYPASS_SECRET` (kosong di prod; hanya untuk automasi ujian).
 
 ## Data (Sanity, langsung)
@@ -69,9 +86,17 @@ npm run lint && npm run build
 ## Keputusan E2E (Chrome MCP, data Sanity langsung — 2026-07-14)
 Homepage (statistik 92·8·94·24, reka bentuk Royal Glass) · pegawai awam 92 + taburan + 0 belum ditugaskan + TIADA IC/telefon bocor · **saguhati penuh: captcha→verify→bank→submit; double-submit=1 rekod (refNo sama)** · captcha salah 400 · **anon GROQ noKpEnc=ciphertext, telefon plain tiada** · headers hadir · admin login+dashboard · **detail pegawai: IC 900911145053 dekripsi + wa.me + foto**. Artifak ujian dibersihkan → pristine.
 
-## Baki tindakan (untuk Hakim)
-- Tukar `ADMIN_PASSWORD`; simpan salinan `DATA_ENCRYPTION_KEY` di tempat selamat.
-- Set `WASSAP_DRY_RUN=0` + tampal JID group WhatsApp bila sedia hantar sebenar.
-- Set kadar yuran per gred di `/admin/yuran/tetapan` (cth. S1=RM10, S5/S9=RM15) & had jenis di `/admin/saguhati/tetapan`.
-- (Pilihan, disyorkan) `npx sanity dataset visibility set production private` — token baca sudah dipasang.
-- Domain `perkib.my` + mailbox `admin@perkib.my` (paparan sahaja buat masa ini). Deploy: folder `deploy/`.
+## Baki tindakan (untuk Hakim) — v3
+1. **GitHub push:** `gh auth login` (HTTPS, akaun hakimalek27) → `git push origin main --tags`. 14 commit v3 setempat belum push (token semasa tiada akses).
+2. **WhatsApp group:** nombor penghantar PERKIB (6019 "PERKIB NOTI MAM", tenant masjid_id 9) **belum jadi ahli** group SANTAI+JK PERKIB (milik tenant 1). Tambah 6019 ke kedua-dua group di WhatsApp → `npx tsx scripts/wa-setup.ts --send --set-target`. (Sasaran & ujian gagal buat masa ini; target dikosongkan supaya cooldown tak jejas noti pemohon.)
+3. **Peta koordinat:** `npm run geocode:masjid` → semak `scripts/output/geocode-review.json` (banding Google Maps) → `npm run geocode:apply`. Sementara: peta fallback senarai.
+4. Lighthouse perkib.my (homepage/direktori/mohon) — sahkan DoD (QA-REPORT.md).
+5. (Pilihan) video `/public/media/perkib-{hero,break}-{wide,vert}.mp4` — fallback siluet berfungsi tanpanya.
+
+### Baki v2 (kekal relevan)
+- Simpan salinan `DATA_ENCRYPTION_KEY` di tempat selamat (hilang = hilang semua IC/telefon/bank).
+- Set kadar yuran per gred `/admin/yuran/tetapan` & had jenis `/admin/saguhati/tetapan`.
+- (Pilihan) `npx sanity dataset visibility set production private` — token baca dipasang.
+
+### Deploy semula (rujukan)
+Corak: `NEXT_PUBLIC_SITE_URL=https://perkib.my npm run build` → cp `.next/static`+`public` ke `.next/standalone` → `tar -czf - -C .next standalone | ssh ubuntu@43.133.34.55 "cat > /tmp/x.tgz"` → server: ekstrak ke `standalone.vNnew` → **cp `.env.local` lama** → `mv standalone standalone.vNold; mv standalone.vNnew standalone` → `pm2 restart perkib && pm2 save`. Rollback: swap balik `standalone.v3old`.
