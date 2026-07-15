@@ -1,6 +1,9 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-15 · **Status:** ✅ **v3.3 DEPLOYED & LIVE di https://perkib.my** (12 pembaikan: arch/kubah, duplikat Hanif, Studio, urus rekod, peta koordinat, nav/CTA).
+**Kemas kini:** 2026-07-15 · **Status:** ✅ **v3.3 DEPLOYED & LIVE di https://perkib.my** (12 pembaikan: arch/kubah, duplikat Hanif, Studio, urus rekod, peta koordinat, nav/CTA) + **koordinat masjid dilengkapkan 93/94** (petang).
+
+## 🗺️ Koordinat masjid dilengkapkan (15 Julai 2026, petang) — DEPLOYED
+Hakim bekalkan koordinat manual (rekod rasmi JAWI + pin peta) untuk **38 masjid** yang sebelum ni tiada koordinat. Ditulis ke Sanity via `scripts/apply-manual-coords.ts` (**_id EKSPLISIT** — padanan nama dibuat & disahkan manual, BUKAN padan automatik; additive-only + validasi bbox wilayah; dry-run dulu). Kini **93/94 masjid awam berkoordinat** (naik dari 55). Baki: **hanya Masjid Al-Hijrah, Labuan** (Hakim: "belum dapat disahkan"). 3 Posting Khas Zon 9 (Ibu Pejabat MAIWP + 2 Surau Istana Negara) tiada koordinat — bukan masjid awam, tak dipapar dalam peta. Build BERSIH (`rm -rf .next`) bake 93 koordinat fresh dari Sanity → deploy tar-pipe → backup **`standalone.bak-20260715-v33map`** → pm2 restart. **Disahkan LIVE:** semua route 200; koordinat baru dalam HTML live (Al-Ehsan/Abi Ayyub + 15 Labuan unik); **E2E Playwright 11/11 lulus** (+1 ujian baharu: peta papar >40 pin dari koordinat Sanity). ⚠️ Nota data: beberapa nota kampung Hakim untuk Labuan berbeza dgn medan `lokasi` Sanity — padanan tetap ikut **nama masjid** (pengecam unik); `lokasi` Sanity tidak diubah.
 
 ## 🆕 v3.3 (15 Julai 2026) — DEPLOYED (12 pembaikan maklum balas Hakim)
 6 milestone (M1–M6), setiap satu **lint+build hijau + commit**; **E2E Playwright 10/10 lulus** (5 v3.2 + 5 v3.3). Punca setiap isu disiasat (2 Explore + GROQ + Playwright).
@@ -10,10 +13,10 @@
 - **Urus rekod (M2) — HANYA `/admin/staf`** (di sebalik gate kata laluan kedua): padam/edit permohonan (dialog wajib taip no. rujukan; edit bank/telefon re-encrypt) + padam maklum balas. Server action **guard BERGANDA** (`isAdminAuthenticated && isStafGateAuthenticated`) — **admin biasa TIDAK boleh padam** (`admin/staf/actions.ts` + `UrusRekod.tsx`).
 - **Sanity Studio (M3):** CSP `studioPolicy` benarkan **`https://*.sanity-cdn.com`** (bridge.js Sanity v5 — punca Studio blank) + `cloudflareinsights` kedua-dua polisi (console noise).
 - **FAQ azanmalek (M3):** punca = `.next/cache/fetch-cache` basi dibakar ke HTML. **Build bersih** (`rm -rf .next`) → 0 azanmalek dlm soalan-lazim.html. Runbook dikemas kini (WAJIB rm -rf .next).
-- **Peta masjid (M4):** geocode **55/94** masjid (Nominatim; lokaliti ikut wilayah; bbox validation), sempadan **KL/Putrajaya/Labuan** (`public/map/boundaries/`). `MasjidMap` fitBounds + butang **Semua/KL/Putrajaya/Labuan** (default fokus **KL** + sempadan). Baki 39 tanpa koordinat → senarai fallback; Hakim perhalusi dlm Studio.
+- **Peta masjid (M4):** geocode **55/94** masjid (Nominatim; lokaliti ikut wilayah; bbox validation), sempadan **KL/Putrajaya/Labuan** (`public/map/boundaries/`). `MasjidMap` fitBounds + butang **Semua/KL/Putrajaya/Labuan** (default fokus **KL** + sempadan). Baki 39 tanpa koordinat → senarai fallback (kemudian **dilengkapkan 93/94** — lihat seksyen Koordinat di atas).
 - **Nav/CTA (M5):** **sorok `/sukarelawan`** (nav + sitemap + redirect ke `/`; fail kekal). CTA terapung "Mohon Saguhati" mobile kini **boleh-tutup (X)** — `sessionStorage` (kekal tersembunyi sesi itu).
 
-**Baki Hakim v3.3:** uji **log masuk Studio** (`/studio` — CSP dah dibetulkan; saya tak boleh log masuk); perhalusi koordinat 39 masjid tanpa koordinat + betulkan geocode tersasar (dalam Studio, medan latitude/longitude); (pilihan lama) RESEND_API_KEY, WhatsApp 6019 group, geocode baki.
+**Baki Hakim v3.3:** uji **log masuk Studio** (`/studio` — CSP dah dibetulkan; saya tak boleh log masuk); ~~perhalusi koordinat 39 masjid~~ ✅ **93/94 SIAP** — hanya **Masjid Al-Hijrah (Labuan)** tinggal (isi `latitude`/`longitude` dlm Studio bila pin disahkan); (pilihan lama) RESEND_API_KEY, WhatsApp 6019 group.
 
 ---
 

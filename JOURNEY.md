@@ -266,3 +266,24 @@ Selepas v3.2 LIVE, Hakim beri 12 item maklum balas (6 screenshot). Semua punca d
 
 ## Deployment v3.3 (15 Jul)
 Build BERSIH (`rm -rf .next`) → standalone → tar-pipe `ubuntu@43.133.34.55` → kekal `.env.local` → backup `standalone.bak-20260715-v33` → `pm2 restart perkib`. Disahkan LIVE: E2E 10/10 terhadap perkib.my + `/soalan-lazim` 0 azanmalek + `/studio` tiada sekatan sanity-cdn. Rollback: `standalone.bak-20260715-v33`.
+
+---
+
+# Koordinat masjid dilengkapkan — 93/94 (15 Julai 2026, petang)
+
+Susulan v3.3 (M4 geocode Nominatim hanya jumpa 55/94), Hakim bekalkan **koordinat manual** untuk baki masjid daripada **rekod rasmi JAWI + pin peta navigasi** (dinormalkan 6 titik perpuluhan). Sasaran: masukkan koordinat semua masjid ke dalam sistem.
+
+## Pendekatan (ketelitian dahulu — tiada padanan buta)
+1. **Faham struktur:** `scripts/apply-geocode.ts` (corak `seedClient().patch().set().commit()` + bbox wilayah), skema `masjid` (`latitude`/`longitude` number, `zon->wilayah`), query peta `getMasjids()` (`sanity.ts:153` projek lat/lng — corak terbukti v3.3).
+2. **Senarai sebenar Sanity:** skrip `scripts/list-no-coords.ts` — GROQ `!defined(latitude)` ikut zon → **42 rekod** (39 masjid awam + 3 Posting Khas Zon 9).
+3. **Padan manual:** 38 koordinat Hakim ↔ **`_id` sebenar Sanity**, disahkan satu-satu. Nama masjid = pengecam unik. Kritikal: **Nur Iman ≠ Nurul Iman** (dua masjid berlainan) diasingkan betul. Al-Hijrah (Labuan) dilangkau — Hakim: belum sah.
+4. **Skrip patch:** `scripts/apply-manual-coords.ts` — **`_id` EKSPLISIT** (bukan padan nama automatik), additive-only (skip yg sudah ada), validasi bbox (KL 3.0–3.3/101.55–101.78, Labuan 5.15–5.45/115.1–115.36), **dry-run dulu**. Dry-run: 38/38 padan, 0 luar bbox, 0 id hilang, 0 sudah ada → commit: **38 ditulis**.
+5. **Sahkan:** GROQ kiraan **55→93** koordinat. Baki 4 = Al-Hijrah + 3 Zon 9 (bukan masjid awam).
+
+## Cabaran & penyelesaian
+- **Percanggahan lokasi (Labuan):** beberapa nota kampung Hakim (cth Al-Ehsan "Tanjung Aru") berbeza dgn medan `lokasi` Sanity ("Sungai Labu"). Diselesai: padan ikut **nama masjid** (pengecam unik, unik dlm zon), `lokasi` Sanity TIDAK diubah (elak regresi data lain). Percanggahan direkod, bukan diperbetul secara buta.
+- **Koordinat bertindih sah:** Al-Sultan Abdullah & Nurul Iman kedua-dua di Kampung Sungai Bedaun (koordinat sama) — Hakim nota "rekod lama"; diterima.
+- **Verifikasi render tanpa GPU:** MapLibre guna WebGL — di Playwright headless (SwiftShader) peta tetap load; ujian baharu `.perkib-pin` >40 LULUS (57s) → sahkan pin betul-betul render dari koordinat, bukan sekadar data dlm HTML.
+
+## Deployment (15 Jul, petang)
+Build BERSIH (`rm -rf .next`, bake 93 koordinat fresh Sanity) → standalone 52M → tar-pipe 13M `ubuntu@43.133.34.55` → kekal `.env.local` (1239B) → backup **`standalone.bak-20260715-v33map`** → `pm2 restart perkib`. **Disahkan LIVE:** 5 route 200; koordinat baru dlm HTML live (Al-Ehsan 115.187944 + Abi Ayyub 3.22717 + 15 Labuan unik); **E2E Playwright 11/11 lulus** (+ujian pin peta). Data mutasi additive & boleh pulih (koordinat boleh ubah/padam dlm Studio). Rollback: `standalone.bak-20260715-v33map`.

@@ -133,3 +133,13 @@ test.describe("PERKIB v3.3 — pembaikan (LIVE)", () => {
     await expect(x).toBeHidden(); // ditutup
   });
 });
+
+test.describe("PERKIB koordinat masjid (LIVE)", () => {
+  test("peta papar pin masjid (KL default) daripada koordinat Sanity", async ({ page }) => {
+    await page.goto("/direktori-masjid?view=peta");
+    // Marker = <button class="perkib-pin"> ditambah selepas map 'load'.
+    await page.locator(".perkib-pin").first().waitFor({ state: "attached", timeout: 20000 });
+    const pins = await page.locator(".perkib-pin").count();
+    expect(pins).toBeGreaterThan(40); // majoriti masjid KL kini berkoordinat
+  });
+});
