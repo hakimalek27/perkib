@@ -408,15 +408,17 @@
   .arch-draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: arch-draw 1.2s var(--ease) forwards; }
   @keyframes arch-draw { to { stroke-dashoffset: 0; } }
 
-  /* Cahaya arch emas (design system) — stroke ArchOutline atas potret kad pegawai/AJK */
+  /* Cahaya arch emas (design system) — stroke ArchOutline atas potret kad pegawai/AJK.
+     Filter STATIK; denyut melalui animasi opacity (dikomposit GPU) supaya jimat
+     walaupun ~93 kad di /pegawai — bukan animasi filter (repaint setiap bingkai). */
   .arch-glow {
-    filter: drop-shadow(0 0 3px var(--accent)) drop-shadow(0 0 9px color-mix(in srgb, var(--accent) 60%, transparent));
+    filter: drop-shadow(0 0 3px var(--accent)) drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 55%, transparent));
   }
   @media (prefers-reduced-motion: no-preference) {
     .arch-glow { animation: arch-glow-pulse 3.2s var(--ease) infinite; }
     @keyframes arch-glow-pulse {
-      0%, 100% { filter: drop-shadow(0 0 2px var(--accent)) drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 45%, transparent)); }
-      50% { filter: drop-shadow(0 0 4px var(--accent-bright)) drop-shadow(0 0 13px color-mix(in srgb, var(--accent-bright) 75%, transparent)); }
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
     }
   }
 

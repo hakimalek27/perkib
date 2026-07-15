@@ -3,45 +3,54 @@ import { Mail, MapPin } from "lucide-react";
 import { initials } from "@/lib/utils";
 import { kategoriLabel, type PegawaiView } from "@/lib/sanity";
 import { ArchFrame } from "@/components/ui/ArchFrame";
+import { ArchOutline } from "@/components/nadi/ArchOutline";
 import { Kubah } from "@/components/ui/Kubah";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 
-// Warna kategori — pill dalam bahagian teks (bukan atas foto), sentiasa terbaca.
-const KATEGORI_TONE: Record<string, string> = {
-  "ketua-imam": "bg-primary/10 text-primary",
-  "timbalan-ketua-imam": "bg-accent/15 text-accent-deep",
-  bilal: "bg-primary-light/15 text-primary-light",
+// Tona kategori — lencana dalam bahagian teks (bukan atas foto), sentiasa terbaca.
+const KATEGORI_TONE: Record<string, BadgeTone> = {
+  "ketua-imam": "brand",
+  "timbalan-ketua-imam": "gold",
+  bilal: "neutral",
 };
 
 export function PegawaiCard({ pegawai }: { pegawai: PegawaiView }) {
-  const tone = KATEGORI_TONE[pegawai.kategori] ?? "bg-muted text-muted-foreground";
+  const tone = KATEGORI_TONE[pegawai.kategori] ?? "neutral";
   return (
     <article className="card-lift group flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-3">
       {/* Mahkota kubah (motif dome PERKIB) */}
       <Kubah className="kubah-halo relative z-10 mx-auto -mb-2.5 h-6 w-7 shrink-0 transition-transform duration-500 group-hover:-translate-y-0.5" />
-      {/* Foto — bingkai arch (motif tunggal PERKIB) */}
-      <ArchFrame ratio="5 / 6" className="w-full bg-gradient-to-br from-primary/8 to-accent/8">
-        {pegawai.photoUrl ? (
-          <Image
-            src={pegawai.photoUrl}
-            alt={pegawai.nama}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center">
-            <span className="font-display text-4xl font-bold text-primary/40">
-              {initials(pegawai.nama)}
-            </span>
-          </div>
-        )}
-      </ArchFrame>
+      {/* Foto — bingkai arch (motif tunggal PERKIB) + bingkai cahaya emas berdenyut */}
+      <div className="relative">
+        <ArchFrame ratio="5 / 6" className="w-full bg-gradient-to-br from-primary/8 to-accent/8">
+          {pegawai.photoUrl ? (
+            <Image
+              src={pegawai.photoUrl}
+              alt={pegawai.nama}
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center">
+              <span className="font-display text-4xl font-bold text-primary/40">
+                {initials(pegawai.nama)}
+              </span>
+            </div>
+          )}
+        </ArchFrame>
+        <ArchOutline
+          stroke="var(--accent-bright)"
+          strokeWidth={2}
+          className="arch-glow pointer-events-none absolute inset-0 h-full w-full"
+        />
+      </div>
 
       {/* Butiran */}
       <div className="flex flex-1 flex-col gap-1.5 px-2 pb-1 pt-3">
-        <span className={`inline-flex w-fit rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${tone}`}>
+        <Badge tone={tone} className="w-fit">
           {kategoriLabel[pegawai.kategori]}
-        </span>
+        </Badge>
         <h3 className="mt-1 font-display text-base font-bold leading-tight text-ink">{pegawai.nama}</h3>
         <p className="text-xs text-muted-foreground">{pegawai.jawatanPenuh}</p>
         <div className="mt-auto space-y-1.5 pt-2">

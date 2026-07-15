@@ -28,6 +28,8 @@ export function ArchOutline({
         d="M2,120 L2,48 C2,20 22,4 47,1 L50,0 L53,1 C78,4 98,20 98,48 L98,120"
         stroke={stroke}
         strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
         pathLength={1}
         className={draw ? "arch-draw" : undefined}
       />

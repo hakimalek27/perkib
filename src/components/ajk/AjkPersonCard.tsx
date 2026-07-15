@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { cn, initials } from "@/lib/utils";
 import { kategoriLabel, type AjkView } from "@/lib/sanity";
+import { ArchFrame } from "@/components/ui/ArchFrame";
+import { ArchOutline } from "@/components/nadi/ArchOutline";
 import { Kubah } from "@/components/ui/Kubah";
 
 export function AjkPersonCard({
@@ -25,27 +27,29 @@ export function AjkPersonCard({
           featured ? "-mb-2.5 h-6 w-7" : "-mb-2 h-5 w-6"
         )}
       />
-      <div
-        className={cn(
-          "relative overflow-hidden rounded-full ring-2",
-          featured ? "size-28 ring-accent/60" : "size-24 ring-accent/25"
-        )}
-      >
-        {member.photoUrl ? (
-          <Image
-            src={member.photoUrl}
-            alt={member.nama}
-            fill
-            sizes={featured ? "112px" : "96px"}
-            className="object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center bg-primary/8">
-            <span className="font-display text-2xl font-semibold text-primary/50">
-              {initials(member.nama)}
-            </span>
-          </div>
-        )}
+      <div className={cn("relative", featured ? "w-28" : "w-24")}>
+        <ArchFrame ratio="5 / 6" className="w-full bg-primary/8">
+          {member.photoUrl ? (
+            <Image
+              src={member.photoUrl}
+              alt={member.nama}
+              fill
+              sizes={featured ? "112px" : "96px"}
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center">
+              <span className="font-display text-2xl font-semibold text-primary/50">
+                {initials(member.nama)}
+              </span>
+            </div>
+          )}
+        </ArchFrame>
+        <ArchOutline
+          stroke={featured ? "var(--accent-bright)" : "var(--accent)"}
+          strokeWidth={featured ? 2 : 1.5}
+          className="arch-glow pointer-events-none absolute inset-0 h-full w-full"
+        />
       </div>
       <p
         className={cn(
