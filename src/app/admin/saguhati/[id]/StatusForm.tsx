@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input, Textarea, Label } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
+import { Field } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { updateStatusAction, type StatusUpdate } from "../actions";
 
 const STATUS_OPTIONS: { value: StatusUpdate["status"]; label: string }[] = [
@@ -70,50 +72,39 @@ export function StatusForm({
       </p>
 
       <div className="mt-5 space-y-4">
-        <div>
-          <Label htmlFor="status">Status</Label>
-          <select
-            id="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-          >
+        <Field label="Status" htmlFor="status">
+          <Select id="status" value={status} onChange={(e) => setStatus(e.target.value)}>
             {STATUS_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
               </option>
             ))}
-          </select>
-        </div>
+          </Select>
+        </Field>
 
         {showTransfer && (
           <div className="grid gap-4 rounded-xl border border-success/30 bg-success/5 p-4 sm:grid-cols-3">
-            <div>
-              <Label htmlFor="tbank">Bank Ditransfer</Label>
-              <Input id="tbank" className="mt-1.5" value={transferBank} onChange={(e) => setTransferBank(e.target.value)} placeholder="cth: Maybank" />
-            </div>
-            <div>
-              <Label htmlFor="ttarikh">Tarikh Transfer</Label>
-              <Input id="ttarikh" type="date" className="mt-1.5" value={transferTarikh} onChange={(e) => setTransferTarikh(e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="truj">No. Rujukan Transaksi</Label>
-              <Input id="truj" className="mt-1.5" value={transferRujukan} onChange={(e) => setTransferRujukan(e.target.value)} placeholder="cth: TXN123456" />
-            </div>
+            <Field label="Bank Ditransfer" htmlFor="tbank">
+              <Input id="tbank" value={transferBank} onChange={(e) => setTransferBank(e.target.value)} placeholder="cth: Maybank" />
+            </Field>
+            <Field label="Tarikh Transfer" htmlFor="ttarikh">
+              <Input id="ttarikh" type="date" value={transferTarikh} onChange={(e) => setTransferTarikh(e.target.value)} />
+            </Field>
+            <Field label="No. Rujukan Transaksi" htmlFor="truj">
+              <Input id="truj" value={transferRujukan} onChange={(e) => setTransferRujukan(e.target.value)} placeholder="cth: TXN123456" />
+            </Field>
           </div>
         )}
 
-        <div>
-          <Label htmlFor="catatanAdmin">Catatan Admin</Label>
+        <Field label="Catatan Admin" htmlFor="catatanAdmin">
           <Textarea
             id="catatanAdmin"
-            className="mt-1.5"
             rows={3}
             value={catatanAdmin}
             onChange={(e) => setCatatanAdmin(e.target.value)}
             placeholder="Catatan dalaman / sebab penolakan…"
           />
-        </div>
+        </Field>
 
         <Button variant="primary" size="lg" onClick={submit} disabled={pending}>
           {pending ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}

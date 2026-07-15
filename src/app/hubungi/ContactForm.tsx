@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input, Textarea, Label } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
+import { Field } from "@/components/ui/field";
 
 const schema = z.object({
   name: z.string().min(2, "Nama terlalu pendek").max(100),
@@ -64,32 +65,22 @@ export function ContactForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <Label htmlFor="name">Nama Penuh</Label>
-          <Input id="name" className="mt-1.5" {...register("name")} aria-invalid={!!errors.name} />
-          {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>}
-        </div>
-        <div>
-          <Label htmlFor="phone">No. Telefon</Label>
-          <Input id="phone" className="mt-1.5" {...register("phone")} aria-invalid={!!errors.phone} />
-          {errors.phone && <p className="mt-1 text-xs text-destructive">{errors.phone.message}</p>}
-        </div>
+        <Field label="Nama Penuh" htmlFor="name" error={errors.name?.message}>
+          <Input id="name" {...register("name")} />
+        </Field>
+        <Field label="No. Telefon" htmlFor="phone" error={errors.phone?.message}>
+          <Input id="phone" {...register("phone")} />
+        </Field>
       </div>
-      <div>
-        <Label htmlFor="email">Emel</Label>
-        <Input id="email" type="email" className="mt-1.5" {...register("email")} aria-invalid={!!errors.email} />
-        {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>}
-      </div>
-      <div>
-        <Label htmlFor="subject">Subjek</Label>
-        <Input id="subject" className="mt-1.5" {...register("subject")} aria-invalid={!!errors.subject} />
-        {errors.subject && <p className="mt-1 text-xs text-destructive">{errors.subject.message}</p>}
-      </div>
-      <div>
-        <Label htmlFor="message">Mesej</Label>
-        <Textarea id="message" rows={5} className="mt-1.5" {...register("message")} aria-invalid={!!errors.message} />
-        {errors.message && <p className="mt-1 text-xs text-destructive">{errors.message.message}</p>}
-      </div>
+      <Field label="Emel" htmlFor="email" error={errors.email?.message}>
+        <Input id="email" type="email" {...register("email")} />
+      </Field>
+      <Field label="Subjek" htmlFor="subject" error={errors.subject?.message}>
+        <Input id="subject" {...register("subject")} />
+      </Field>
+      <Field label="Mesej" htmlFor="message" error={errors.message?.message}>
+        <Textarea id="message" rows={5} {...register("message")} />
+      </Field>
 
       {status === "error" && (
         <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">

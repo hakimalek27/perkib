@@ -4,12 +4,8 @@ import { useState, useTransition } from "react";
 import { Mail, Phone, MessageCircle, Check, Clock, Inbox } from "lucide-react";
 import { setMaklumBalasStatusAction } from "./actions";
 import type { MaklumBalasItem } from "@/lib/admin-data";
+import { Badge, STATUS_TONE } from "@/components/ui/badge";
 
-const STATUS_TONE: Record<string, string> = {
-  baru: "bg-primary/10 text-primary",
-  dibaca: "bg-accent/15 text-accent-deep",
-  selesai: "bg-success/10 text-success",
-};
 const STATUS_LABEL: Record<string, string> = { baru: "Baru", dibaca: "Dibaca", selesai: "Selesai" };
 const FILTERS = ["semua", "baru", "dibaca", "selesai"] as const;
 
@@ -65,13 +61,9 @@ export function MaklumBalasList({ items }: { items: MaklumBalasItem[] }) {
       {shown.map((it) => (
         <article key={it._id} className="rounded-2xl border border-border bg-card p-5 shadow-soft">
           <div className="flex items-center gap-2">
-            <span
-              className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                STATUS_TONE[it.status] ?? "bg-muted text-muted-foreground"
-              }`}
-            >
+            <Badge tone={STATUS_TONE[it.status] ?? "neutral"}>
               {STATUS_LABEL[it.status] ?? it.status}
-            </span>
+            </Badge>
             <h3 className="font-display text-base font-bold text-ink">{it.subjek || "(Tiada subjek)"}</h3>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">

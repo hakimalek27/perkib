@@ -6,18 +6,11 @@ import { getPermohonanById, STATUS_LABEL } from "@/lib/admin-data";
 import { decryptValue } from "@/lib/crypto";
 import { normalizePhone } from "@/lib/whatsapp";
 import { cn, formatRM } from "@/lib/utils";
+import { Badge, STATUS_TONE } from "@/components/ui/badge";
 import { StatusForm } from "./StatusForm";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Butiran Permohonan — Admin PERKIB", robots: { index: false } };
-
-const STATUS_TONE: Record<string, string> = {
-  baru: "bg-primary/10 text-primary",
-  diproses: "bg-accent/15 text-accent-deep",
-  lulus: "bg-success/15 text-success",
-  tolak: "bg-destructive/10 text-destructive",
-  dibayar: "bg-success/20 text-success",
-};
 
 function tarikh(iso?: string): string {
   if (!iso) return "-";
@@ -64,14 +57,9 @@ export default async function AdminPermohonanDetail({
               </p>
               <p className="font-display text-2xl font-semibold text-primary">{p.nomborRujukan}</p>
             </div>
-            <span
-              className={cn(
-                "rounded-full px-4 py-1.5 text-sm font-semibold",
-                STATUS_TONE[p.status] ?? "bg-muted text-muted-foreground"
-              )}
-            >
+            <Badge tone={STATUS_TONE[p.status] ?? "neutral"} className="px-4 py-1.5 text-sm">
               {STATUS_LABEL[p.status] ?? p.status}
-            </span>
+            </Badge>
           </div>
 
           <dl className="mt-6 grid gap-x-8 gap-y-4 text-sm sm:grid-cols-2">

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/input";
+import { Input, Label } from "@/components/ui/input";
 
 export function LoginForm() {
   const router = useRouter();
@@ -58,7 +58,7 @@ export function LoginForm() {
       <div className="mt-6">
         <Label htmlFor="password">Kata Laluan</Label>
         <div className="relative mt-1.5">
-          <input
+          <Input
             id="password"
             type={showPw ? "text" : "password"}
             value={password}
@@ -66,7 +66,7 @@ export function LoginForm() {
             onKeyUp={(e) => setCapsOn(e.getModifierState?.("CapsLock") ?? false)}
             autoComplete="current-password"
             required
-            className="h-11 w-full rounded-lg border border-input bg-card px-3 pr-10 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="pr-10"
           />
           <button
             type="button"

@@ -9,17 +9,10 @@ import {
   STATUS_LABEL,
 } from "@/lib/admin-data";
 import { cn, formatRM } from "@/lib/utils";
+import { Badge, STATUS_TONE } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Permohonan Saguhati — Admin PERKIB", robots: { index: false } };
-
-const STATUS_TONE: Record<string, string> = {
-  baru: "bg-primary/10 text-primary",
-  diproses: "bg-accent/15 text-accent-deep",
-  lulus: "bg-success/15 text-success",
-  tolak: "bg-destructive/10 text-destructive",
-  dibayar: "bg-success/20 text-success",
-};
 
 function tarikh(iso: string): string {
   try {
@@ -140,14 +133,9 @@ export default async function AdminSaguhatiPage({
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-display font-semibold text-ink">{p.nomborRujukan}</span>
-                        <span
-                          className={cn(
-                            "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
-                            STATUS_TONE[p.status] ?? "bg-muted text-muted-foreground"
-                          )}
-                        >
+                        <Badge tone={STATUS_TONE[p.status] ?? "neutral"}>
                           {STATUS_LABEL[p.status] ?? p.status}
-                        </span>
+                        </Badge>
                       </div>
                       <p className="mt-0.5 truncate text-sm text-muted-foreground">
                         {p.namaPemohon} ({p.employeeNo}) · {p.jenisNama} · {formatRM(p.jenisKadar)}

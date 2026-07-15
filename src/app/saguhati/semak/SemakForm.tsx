@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { Search, Loader2, AlertCircle, FileClock, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input, Label } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { Field } from "@/components/ui/field";
+import { Badge, STATUS_TONE } from "@/components/ui/badge";
 import { cn, formatRM } from "@/lib/utils";
 
 type Permohonan = {
@@ -15,14 +17,6 @@ type Permohonan = {
   tarikhMohon?: string;
   tarikhKemaskini?: string;
   catatanAdmin?: string | null;
-};
-
-const STATUS_TONE: Record<string, string> = {
-  baru: "bg-primary/10 text-primary",
-  diproses: "bg-accent/15 text-accent-deep",
-  lulus: "bg-success/15 text-success",
-  tolak: "bg-destructive/10 text-destructive",
-  dibayar: "bg-success/20 text-success",
 };
 
 // Peringkat timeline (spek §8.6). Indeks tertinggi "dicapai" per status sebenar.
@@ -139,14 +133,9 @@ export function SemakForm() {
             </p>
             <p className="font-display text-2xl font-bold text-primary">{result.nomborRujukan}</p>
           </div>
-          <span
-            className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-semibold",
-              STATUS_TONE[result.status] ?? "bg-muted text-muted-foreground"
-            )}
-          >
+          <Badge tone={STATUS_TONE[result.status] ?? "neutral"} className="px-4 py-1.5 text-sm">
             {result.statusLabel}
-          </span>
+          </Badge>
         </div>
 
         {/* Timeline menegak node arch */}
@@ -209,29 +198,25 @@ export function SemakForm() {
       )}
 
       <div className="mt-6 space-y-5">
-        <div>
-          <Label htmlFor="refNo">Nombor Rujukan</Label>
+        <Field label="Nombor Rujukan" htmlFor="refNo">
           <Input
             id="refNo"
-            className="mt-1.5"
             value={refNo}
             onChange={(e) => setRefNo(e.target.value)}
             placeholder="Contoh: PKB-2026-0001"
             required
           />
-        </div>
-        <div>
-          <Label htmlFor="employeeNoSemak">No. Pekerja</Label>
+        </Field>
+        <Field label="No. Pekerja" htmlFor="employeeNoSemak">
           <Input
             id="employeeNoSemak"
-            className="mt-1.5"
             value={employeeNo}
             onChange={(e) => setEmployeeNo(e.target.value)}
             placeholder="Contoh: 1743"
             inputMode="numeric"
             required
           />
-        </div>
+        </Field>
       </div>
 
       <Button type="submit" variant="primary" size="lg" disabled={loading} className="mt-7 w-full">

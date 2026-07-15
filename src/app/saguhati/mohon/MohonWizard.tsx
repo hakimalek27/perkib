@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea, Label } from "@/components/ui/input";
+import { Field } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { cn, formatRM } from "@/lib/utils";
 import type { JenisSaguhati } from "@/lib/sanity";
 
@@ -467,13 +469,12 @@ export function MohonWizard({ jenis }: { jenis: JenisSaguhati[] }) {
             </legend>
             <p className="mt-1 text-sm text-muted-foreground">Saguhati akan dikreditkan ke akaun ini. Nombor telefon untuk notifikasi status.</p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="bankNama">Nama Bank</Label>
-                <select id="bankNama" value={bankNama} onChange={(e) => setBankNama(e.target.value)} className="mt-1.5 h-11 w-full rounded-lg border border-input bg-background px-3 text-sm text-ink outline-none focus:border-primary focus:ring-2 focus:ring-primary/20">
+              <Field label="Nama Bank" htmlFor="bankNama">
+                <Select id="bankNama" value={bankNama} onChange={(e) => setBankNama(e.target.value)}>
                   <option value="">— Pilih bank —</option>
                   {BANK_LIST.map((b) => <option key={b} value={b}>{b}</option>)}
-                </select>
-              </div>
+                </Select>
+              </Field>
               <div>
                 <Label htmlFor="bankAkaun">No. Akaun Bank</Label>
                 <Input id="bankAkaun" className="mt-1.5" value={bankAkaun} onChange={(e) => setBankAkaun(e.target.value.replace(/[^\d\s-]/g, "").slice(0, 24))} placeholder="Contoh: 158123456789" inputMode="numeric" />
