@@ -1,7 +1,10 @@
 import type { CSSProperties } from "react";
 
-// Outline arch (garis emas) untuk hiasan hero / echo. Boleh "dilukis" melalui
-// CSS (pathLength=1 + stroke-dashoffset) bila kelas .arch-draw digunakan.
+// Outline arch (garis emas) untuk hiasan hero / echo + bingkai tepi potret kad.
+// Path FULL-BLEED (x=0..100) yang PADAN tepat dgn #archClip (ArchClipDefs) supaya
+// garis emas duduk betul-betul di tepi foto (tiada bocor). svg overflow-visible
+// supaya stroke tengah-tepi tidak terpotong. Boleh "dilukis" (pathLength=1 +
+// stroke-dashoffset) bila kelas .arch-draw digunakan.
 export function ArchOutline({
   className,
   stroke = "var(--gold-soft)",
@@ -21,11 +24,11 @@ export function ArchOutline({
       fill="none"
       preserveAspectRatio="none"
       aria-hidden="true"
-      className={className}
+      className={className ? `overflow-visible ${className}` : "overflow-visible"}
       style={style}
     >
       <path
-        d="M2,120 L2,48 C2,20 22,4 47,1 L50,0 L53,1 C78,4 98,20 98,48 L98,120"
+        d="M0,120 L0,48 C0,19.2 20,3.6 47,0.72 L50,0 L53,0.72 C80,3.6 100,19.2 100,48 L100,120"
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinecap="round"

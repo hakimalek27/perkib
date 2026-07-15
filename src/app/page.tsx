@@ -7,6 +7,7 @@ import { Reveal } from "@/components/Reveal";
 import { Odometer } from "@/components/nadi/Odometer";
 import { Glyph, type GlyphName } from "@/components/ui/Glyph";
 import { ArchFrame } from "@/components/ui/ArchFrame";
+import { ArchOutline } from "@/components/nadi/ArchOutline";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { Magnetic } from "@/components/nadi/Magnetic";
@@ -224,15 +225,22 @@ export default async function HomePage() {
               {[presiden, timbalan].filter(Boolean).map((m) => (
                 <Reveal key={m!.id}>
                   <div className="card-lift flex items-center gap-5 rounded-2xl border border-border bg-card p-5">
-                    <ArchFrame ratio="5 / 6" className="w-28 shrink-0">
-                      {m!.photoUrl ? (
-                        <Image src={m!.photoUrl} alt={m!.nama} fill sizes="112px" className="object-cover" />
-                      ) : (
-                        <div className="flex size-full items-center justify-center bg-[var(--tint)]">
-                          <span className="font-display text-3xl font-bold text-primary/50">{initials(m!.nama)}</span>
-                        </div>
-                      )}
-                    </ArchFrame>
+                    <div className="relative w-28 shrink-0">
+                      <ArchFrame ratio="5 / 6" className="w-full">
+                        {m!.photoUrl ? (
+                          <Image src={m!.photoUrl} alt={m!.nama} fill sizes="112px" className="object-cover" />
+                        ) : (
+                          <div className="flex size-full items-center justify-center bg-[var(--tint)]">
+                            <span className="font-display text-3xl font-bold text-primary/50">{initials(m!.nama)}</span>
+                          </div>
+                        )}
+                      </ArchFrame>
+                      <ArchOutline
+                        stroke="var(--accent-bright)"
+                        strokeWidth={2}
+                        className="arch-glow pointer-events-none absolute inset-0 h-full w-full"
+                      />
+                    </div>
                     <div>
                       <p className="text-sm font-semibold text-accent-deep">{m!.jawatan}</p>
                       <p className="mt-1 font-display text-lg font-bold text-ink">{m!.nama}</p>
@@ -246,15 +254,22 @@ export default async function HomePage() {
             {lain.map((m, i) => (
               <Reveal key={m.id} delay={i * 0.05}>
                 <div className="card-lift flex flex-col items-center rounded-2xl border border-border bg-card p-5 text-center">
-                  <ArchFrame ratio="5 / 6" className="w-24">
-                    {m.photoUrl ? (
-                      <Image src={m.photoUrl} alt={m.nama} fill sizes="96px" className="object-cover" />
-                    ) : (
-                      <div className="flex size-full items-center justify-center bg-[var(--tint)]">
-                        <span className="font-display text-2xl font-bold text-primary/50">{initials(m.nama)}</span>
-                      </div>
-                    )}
-                  </ArchFrame>
+                  <div className="relative w-24">
+                    <ArchFrame ratio="5 / 6" className="w-full">
+                      {m.photoUrl ? (
+                        <Image src={m.photoUrl} alt={m.nama} fill sizes="96px" className="object-cover" />
+                      ) : (
+                        <div className="flex size-full items-center justify-center bg-[var(--tint)]">
+                          <span className="font-display text-2xl font-bold text-primary/50">{initials(m.nama)}</span>
+                        </div>
+                      )}
+                    </ArchFrame>
+                    <ArchOutline
+                      stroke="var(--accent)"
+                      strokeWidth={1.5}
+                      className="arch-glow pointer-events-none absolute inset-0 h-full w-full"
+                    />
+                  </div>
                   <p className="mt-4 text-xs font-semibold leading-tight text-accent-deep">{m.jawatan}</p>
                   <p className="mt-1 font-display text-sm font-bold text-ink">{m.nama}</p>
                 </div>

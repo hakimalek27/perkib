@@ -3,7 +3,6 @@ import { cn, initials } from "@/lib/utils";
 import { kategoriLabel, type AjkView } from "@/lib/sanity";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { ArchOutline } from "@/components/nadi/ArchOutline";
-import { Kubah } from "@/components/ui/Kubah";
 
 export function AjkPersonCard({
   member,
@@ -19,14 +18,6 @@ export function AjkPersonCard({
         featured ? "border-accent/50 gold-topline" : "border-border"
       )}
     >
-      {/* Mahkota kubah (motif dome PERKIB) */}
-      <Kubah
-        bright={featured}
-        className={cn(
-          "kubah-halo relative z-10 mx-auto shrink-0",
-          featured ? "-mb-2.5 h-6 w-7" : "-mb-2 h-5 w-6"
-        )}
-      />
       <div className={cn("relative", featured ? "w-28" : "w-24")}>
         <ArchFrame ratio="5 / 6" className="w-full bg-primary/8">
           {member.photoUrl ? (

@@ -4,7 +4,6 @@ import { initials } from "@/lib/utils";
 import { kategoriLabel, type PegawaiView } from "@/lib/sanity";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { ArchOutline } from "@/components/nadi/ArchOutline";
-import { Kubah } from "@/components/ui/Kubah";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 
 // Tona kategori — lencana dalam bahagian teks (bukan atas foto), sentiasa terbaca.
@@ -18,8 +17,6 @@ export function PegawaiCard({ pegawai }: { pegawai: PegawaiView }) {
   const tone = KATEGORI_TONE[pegawai.kategori] ?? "neutral";
   return (
     <article className="card-lift group flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-3">
-      {/* Mahkota kubah (motif dome PERKIB) */}
-      <Kubah className="kubah-halo relative z-10 mx-auto -mb-2.5 h-6 w-7 shrink-0 transition-transform duration-500 group-hover:-translate-y-0.5" />
       {/* Foto — bingkai arch (motif tunggal PERKIB) + bingkai cahaya emas berdenyut */}
       <div className="relative">
         <ArchFrame ratio="5 / 6" className="w-full bg-gradient-to-br from-primary/8 to-accent/8">

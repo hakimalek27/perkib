@@ -36,7 +36,10 @@ function Tier({
           <Reveal key={m.id} delay={Math.min(i * 0.04, 0.3)}>
             <AjkPersonCard
               member={m}
-              featured={highlightPresident && m.jawatan.toLowerCase() === "presiden"}
+              featured={
+                highlightPresident &&
+                ["presiden", "timbalan presiden"].includes(m.jawatan.toLowerCase())
+              }
             />
           </Reveal>
         ))}
