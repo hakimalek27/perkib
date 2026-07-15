@@ -62,6 +62,12 @@
   --shadow-elev: 0 1px 3px rgb(13 17 23 / 0.06), 0 12px 30px -10px rgb(13 17 23 / 0.16);
   --shadow-deep: 0 18px 40px -24px rgb(13 17 23 / 0.28);
   --shadow-gold: 0 8px 30px rgb(198 162 93 / 0.22);
+  --shadow-cta: 0 10px 30px rgb(158 31 46 / 0.35);
+
+  /* Garis ghost + neutral sebagai utiliti warna Tailwind */
+  --color-border-ghost: var(--border-ghost);
+  --color-border-ghost-dark: var(--border-ghost-dark);
+  --color-neutral: var(--neutral);
 }
 
 :root {
@@ -107,6 +113,13 @@
   --neutral: #718096;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --radius: 0.875rem;
+  /* Garis butang ghost + durasi bertoken (design system) */
+  --border-ghost: #C9CCD2;
+  --border-ghost-dark: #3A4250;
+  --dur-micro: 150ms;
+  --dur-interface: 350ms;
+  --dur-spatial: 700ms;
+  --dur-cinematic: 1600ms;
 }
 
 @layer base {
@@ -304,7 +317,7 @@
   .reveal {
     opacity: 0;
     transform: translateY(14px);
-    transition: opacity 0.7s ease var(--d, 0s), transform 0.7s ease var(--d, 0s);
+    transition: opacity var(--dur-spatial) ease var(--d, 0s), transform var(--dur-spatial) ease var(--d, 0s);
   }
   .reveal.in {
     opacity: 1;
@@ -313,7 +326,7 @@
 
   /* Kad lift Nadi — border gelap + naik + hairline emas */
   .card-lift {
-    transition: transform 0.35s var(--ease), box-shadow 0.35s ease, border-color 0.3s ease;
+    transition: transform var(--dur-interface) var(--ease), box-shadow var(--dur-interface) ease, border-color 0.3s ease;
   }
   .card-lift:hover {
     transform: translateY(-3px);
@@ -323,7 +336,7 @@
 
   /* Legasi hover (dikekalkan nama sehingga M8; recolor Nadi) */
   .card-hover {
-    transition: transform 0.35s var(--ease), box-shadow 0.35s ease, border-color 0.3s ease;
+    transition: transform var(--dur-interface) var(--ease), box-shadow var(--dur-interface) ease, border-color 0.3s ease;
   }
   .card-hover:hover {
     transform: translateY(-3px);
@@ -331,7 +344,7 @@
     border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
   }
   .hover-glow {
-    transition: transform 0.35s var(--ease), box-shadow 0.35s ease, border-color 0.3s ease;
+    transition: transform var(--dur-interface) var(--ease), box-shadow var(--dur-interface) ease, border-color 0.3s ease;
   }
   .hover-glow:hover {
     transform: translateY(-3px);
@@ -388,16 +401,29 @@
   /* Odometer digit (Odometer.tsx) */
   .odo { display: inline-flex; overflow: hidden; }
   .odo-digit { height: 1em; overflow: hidden; display: block; }
-  .odo-reel { display: flex; flex-direction: column; will-change: transform; transition: transform 1.6s var(--ease); }
+  .odo-reel { display: flex; flex-direction: column; will-change: transform; transition: transform var(--dur-cinematic) var(--ease); }
   .odo-reel span { display: block; height: 1em; line-height: 1; }
 
   /* Arch draw (ArchOutline draw) */
   .arch-draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: arch-draw 1.2s var(--ease) forwards; }
   @keyframes arch-draw { to { stroke-dashoffset: 0; } }
 
+  /* Cahaya arch emas (design system) — stroke ArchOutline atas potret kad pegawai/AJK */
+  .arch-glow {
+    filter: drop-shadow(0 0 3px var(--accent)) drop-shadow(0 0 9px color-mix(in srgb, var(--accent) 60%, transparent));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .arch-glow { animation: arch-glow-pulse 3.2s var(--ease) infinite; }
+    @keyframes arch-glow-pulse {
+      0%, 100% { filter: drop-shadow(0 0 2px var(--accent)) drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 45%, transparent)); }
+      50% { filter: drop-shadow(0 0 4px var(--accent-bright)) drop-shadow(0 0 13px color-mix(in srgb, var(--accent-bright) 75%, transparent)); }
+    }
+  }
+
   /* Tier Essential — matikan animasi spatial */
   .tier-essential .odo-reel { transition: none; }
   .tier-essential .reveal { opacity: 1; transform: none; transition: none; }
   .tier-essential .page-enter { animation: none; }
   .tier-essential .arch-draw { animation: none; stroke-dashoffset: 0; }
+  .tier-essential .arch-glow { animation: none; }
 }

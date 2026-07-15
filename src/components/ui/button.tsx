@@ -12,17 +12,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-primary text-white hover:bg-primary-dark",
+        primary: "bg-primary text-white hover:bg-primary-dark hover:shadow-cta",
         // Alias → maroon (CTA utama Nadi = maroon, bukan emas)
-        gold: "bg-primary text-white hover:bg-primary-dark",
-        ghost: "border border-[#C9CCD2] bg-transparent text-ink hover:border-ink",
+        gold: "bg-primary text-white hover:bg-primary-dark hover:shadow-cta",
+        ghost: "border border-border-ghost bg-transparent text-ink hover:border-ink",
         // Alias → ghost
-        outline: "border border-[#C9CCD2] bg-transparent text-ink hover:border-ink",
+        outline: "border border-border-ghost bg-transparent text-ink hover:border-ink",
         "ghost-dark":
-          "border border-[#3A4250] bg-transparent text-[#F7F3EB] hover:border-accent hover:text-accent",
+          "border border-border-ghost-dark bg-transparent text-[#F7F3EB] hover:border-accent hover:text-accent",
         // Alias → ghost-dark
-        dark: "border border-[#3A4250] bg-transparent text-[#F7F3EB] hover:border-accent hover:text-accent",
-        white: "border border-[#3A4250] bg-transparent text-[#F7F3EB] hover:border-accent hover:text-accent",
+        dark: "border border-border-ghost-dark bg-transparent text-[#F7F3EB] hover:border-accent hover:text-accent",
+        white: "border border-border-ghost-dark bg-transparent text-[#F7F3EB] hover:border-accent hover:text-accent",
       },
       size: {
         sm: "h-10 px-4 text-sm",
