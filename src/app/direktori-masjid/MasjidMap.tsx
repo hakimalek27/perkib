@@ -1,28 +1,58 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { X, MapPin, Navigation, Star, Landmark } from "lucide-react";
 import type { MasjidView } from "@/lib/sanity";
 
+type Region = "semua" | "kl" | "putrajaya" | "labuan";
+
+// Sempadan kasar setiap wilayah [SW, NE] (longitude, latitude) — utk fokus butang.
+const REGION_BOUNDS: Record<Exclude<Region, "semua">, [[number, number], [number, number]]> = {
+  kl: [
+    [101.55, 3.0],
+    [101.78, 3.3],
+  ],
+  putrajaya: [
+    [101.62, 2.87],
+    [101.75, 3.0],
+  ],
+  labuan: [
+    [115.1, 5.15],
+    [115.36, 5.45],
+  ],
+};
+
+const REGION_BTN: { key: Region; label: string }[] = [
+  { key: "semua", label: "Semua" },
+  { key: "kl", label: "KL" },
+  { key: "putrajaya", label: "Putrajaya" },
+  { key: "labuan", label: "Labuan" },
+];
+
 // Peta direktori masjid — MapLibre GL + OpenFreeMap (positron). Marker arch maroon;
-// klik → drawer. Hanya masjid dengan koordinat dipaparkan. Ralat muat → onError (fallback senarai).
-export function MasjidMap({
-  masjids,
-  onError,
-}: {
-  masjids: MasjidView[];
-  onError?: () => void;
-}) {
+// klik → drawer. Fokus wilayah (KL/Putrajaya/Labuan) + sempadan. Hanya masjid dgn
+// koordinat dipaparkan. Ralat muat → onError (fallback senarai).
+export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError?: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const loadedRef = useRef(false);
   const [selected, setSelected] = useState<MasjidView | null>(null);
+  // Default fokus KL (majoriti masjid + permintaan "highlight sempadan KL sahaja").
+  // Putrajaya/Labuan diakses via butang (peta berasingan).
+  const [region, setRegion] = useState<Region>("kl");
 
-  const withCoords = masjids.filter(
-    (m) => typeof m.latitude === "number" && typeof m.longitude === "number"
+  const withCoords = useMemo(
+    () => masjids.filter((m) => typeof m.latitude === "number" && typeof m.longitude === "number"),
+    [masjids]
+  );
+  const visible = useMemo(
+    () => (region === "semua" ? withCoords : withCoords.filter((m) => m.wilayah === region)),
+    [withCoords, region]
   );
 
+  // Init peta (sekali).
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
     const essential = matchMedia("(max-width: 720px)").matches;
@@ -31,9 +61,9 @@ export function MasjidMap({
       map = new maplibregl.Map({
         container: containerRef.current,
         style: "https://tiles.openfreemap.org/styles/positron",
-        center: [101.6869, 3.139], // Kuala Lumpur
-        zoom: 10.5,
-        pitch: essential ? 0 : 40,
+        center: [101.6869, 3.139], // KL — diganti fitBounds bila koordinat ada
+        zoom: 10,
+        pitch: essential ? 0 : 30,
         attributionControl: { compact: true },
       });
     } catch {
@@ -43,23 +73,29 @@ export function MasjidMap({
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: !essential }), "top-right");
     map.on("error", (e) => {
-      // Ralat awal muat tiles/style → fallback senarai.
       if (e?.error && String(e.error).match(/style|tiles|fetch/i)) onError?.();
+    });
+    map.on("load", () => {
+      loadedRef.current = true;
+      // Fokus awal = KL (default region) — bukan center tetap.
+      map.fitBounds(REGION_BOUNDS.kl, { padding: 60, maxZoom: 12, duration: 0 });
+      loadBoundaries(map);
     });
 
     return () => {
       map.remove();
       mapRef.current = null;
+      loadedRef.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Marker: cipta semula bila senarai berkoordinat berubah.
+  // Marker: cipta semula bila senarai visible berubah.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     const markers: maplibregl.Marker[] = [];
-    for (const m of withCoords) {
+    for (const m of visible) {
       const el = document.createElement("button");
       el.setAttribute("aria-label", m.nama);
       el.className = "perkib-pin";
@@ -72,7 +108,23 @@ export function MasjidMap({
       markers.push(marker);
     }
     return () => markers.forEach((mk) => mk.remove());
-  }, [withCoords]);
+  }, [visible]);
+
+  // Fokus wilayah bila butang ditukar.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !loadedRef.current) return;
+    if (region === "semua") {
+      if (withCoords.length > 0) {
+        const b = new maplibregl.LngLatBounds();
+        withCoords.forEach((m) => b.extend([m.longitude!, m.latitude!]));
+        map.fitBounds(b, { padding: 60, maxZoom: 13, duration: 800 });
+      }
+    } else {
+      map.fitBounds(REGION_BOUNDS[region], { padding: 60, maxZoom: 13, duration: 800 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region]);
 
   return (
     <div className="relative">
@@ -81,6 +133,22 @@ export function MasjidMap({
         className="h-[560px] w-full overflow-hidden rounded-2xl border border-border"
         style={{ background: "var(--muted)" }}
       />
+
+      {/* Butang fokus wilayah */}
+      <div className="absolute left-3 top-3 z-10 flex gap-1 rounded-xl border border-border bg-card/95 p-1 shadow-soft backdrop-blur">
+        {REGION_BTN.map((r) => (
+          <button
+            key={r.key}
+            onClick={() => setRegion(r.key)}
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+              region === r.key ? "bg-primary text-white" : "text-ink/70 hover:bg-muted"
+            }`}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
+
       {withCoords.length === 0 && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <p className="rounded-lg bg-card/90 px-4 py-2 text-sm text-muted-foreground shadow-soft">
@@ -133,4 +201,33 @@ export function MasjidMap({
       )}
     </div>
   );
+}
+
+// Muat sempadan wilayah dari public/map/boundaries/*.json — layer line maroon +
+// fill nipis. Graceful skip jika fail tiada / gagal (peta tetap berfungsi).
+async function loadBoundaries(map: maplibregl.Map) {
+  for (const r of ["kl", "putrajaya", "labuan"]) {
+    try {
+      const res = await fetch(`/map/boundaries/${r}.json`, { cache: "force-cache" });
+      if (!res.ok) continue;
+      const geojson = await res.json();
+      const srcId = `sempadan-${r}`;
+      if (map.getSource(srcId)) continue;
+      map.addSource(srcId, { type: "geojson", data: geojson });
+      map.addLayer({
+        id: `${srcId}-fill`,
+        type: "fill",
+        source: srcId,
+        paint: { "fill-color": "#9E1F2E", "fill-opacity": 0.05 },
+      });
+      map.addLayer({
+        id: `${srcId}-line`,
+        type: "line",
+        source: srcId,
+        paint: { "line-color": "#9E1F2E", "line-width": 1.5, "line-opacity": 0.45 },
+      });
+    } catch {
+      /* skip senyap — sempadan hiasan sahaja */
+    }
+  }
 }

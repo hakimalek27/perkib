@@ -21,6 +21,7 @@
     "build:staf-lain": "tsx scripts/build-staf-lain.ts",
     "geocode:masjid": "tsx scripts/geocode-masjid.ts",
     "geocode:apply": "tsx scripts/apply-geocode.ts",
+    "geocode:boundaries": "tsx scripts/fetch-boundaries.ts",
     "validate:data": "tsx scripts/validate-data.ts",
     "test:e2e": "playwright test"
   },

@@ -1,0 +1,972 @@
+[
+  {
+    "id": "masjid-1-masjid-abi-ayyub-al-ansari",
+    "nama": "Masjid Abi Ayyub Al-Ansari",
+    "lokasi": "Taman Batu Muda, Batu Caves",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-1-masjid-abu-hurairah",
+    "nama": "Masjid Abu Hurairah",
+    "lokasi": "Kampung Batu, Batu 5, Jalan Ipoh",
+    "wilayah": "kl",
+    "latitude": 3.2016401,
+    "longitude": 101.6713299,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Abu Hurairah (Sementara), Jalan Batu Kapur, Taman Kok Lian, Batu, Kuala Lumpur, 51200, Malaysia"
+  },
+  {
+    "id": "masjid-1-masjid-al-firdaus",
+    "nama": "Masjid Al-Firdaus",
+    "lokasi": "Segambut Luar",
+    "wilayah": "kl",
+    "latitude": 3.1881617,
+    "longitude": 101.6687797,
+    "confidence": "sederhana",
+    "osmDisplay": "Al-Firdaus Mosque, Jalan 1/42, Taman Sejahtera, Segambut, Kepong, Kuala Lumpur, 51200, Malaysia"
+  },
+  {
+    "id": "masjid-1-masjid-al-imam-al-ghazali",
+    "nama": "Masjid Al-Imam Al-Ghazali",
+    "lokasi": "Bandar Menjalara, Kepong",
+    "wilayah": "kl",
+    "latitude": 3.1964983,
+    "longitude": 101.6285033,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al Imam Al Ghazali, Jalan Taman Bukit Maluri, Kepong, Kuala Lumpur, 52200, Malaysia"
+  },
+  {
+    "id": "masjid-1-masjid-al-qurtubi",
+    "nama": "Masjid Al-Qurtubi",
+    "lokasi": "Taman Sri Segambut",
+    "wilayah": "kl",
+    "latitude": 3.1939542,
+    "longitude": 101.6588212,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Qurtubi, Jalan Taman Sri Segambut, Taman Sri Segambut, Segambut, Kepong, Kuala Lumpur, 52000, Malaysia"
+  },
+  {
+    "id": "masjid-1-masjid-al-zakirin",
+    "nama": "Masjid Al-Zakirin",
+    "lokasi": "Taman Wilayah Selayang",
+    "wilayah": "kl",
+    "latitude": 3.2377958,
+    "longitude": 101.6602455,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al Zakirin (Opp), Jalan 4/2B, Taman Wilayah Selayang, Kepong, Kuala Lumpur, 68100, Malaysia"
+  },
+  {
+    "id": "masjid-1-masjid-amaniah",
+    "nama": "Masjid Amaniah",
+    "lokasi": "Jalan Besar, Kepong",
+    "wilayah": "kl",
+    "latitude": 3.2131758,
+    "longitude": 101.634487,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Amaniah, Jalan Kepong, Taman Kepong, Kepong, Kuala Lumpur, 52100, Malaysia"
+  },
+  {
+    "id": "masjid-1-masjid-anas-bin-malik",
+    "nama": "Masjid Anas Bin Malik",
+    "lokasi": "Kampung Selayang Lama, Batu Caves",
+    "wilayah": "kl",
+    "latitude": 3.2312838,
+    "longitude": 101.6660361,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Anas bin Malik, Jalan Laman Sari, Residensi Laman Sari, Kepong, Kuala Lumpur, 68100, Malaysia"
+  },
+  {
+    "id": "masjid-1-masjid-saidina-hamzah",
+    "nama": "Masjid Saidina Hamzah",
+    "lokasi": "Kampung Batu Muda, Batu 4½ Jalan Ipoh",
+    "wilayah": "kl",
+    "latitude": 3.2176929,
+    "longitude": 101.6885125,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Saidina Hamzah, Lorong 6/12C, Taman Koperasi Polis, Kampung Sri Batu, Kampung Padang Balang, Kuala Lumpur, 68100, Malaysia"
+  },
+  {
+    "id": "masjid-1-masjid-ubudiah",
+    "nama": "Masjid Ubudiah",
+    "lokasi": "Segambut Dalam",
+    "wilayah": "kl",
+    "latitude": 3.1787692,
+    "longitude": 101.652101,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Ubudiah, Jalan Segambut Dalam, Segambut, Kepong, Kuala Lumpur, 50480, Malaysia"
+  },
+  {
+    "id": "masjid-2-masjid-al-hidayah-sentul",
+    "nama": "Masjid Al-Hidayah (Sentul)",
+    "lokasi": "Sentul Pasar, Sentul",
+    "wilayah": "kl",
+    "latitude": 3.1920157,
+    "longitude": 101.691022,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Hidayah Sentul, Jalan Sentul, Sentul Bahagia, Kampung Chubadak Hilir, Kuala Lumpur, 51100, Malaysia"
+  },
+  {
+    "id": "masjid-2-masjid-amru-bin-al-as",
+    "nama": "Masjid Amru bin Al-'As",
+    "lokasi": "Bandar Baru Sentul",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-2-masjid-bilal-bin-rabah",
+    "nama": "Masjid Bilal bin Rabah",
+    "lokasi": "Taman Koperasi Polis Fasa 1, Batu Caves",
+    "wilayah": "kl",
+    "latitude": 3.2208732,
+    "longitude": 101.694788,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Bilal Bin Rabah, Jalan 2/10, Taman Koperasi Polis Fasa 1, Kampung Bandar Dalam, Kampung Padang Balang, Kuala Lumpur, 65100, Malaysia"
+  },
+  {
+    "id": "masjid-2-masjid-ibn-abbas",
+    "nama": "Masjid Ibn Abbas",
+    "lokasi": "Taman Ibu Kota",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-2-masjid-jamek-pekan-sentul",
+    "nama": "Masjid Jamek Pekan Sentul",
+    "lokasi": "Jalan Haji Salleh, Sentul",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-2-masjid-jamek-saad-ibn-waqqas",
+    "nama": "Masjid Jamek Saad Ibn Waqqas",
+    "lokasi": "Jalan Gombak",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-2-masjid-saidina-ali-kw",
+    "nama": "Masjid Saidina Ali KW",
+    "lokasi": "Kampung Padang Balang, Sentul",
+    "wilayah": "kl",
+    "latitude": 3.2124717,
+    "longitude": 101.6983969,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Saidina Ali, Jalan Kampung Padang Balang, Taman Pelangi Jaya, Kampung Bandar Dalam, Kampung Padang Balang, Kuala Lumpur, 53000, Malaysia"
+  },
+  {
+    "id": "masjid-2-masjid-salahuddin-al-ayyubi",
+    "nama": "Masjid Salahuddin Al-Ayyubi",
+    "lokasi": "Taman Melati, Setapak",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-2-masjid-zaid-bin-haritsah",
+    "nama": "Masjid Zaid bin Haritsah",
+    "lokasi": "KM 8, Jalan Gombak",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-3-masjid-al-bukhary",
+    "nama": "Masjid Al-Bukhary",
+    "lokasi": "Jalan Hang Tuah",
+    "wilayah": "kl",
+    "latitude": 3.1393298,
+    "longitude": 101.7048402,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Bukhary, 1, Jalan Hang Tuah, Bukit Bintang, Kuala Lumpur, 55200, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-al-imam-ash-shafie",
+    "nama": "Masjid Al-Imam Ash-Shafie",
+    "lokasi": "Jalan Perkasa, Taman Maluri, Kampung Pandan",
+    "wilayah": "kl",
+    "latitude": 3.1335677,
+    "longitude": 101.7308165,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Imam Ash-Shafie, Taman Maluri, Maluri, Kampung Pandan, Kuala Lumpur, 50988, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-ar-rahimah",
+    "nama": "Masjid Ar-Rahimah",
+    "lokasi": "Kampung Pandan",
+    "wilayah": "kl",
+    "latitude": 3.1449676,
+    "longitude": 101.7377984,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Ar-Rahimah, Jalan 1, Desa Pandan, Maluri, Kampung Pandan, Kuala Lumpur, 55000, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-as-sodiqin",
+    "nama": "Masjid As-Sodiqin",
+    "lokasi": "Kampung Pandan Dalam",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-3-masjid-asy-syakirin",
+    "nama": "Masjid Asy-Syakirin",
+    "lokasi": "Menara Berkembar Petronas, KLCC",
+    "wilayah": "kl",
+    "latitude": 3.1572876,
+    "longitude": 101.7161733,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid As Syakirin, Persiaran KLCC, Kampung Paya, Bukit Bintang, Kuala Lumpur, 50450, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-bukit-aman",
+    "nama": "Masjid Bukit Aman",
+    "lokasi": "Jalan Bukit Aman",
+    "wilayah": "kl",
+    "latitude": 3.1475958,
+    "longitude": 101.6886036,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Bukit Aman, Jalan Tanglin, Kuala Lumpur, 50646, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-india",
+    "nama": "Masjid India",
+    "lokasi": "Jalan Melayu",
+    "wilayah": "kl",
+    "latitude": 3.151678,
+    "longitude": 101.6963456,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid India, Jalan Masjid India, Kampung Cendana, Kuala Lumpur, 50100, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-jamek-alam-shah",
+    "nama": "Masjid Jamek Alam Shah",
+    "lokasi": "Jalan Tun Razak / Jalan Pasar",
+    "wilayah": "kl",
+    "latitude": 3.1351176,
+    "longitude": 101.718398,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Jamek Alam Shah, Jalan Yew, Maluri, Cheras, Kuala Lumpur, 55720, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-jamek-kampung-baru",
+    "nama": "Masjid Jamek Kampung Baru",
+    "lokasi": "Jalan Raja Alang, Kampung Baru",
+    "wilayah": "kl",
+    "latitude": 3.164264,
+    "longitude": 101.7034135,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Jamek Kampung Baru, Jalan Daud, Kampung Hujung Pasir, Kampung Paya, Kampung Bharu, Kuala Lumpur, 50300, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-jamek-pakistan",
+    "nama": "Masjid Jamek Pakistan",
+    "lokasi": "Jalan Raja Muda Abd. Aziz",
+    "wilayah": "kl",
+    "latitude": 3.1670759,
+    "longitude": 101.6999205,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Jamek Pakistan, Lorong Haji Hussein 2, Chow Kit, Kampung Bharu, Kuala Lumpur, 50586, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-jamek-sultan-abdul-samad",
+    "nama": "Masjid Jamek Sultan Abdul Samad",
+    "lokasi": "Jalan Tun Perak",
+    "wilayah": "kl",
+    "latitude": 3.1489292,
+    "longitude": 101.6956759,
+    "confidence": "tinggi",
+    "osmDisplay": "Masjid Jamek Kuala Lumpur, Jalan Tun Perak, Bukit Bintang, Kuala Lumpur, 50050, Malaysia"
+  },
+  {
+    "id": "masjid-3-masjid-nurul-islam",
+    "nama": "Masjid Nurul Islam",
+    "lokasi": "Kampung Pandan",
+    "wilayah": "kl",
+    "latitude": 3.1505562,
+    "longitude": 101.7447011,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Nurul Islam, Lorong 1, Kampung Desa Pahlawan, Ampang Hilir, Kampung Pandan, Kuala Lumpur, 68000, Malaysia"
+  },
+  {
+    "id": "masjid-4-masjid-abu-ubaidah-al-jarrah",
+    "nama": "Masjid Abu Ubaidah Al-Jarrah",
+    "lokasi": "Taman Sri Rampai, Setapak Jaya",
+    "wilayah": "kl",
+    "latitude": 3.1942835,
+    "longitude": 101.7286402,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Abu Ubaidah Al-Jarrah (Opp), Jalan 1/26, Taman Sri Rampai, Semarak, Kuala Lumpur, 53300, Malaysia"
+  },
+  {
+    "id": "masjid-4-masjid-al-akram",
+    "nama": "Masjid Al-Akram",
+    "lokasi": "Datuk Keramat, Jalan Datuk Keramat",
+    "wilayah": "kl",
+    "latitude": 3.1664685,
+    "longitude": 101.7292637,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Akram, Jalan Keramat, Kampung Datuk Keramat, Kuala Lumpur, 54000, Malaysia"
+  },
+  {
+    "id": "masjid-4-masjid-al-muttaqin",
+    "nama": "Masjid Al-Muttaqin",
+    "lokasi": "Taman Wangsa Melawati",
+    "wilayah": "kl",
+    "latitude": 3.210377,
+    "longitude": 101.7432481,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Muttaqin, Wangsa Melawati, Jalan Wangsa Melawati 6, Taman Wangsa Melawati, Desa Melawati, Wangsa Maju, Kuala Lumpur, 53300, Malaysia"
+  },
+  {
+    "id": "masjid-4-masjid-ibn-masud",
+    "nama": "Masjid Ibn Mas'ud",
+    "lokasi": "Jalan Damai, off Jalan Ampang",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-4-masjid-ibnu-sina",
+    "nama": "Masjid Ibnu Sina",
+    "lokasi": "Taman Tasik Titiwangsa",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-4-masjid-jamiul-ehsan",
+    "nama": "Masjid Jamiul Ehsan",
+    "lokasi": "Jalan Pahang, Pekan Setapak",
+    "wilayah": "kl",
+    "latitude": 3.1878334,
+    "longitude": 101.7026234,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Jamiul Ehsan, Jalan Puah Jaya 1, Kampung Puah Seberang, Kuala Lumpur, 53000, Malaysia"
+  },
+  {
+    "id": "masjid-4-masjid-khalid-bin-al-walid",
+    "nama": "Masjid Khalid bin Al-Walid",
+    "lokasi": "Jalan Padang Tembak",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-4-masjid-muadz-bin-jabal",
+    "nama": "Masjid Muadz bin Jabal",
+    "lokasi": "Persiaran Setiawangsa, Taman Setiawangsa",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-4-masjid-muhammad-al-fateh",
+    "nama": "Masjid Muhammad Al-Fateh",
+    "lokasi": "Kem Wardieburn, Setapak",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-4-masjid-solehin",
+    "nama": "Masjid Solehin",
+    "lokasi": "Pusat Latihan Polis Depoh, Jalan Semarak",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-4-masjid-universiti-teknologi-malaysia",
+    "nama": "Masjid Universiti Teknologi Malaysia",
+    "lokasi": "Jalan Semarak",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-4-masjid-usamah-bin-zaid",
+    "nama": "Masjid Usamah bin Zaid",
+    "lokasi": "Wangsa Maju, Setapak",
+    "wilayah": "kl",
+    "latitude": 3.202216,
+    "longitude": 101.7370815,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Usamah bin Zaid, Wangsa Maju, Kuala Lumpur, 53300, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-abdul-rahman-bin-auf",
+    "nama": "Masjid Abdul Rahman bin Auf",
+    "lokasi": "Batu 5½ Jalan Puchong",
+    "wilayah": "kl",
+    "latitude": 3.0792697,
+    "longitude": 101.665744,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Abdul Rahman Bin Auf, Jalan Puchong, Taman OUG, Kuala Lumpur, 58200, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-abdullah-bin-zubair",
+    "nama": "Masjid Abdullah bin Zubair",
+    "lokasi": "Jalan Lapangan Terbang Lama",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-5-masjid-al-imam-at-tirmizi",
+    "nama": "Masjid Al-Imam At-Tirmizi",
+    "lokasi": "Taman Sri Sentosa, Jalan Klang Lama",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-5-masjid-al-khasyiin",
+    "nama": "Masjid Al-Khasyi'in",
+    "lokasi": "Taman Desa Petaling",
+    "wilayah": "kl",
+    "latitude": 3.0831895,
+    "longitude": 101.7101526,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Khasyi'in, Jalan 2/125, Desa Petaling, Bandar Tun Razak, Salak Selatan, Kuala Lumpur, 57100, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-al-mubarakah",
+    "nama": "Masjid Al-Mubarakah",
+    "lokasi": "Bandar Tun Razak, Cheras",
+    "wilayah": "kl",
+    "latitude": 3.0713426,
+    "longitude": 101.749283,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Mubarakah, Jalan 9/144A, Taman Bukit Cheras, Cheras, Kuala Lumpur, 56000, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-al-muhsinin",
+    "nama": "Masjid Al-Muhsinin",
+    "lokasi": "Taman Desa, off Jalan Klang Lama",
+    "wilayah": "kl",
+    "latitude": 3.1038958,
+    "longitude": 101.6888795,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Muhsinin, Jalan 109F, Taman Danau Desa, Taman Desa, Kuala Lumpur, 58100, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-al-mukhlisin",
+    "nama": "Masjid Al-Mukhlisin",
+    "lokasi": "Cheras",
+    "wilayah": "kl",
+    "latitude": 3.0626866,
+    "longitude": 101.7423123,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Mukhlisin, Jalan Damai Bakti 7, Cheras, Kuala Lumpur, 56000, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-al-mukhlisin-alam-damai",
+    "nama": "Masjid Al-Mukhlisin (Alam Damai)",
+    "lokasi": "Taman Alam Damai, Cheras",
+    "wilayah": "kl",
+    "latitude": 3.0626866,
+    "longitude": 101.7423123,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Mukhlisin, Jalan Damai Bakti 7, Cheras, Kuala Lumpur, 56000, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-al-muqarrabin",
+    "nama": "Masjid Al-Muqarrabin",
+    "lokasi": "Bandar Tasik Selatan",
+    "wilayah": "kl",
+    "latitude": 3.0741752,
+    "longitude": 101.7190806,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al Muqarrabin, Jalan Tasik Selatan 21, Bandar Tasik Selatan, Sungai Besi, Kuala Lumpur, 57000, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-al-najihin",
+    "nama": "Masjid Al-Najihin",
+    "lokasi": "Bandar Seri Permaisuri, Cheras",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-5-masjid-az-zubair-ibnu-awwam",
+    "nama": "Masjid Az-Zubair Ibnu Awwam",
+    "lokasi": "KM 6 Jalan Cheras",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-5-masjid-jamek-bandar-baru-sri-petaling",
+    "nama": "Masjid Jamek Bandar Baru Sri Petaling",
+    "lokasi": "Bandar Baru Sri Petaling",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-5-masjid-jamek-ibnu-khaldun",
+    "nama": "Masjid Jamek Ibnu Khaldun",
+    "lokasi": "Pekan Sungai Besi",
+    "wilayah": "kl",
+    "latitude": 3.0642769,
+    "longitude": 101.7093005,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Jamek Ibnu Khaldun, Jalan Suasa 3, Pekan Sungai Besi, Sungai Besi, Kuala Lumpur, 57000, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-jamek-petaling",
+    "nama": "Masjid Jamek Petaling",
+    "lokasi": "Batu 6, Jalan Puchong",
+    "wilayah": "kl",
+    "latitude": 3.0765464,
+    "longitude": 101.6617184,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Jamek Petaling, Batu 6, Jalan Puchong, Seri Sentosa, Taman OUG, Kuala Lumpur, 58200, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-saidina-othman-ibnu-affan",
+    "nama": "Masjid Saidina Othman Ibnu Affan",
+    "lokasi": "Bandar Tun Razak",
+    "wilayah": "kl",
+    "latitude": 3.0909176,
+    "longitude": 101.7182141,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Saidina Othman Ibnu Affan, Jalan Budiman 4, Bandar Tun Razak, Cheras, Kuala Lumpur, 56000, Malaysia"
+  },
+  {
+    "id": "masjid-5-masjid-talhah-bin-ubaidillah",
+    "nama": "Masjid Talhah bin Ubaidillah",
+    "lokasi": "Jalan Alam Sutera, Bukit Jalil",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-5-masjid-thoriq-bin-ziyad",
+    "nama": "Masjid Thoriq bin Ziyad",
+    "lokasi": "Kem Sungai Besi",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-5-masjid-zaid-bin-thabit",
+    "nama": "Masjid Zaid bin Thabit",
+    "lokasi": "Desa Tun Razak",
+    "wilayah": "kl",
+    "latitude": 3.0775664,
+    "longitude": 101.7148294,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Zaid bin Thabit, Jalan Lingkaran Tengah 2, Bandar Tun Razak, Sungai Besi, Kuala Lumpur, 57100, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-al-ghufran",
+    "nama": "Masjid Al-Ghufran",
+    "lokasi": "Kompleks Balai Islam, Pinggiran TTDI",
+    "wilayah": "kl",
+    "latitude": 3.1575365,
+    "longitude": 101.6175157,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Ghufran, Jalan 4/71B, Pinggiran TTDI, Kuala Lumpur, 47820, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-al-hidayah",
+    "nama": "Masjid Al-Hidayah",
+    "lokasi": "Kampung Sungai Penchala",
+    "wilayah": "kl",
+    "latitude": 3.1644138,
+    "longitude": 101.6231195,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Hidayah, Jalan Penchala Indah 2, Kampung Sungai Penchala, Kampung Palimbayan Indah, Kuala Lumpur, 47820, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-al-ikhlasiah",
+    "nama": "Masjid Al-Ikhlasiah",
+    "lokasi": "Bukit Kerinchi, Pantai Hill Park",
+    "wilayah": "kl",
+    "latitude": 3.1075025,
+    "longitude": 101.6672588,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Al-Ikhlasiah, Jalan Pantai Permai 7, Taman Desa Kerinchi, Pantai Dalam, Kuala Lumpur, 59200, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-ar-rahah",
+    "nama": "Masjid Ar-Rahah",
+    "lokasi": "Kampung Kerinchi",
+    "wilayah": "kl",
+    "latitude": 3.1135182,
+    "longitude": 101.6689176,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Ar-Rahah, Lorong Motosikal Lebuhraya Persekutuan, Kampung Kerinchi, Pantai Dalam, Kuala Lumpur, 50614, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-ar-rahman",
+    "nama": "Masjid Ar-Rahman",
+    "lokasi": "Jalan Pantai Baharu",
+    "wilayah": "kl",
+    "latitude": 3.1179226,
+    "longitude": 101.6627744,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Ar-Rahman, Jalan Pantai Baharu, Kampung Kerinchi, Bangsar, Kuala Lumpur, 59200, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-at-taqwa",
+    "nama": "Masjid At-Taqwa",
+    "lokasi": "Taman Tun Dr. Ismail",
+    "wilayah": "kl",
+    "latitude": 3.1462233,
+    "longitude": 101.6298025,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid At-Taqwa, Lorong Datuk Sulaiman 4, Taman Tun Dr Ismail, Kuala Lumpur, 60000, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-az-zahrawi",
+    "nama": "Masjid Az-Zahrawi",
+    "lokasi": "Hospital Kuala Lumpur",
+    "wilayah": "kl",
+    "latitude": 3.1704833,
+    "longitude": 101.7028753,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Az-Zahrawi, Jalan Doktor Latiff, Kampung Atas A, Chow Kit, Sentul, Kuala Lumpur, 50586, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-jamek-abdullah-hukum-eco-city",
+    "nama": "Masjid Jamek Abdullah Hukum Eco City",
+    "lokasi": "KL Eco City, Jalan Bangsar",
+    "wilayah": "kl",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-6-masjid-jamek-al-khadijiah",
+    "nama": "Masjid Jamek Al-Khadijiah",
+    "lokasi": "Pantai Dalam",
+    "wilayah": "kl",
+    "latitude": 3.0977415,
+    "longitude": 101.6692265,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Jamek Al-Khadijiah, Jalan Pantai Dalam, Pantai Dalam, Kuala Lumpur, 59200, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-jamek-tengku-abdul-aziz-shah",
+    "nama": "Masjid Jamek Tengku Abdul Aziz Shah",
+    "lokasi": "Kampung Sungai Penchala",
+    "wilayah": "kl",
+    "latitude": 3.1626667,
+    "longitude": 101.6258808,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Jamek Tengku Abdul Aziz Shah, Jalan Sungai Penchala, Kampung Sungai Penchala, Kampung Palimbayan Indah, Kuala Lumpur, 47820, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-muhammadi",
+    "nama": "Masjid Muhammadi",
+    "lokasi": "Angkasapuri, Bukit Putra",
+    "wilayah": "kl",
+    "latitude": 3.111686,
+    "longitude": 101.6728247,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Muhammadi Angkasapuri, Lebuhraya Baru Pantai, Pantai Dalam, Kuala Lumpur, 50614, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-saidina-abu-bakar-as-siddiq",
+    "nama": "Masjid Saidina Abu Bakar As-Siddiq",
+    "lokasi": "Jalan Ara, Bangsar",
+    "wilayah": "kl",
+    "latitude": 3.1295317,
+    "longitude": 101.6718814,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Saidina Abu Bakar As-Siddiq, Jalan Ara, Bangsar, Kuala Lumpur, 59100, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-saidina-umar-al-khattab",
+    "nama": "Masjid Saidina Umar Al-Khattab",
+    "lokasi": "Jalan Setiabudi, Bukit Damansara",
+    "wilayah": "kl",
+    "latitude": 3.1500554,
+    "longitude": 101.6551565,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Saidina Umar Al-Khattab, Jalan Setia Bakti, Bukit Damansara, Kuala Lumpur, 50490, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-tnb",
+    "nama": "Masjid TNB",
+    "lokasi": "Bangsar",
+    "wilayah": "kl",
+    "latitude": 3.1183315,
+    "longitude": 101.671368,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid An Nur, Jalan Kilat, Tenaga Nasional Berhad, Bangsar, Kuala Lumpur, 50614, Malaysia"
+  },
+  {
+    "id": "masjid-6-masjid-wilayah-persekutuan",
+    "nama": "Masjid Wilayah Persekutuan",
+    "lokasi": "Jalan Tuanku Abdul Halim (Jalan Duta)",
+    "wilayah": "kl",
+    "latitude": 3.1719803,
+    "longitude": 101.6707695,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Wilayah Persekutuan, Jalan Sultan Mizan Zainal Abidin, Taman Duta, Kuala Lumpur, 50480, Malaysia"
+  },
+  {
+    "id": "masjid-7-masjid-mahmoodiah",
+    "nama": "Masjid Mahmoodiah",
+    "lokasi": "Presint 18, Putrajaya",
+    "wilayah": "putrajaya",
+    "latitude": 2.9185075,
+    "longitude": 101.6949922,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Mahmoodiah, Jalan P18 C, Presint 18, Putrajaya, 62618, Malaysia"
+  },
+  {
+    "id": "masjid-8-masjid-al-ehsan",
+    "nama": "Masjid Al-Ehsan",
+    "lokasi": "Kampung Sungai Labu",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-al-falah",
+    "nama": "Masjid Al-Falah",
+    "lokasi": "Jalan Mohd Salleh, Kampung Bukit Kalam",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-al-hijrah",
+    "nama": "Masjid Al-Hijrah",
+    "lokasi": "Kampung Sungai Miri",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-al-munawwar",
+    "nama": "Masjid Al-Munawwar",
+    "lokasi": "Kampung Pohon Batu",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-al-muttakin",
+    "nama": "Masjid Al-Muttakin",
+    "lokasi": "Taman 10FC, Kampung Kerupang 2",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-al-muzakirullah",
+    "nama": "Masjid Al-Muzakirullah",
+    "lokasi": "Jalan Tanjung Kubong, Kampung Lubok Temiang",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-al-sultan-abdullah",
+    "nama": "Masjid Al-Sultan Abdullah",
+    "lokasi": "Kampung Sungai Bedaun",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-ar-rahman-labuan",
+    "nama": "Masjid Ar-Rahman (Labuan)",
+    "lokasi": "Kampung Sungai Lada",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-bebuloh-darat",
+    "nama": "Masjid Bebuloh Darat",
+    "lokasi": "Kampung Bebuloh Darat",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-jamek-adam",
+    "nama": "Masjid Jamek Adam",
+    "lokasi": "Kampung Lajau",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-jamek-an-nur",
+    "nama": "Masjid Jamek An-Nur",
+    "lokasi": "Bandar Labuan",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-jamek-layang-layangan",
+    "nama": "Masjid Jamek Layang-Layangan",
+    "lokasi": "Kampung Layang-Layangan",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-nur-iman",
+    "nama": "Masjid Nur Iman",
+    "lokasi": "Kampung Ganggarak",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-nurul-iman",
+    "nama": "Masjid Nurul Iman",
+    "lokasi": "Kampung Sungai Bedaun",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-rancha-rancha-darat",
+    "nama": "Masjid Rancha-Rancha Darat",
+    "lokasi": "Kampung Ranca-Ranca",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-sirajul-islam",
+    "nama": "Masjid Sirajul Islam",
+    "lokasi": "Kampung Tanjung Aru",
+    "wilayah": "labuan",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-8-masjid-sultan-muhammad-v",
+    "nama": "Masjid Sultan Muhammad V",
+    "lokasi": "Jalan Pohon Batu, Kampung Lajau",
+    "wilayah": "labuan",
+    "latitude": 5.3325467,
+    "longitude": 115.2343573,
+    "confidence": "sederhana",
+    "osmDisplay": "Masjid Sultan Muhammad V, Jalan Pohon Batu, Bandar Victoria, Labuan, Malaysia"
+  },
+  {
+    "id": "masjid-9-ibu-pejabat-maiwp",
+    "nama": "Ibu Pejabat MAIWP",
+    "lokasi": "Bangunan PERKIM, No. 150, Jalan Ipoh, 51200 KL",
+    "wilayah": "khas",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-9-surau-istana-negara-lama",
+    "nama": "Surau Istana Negara (Lama)",
+    "lokasi": "Istana Negara Lama, Jalan Istana",
+    "wilayah": "khas",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  },
+  {
+    "id": "masjid-9-surau-utama-istana-negara",
+    "nama": "Surau Utama Istana Negara",
+    "lokasi": "Istana Negara, Jalan Tuanku Abdul Halim",
+    "wilayah": "khas",
+    "latitude": null,
+    "longitude": null,
+    "confidence": "tiada",
+    "osmDisplay": "(tidak dijumpai)"
+  }
+]
