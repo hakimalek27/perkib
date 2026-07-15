@@ -129,4 +129,6 @@ Homepage (statistik 92·8·94·24, reka bentuk Royal Glass) · pegawai awam 92 +
 - (Pilihan) `npx sanity dataset visibility set production private` — token baca dipasang.
 
 ### Deploy semula (rujukan)
-Corak: `NEXT_PUBLIC_SITE_URL=https://perkib.my npm run build` → cp `.next/static`+`public` ke `.next/standalone` → `tar -czf - -C .next standalone | ssh ubuntu@43.133.34.55 "cat > /tmp/x.tgz"` → server: ekstrak ke `standalone.vNnew` → **cp `.env.local` lama** → `mv standalone standalone.vNold; mv standalone.vNnew standalone` → `pm2 restart perkib && pm2 save`. Rollback: swap balik `standalone.v3old`.
+Corak: **`rm -rf .next`** (WAJIB — lihat nota bawah) → `NEXT_PUBLIC_SITE_URL=https://perkib.my npm run build` → cp `.next/static`+`public` ke `.next/standalone` → `tar -czf - -C .next standalone | ssh ubuntu@43.133.34.55 "cat > /tmp/x.tgz"` → server: ekstrak ke `standalone.vNnew` → **cp `.env.local` lama** → `mv standalone standalone.vNold; mv standalone.vNnew standalone` → `pm2 restart perkib && pm2 save`. Rollback: swap balik `standalone.v3old`.
+
+> ⚠️ **WAJIB `rm -rf .next` sebelum build produksi.** `.next/cache/fetch-cache` menyimpan respons Sanity yang boleh menjadi **basi** dan dibakar semula ke HTML statik (punca FAQ live pernah tunjuk emel lama `azanmalek@maiwp.gov.my` walaupun Sanity sudah bersih). Selepas build, sahkan: `grep -c azanmalek .next/server/app/soalan-lazim.html` mesti **0**.

@@ -15,9 +15,10 @@ const sitePolicy = [
   "img-src 'self' data: blob: https://cdn.sanity.io",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  // static.cloudflareinsights.com: beacon RUM Cloudflare (disuntik automatik).
+  `script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com${isDev ? " 'unsafe-eval'" : ""}`,
   // tiles.openfreemap.org: style JSON + tiles PBF + glyphs + sprite untuk peta MapLibre.
-  "connect-src 'self' https://*.sanity.io https://tiles.openfreemap.org",
+  "connect-src 'self' https://*.sanity.io https://tiles.openfreemap.org https://cloudflareinsights.com",
   "worker-src 'self' blob:",
 ].join("; ");
 
@@ -25,11 +26,13 @@ const sitePolicy = [
 const studioPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
-  "img-src 'self' data: blob: https://cdn.sanity.io https://*.sanity.io",
+  "img-src 'self' data: blob: https://cdn.sanity.io https://*.sanity.io https://*.sanity-cdn.com",
   "font-src 'self' data: https://*.sanity.io",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:",
-  "connect-src 'self' https://*.sanity.io wss://*.sanity.io https://*.api.sanity.io",
+  // core.sanity-cdn.com: bridge.js (auth/dashboard bridge Sanity v5) — tanpa ini
+  // pengguna yg sudah log masuk gagal boot workspace → Studio blank.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.sanity-cdn.com https://static.cloudflareinsights.com",
+  "connect-src 'self' https://*.sanity.io wss://*.sanity.io https://*.api.sanity.io https://*.sanity-cdn.com https://cloudflareinsights.com",
   "frame-src 'self' https://*.sanity.io",
   "worker-src 'self' blob:",
 ].join("; ");
