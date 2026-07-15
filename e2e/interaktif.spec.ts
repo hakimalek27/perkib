@@ -1,0 +1,97 @@
+import { test, expect } from "@playwright/test";
+
+// Ujian interaktiviti awam PERKIB v3.2 (LIVE perkib.my) — mengesahkan klik/toggle
+// yang gagal diuji melalui Chrome MCP (tab background menggantung hidrasi).
+
+test.describe("PERKIB v3.2 — interaktiviti awam (LIVE)", () => {
+  test("M5 · accordion /soalan-lazim buka & tutup", async ({ page }) => {
+    await page.goto("/soalan-lazim");
+    const trigger = page.locator('[id^="acc-t-"]').first();
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    const panelId = await trigger.getAttribute("aria-controls");
+    const panel = page.locator(`#${panelId}`);
+
+    // Buka
+    await trigger.click();
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    await expect(panel).toHaveAttribute("data-open", "true");
+    // grid-template-rows bukan 0fr bila terbuka (kandungan ada ketinggian)
+    const openRows = await panel.evaluate((el) => getComputedStyle(el).gridTemplateRows);
+    expect(openRows).not.toBe("0fr");
+    expect(openRows).not.toBe("0px");
+
+    // Tutup
+    await trigger.click();
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await expect(panel).toHaveAttribute("data-open", "false");
+  });
+
+  test("M1 · penapis kategori /pegawai (desktop)", async ({ page }) => {
+    await page.goto("/pegawai");
+    await page.locator("article").first().waitFor();
+    const before = await page.locator("article").count();
+    expect(before).toBeGreaterThan(30);
+
+    // Klik pill kategori "Bilal"
+    const bilal = page.locator("#penapis-pegawai button", { hasText: /^Bilal/ });
+    await bilal.click();
+    await expect(page.getByText(/Memaparkan \d+ pegawai/)).toBeVisible();
+
+    const after = await page.locator("article").count();
+    expect(after).toBeGreaterThan(0);
+    expect(after).toBeLessThan(before);
+
+    // Setiap kad ditapis mesti kategori Bilal
+    const cards = page.locator("article");
+    const n = await cards.count();
+    for (let i = 0; i < n; i++) {
+      await expect(cards.nth(i)).toContainText("Bilal");
+    }
+
+    // Reset → kembali penuh
+    await page.locator("#penapis-pegawai button", { hasText: /Semua Kategori/ }).click();
+    await expect(page.locator("article")).toHaveCount(before);
+  });
+
+  test("M1 · butang Tapis + panel collapsible /pegawai (mobile)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/pegawai");
+    await page.locator("article").first().waitFor();
+
+    const tapis = page.getByRole("button", { name: /Tapis/ });
+    await expect(tapis).toBeVisible();
+
+    const panel = page.locator("#penapis-pegawai");
+    await expect(panel).toBeHidden(); // tertutup pada mula (mobile)
+
+    await tapis.click();
+    await expect(panel).toBeVisible(); // dibuka
+
+    // Tapis kategori dalam panel berfungsi
+    const before = await page.locator("article").count();
+    await page.locator("#penapis-pegawai button", { hasText: /^Bilal/ }).click();
+    await expect(page.getByText(/Memaparkan \d+ pegawai/)).toBeVisible();
+    expect(await page.locator("article").count()).toBeLessThan(before);
+
+    await tapis.click();
+    await expect(panel).toBeHidden(); // ditutup semula
+  });
+
+  test("M5 · kad /saguhati gaya Nadi", async ({ page }) => {
+    await page.goto("/saguhati");
+    await expect(page.getByText("kadar saguhati").first()).toBeVisible();
+    await expect(page.getByText(/^S[1-9]$/).first()).toBeVisible(); // kod S1–S9
+    await expect(page.getByText("Sekali seumur hidup").first()).toBeVisible();
+  });
+
+  test("M4 · arch-glow + kubah pada kad pegawai", async ({ page }) => {
+    await page.goto("/pegawai");
+    await page.locator("article").first().waitFor();
+    // Bingkai arch-glow hadir + animasi berdenyut aktif (opacity animation)
+    const archGlow = page.locator(".arch-glow").first();
+    await expect(archGlow).toBeAttached();
+    const glowCount = await page.locator(".arch-glow").count();
+    expect(glowCount).toBeGreaterThan(50); // ~93 kad
+  });
+});

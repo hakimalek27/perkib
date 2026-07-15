@@ -21,7 +21,8 @@
     "build:staf-lain": "tsx scripts/build-staf-lain.ts",
     "geocode:masjid": "tsx scripts/geocode-masjid.ts",
     "geocode:apply": "tsx scripts/apply-geocode.ts",
-    "validate:data": "tsx scripts/validate-data.ts"
+    "validate:data": "tsx scripts/validate-data.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^2.0.1",
@@ -48,6 +49,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20",
