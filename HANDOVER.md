@@ -1,6 +1,22 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-15 · **Status:** ✅ **v3.2 DEPLOYED & LIVE di https://perkib.my** (adopsi design system Claude Design + pembaikan mobile /pegawai & admin yuran).
+**Kemas kini:** 2026-07-15 · **Status:** ✅ **v3.3 DEPLOYED & LIVE di https://perkib.my** (12 pembaikan: arch/kubah, duplikat Hanif, Studio, urus rekod, peta koordinat, nav/CTA).
+
+## 🆕 v3.3 (15 Julai 2026) — DEPLOYED (12 pembaikan maklum balas Hakim)
+6 milestone (M1–M6), setiap satu **lint+build hijau + commit**; **E2E Playwright 10/10 lulus** (5 v3.2 + 5 v3.3). Punca setiap isu disiasat (2 Explore + GROQ + Playwright).
+- **Kad arch (M1):** `ArchOutline` path **full-bleed** padan tepat `#archClip` + `overflow-visible` → foto **ngam dalam arch** (tiada bocor 2%). **Kubah dibuang** dari kad pegawai/AJK (`Kubah.tsx`+`.kubah-halo` kekal). Homepage kepimpinan: tambah `ArchOutline` (garis arch emas kini nampak). `/ajk`: **Timbalan Presiden featured** (sama saiz Presiden).
+- **Duplikat Hanif (M2):** padam `drafts.pegawai-1991` (backup disimpan) → admin **93**. `admin-data.ts`: tapis `!(_id in path("drafts.**"))` semua query admin (defense-in-depth).
+- **Live search /admin/pegawai (M2):** komponen klien `PegawaiAdminList` (taip terus tapis — tiada Enter).
+- **Urus rekod (M2) — HANYA `/admin/staf`** (di sebalik gate kata laluan kedua): padam/edit permohonan (dialog wajib taip no. rujukan; edit bank/telefon re-encrypt) + padam maklum balas. Server action **guard BERGANDA** (`isAdminAuthenticated && isStafGateAuthenticated`) — **admin biasa TIDAK boleh padam** (`admin/staf/actions.ts` + `UrusRekod.tsx`).
+- **Sanity Studio (M3):** CSP `studioPolicy` benarkan **`https://*.sanity-cdn.com`** (bridge.js Sanity v5 — punca Studio blank) + `cloudflareinsights` kedua-dua polisi (console noise).
+- **FAQ azanmalek (M3):** punca = `.next/cache/fetch-cache` basi dibakar ke HTML. **Build bersih** (`rm -rf .next`) → 0 azanmalek dlm soalan-lazim.html. Runbook dikemas kini (WAJIB rm -rf .next).
+- **Peta masjid (M4):** geocode **55/94** masjid (Nominatim; lokaliti ikut wilayah; bbox validation), sempadan **KL/Putrajaya/Labuan** (`public/map/boundaries/`). `MasjidMap` fitBounds + butang **Semua/KL/Putrajaya/Labuan** (default fokus **KL** + sempadan). Baki 39 tanpa koordinat → senarai fallback; Hakim perhalusi dlm Studio.
+- **Nav/CTA (M5):** **sorok `/sukarelawan`** (nav + sitemap + redirect ke `/`; fail kekal). CTA terapung "Mohon Saguhati" mobile kini **boleh-tutup (X)** — `sessionStorage` (kekal tersembunyi sesi itu).
+
+**Baki Hakim v3.3:** uji **log masuk Studio** (`/studio` — CSP dah dibetulkan; saya tak boleh log masuk); perhalusi koordinat 39 masjid tanpa koordinat + betulkan geocode tersasar (dalam Studio, medan latitude/longitude); (pilihan lama) RESEND_API_KEY, WhatsApp 6019 group, geocode baki.
+
+---
+
 
 ## 🆕 v3.2 (15 Julai 2026) — DEPLOYED (adopsi design system + mobile)
 Adopsi **delta** design system "PERKIB Nadi" (claude.ai/design `6e86173e…`, reverse-engineered dari repo → majoriti token/komponen sudah padan) + 2 pembaikan mobile diminta Hakim. 6 milestone (M1–M6), setiap satu **lint+build hijau + commit**. Kandungan/data/kadar/medan/API/skema **BEKU**. Deploy: build (NEXT_PUBLIC_SITE_URL=perkib.my) → tar-pipe → kekal `.env.local` (1239B) → backup **`standalone.bak-20260715-v32`** → pm2 restart. Disahkan LIVE (7 route Cloudflare 200, 16 chunk JS 200, jiran wassap tidak terganggu).

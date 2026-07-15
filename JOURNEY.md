@@ -236,3 +236,33 @@ Hakim menjana design system **"PERKIB Nadi"** di claude.ai/design (reverse-engin
 
 ## Deployment v3.2 (15 Jul)
 Build `NEXT_PUBLIC_SITE_URL=https://perkib.my` · standalone 52MB → tgz 13MB → `/tmp` server (43.133.34.55). Extract → **kekal `.env.local` (1239B, `DATA_ENCRYPTION_KEY` selamat)** → backup `standalone.bak-20260715-v32` → swap → `pm2 restart perkib`. **Disahkan LIVE** (Cloudflare): 7 route 200, penanda M1 (Tapis)+M4 (arch-glow)+M5 (kad Nadi) hadir, 16 chunk JS 200, jiran wassap tidak terganggu. ⚠️ Nota: tersilap IP kariah (43.134.93.81) sekali — classifier menghalang; dibetulkan ke 43.133.34.55. Rollback: `standalone.bak-20260715-v32`.
+
+---
+
+# v3.3 — 12 Pembaikan Maklum Balas Hakim (15 Julai 2026)
+
+Selepas v3.2 LIVE, Hakim beri 12 item maklum balas (6 screenshot). Semua punca disiasat (2 ejen Explore + GROQ live + Playwright headless) sebelum plan. 6 milestone (M1–M6), setiap satu lint+build hijau + commit + **E2E Playwright 10/10 lulus** (5 v3.2 + 5 v3.3 baharu).
+
+| # | Milestone | Hasil | Commit |
+|---|---|---|---|
+| M1 | Kad: ArchOutline full-bleed (foto ngam arch) + buang kubah + arch homepage + TP featured | Disahkan visual (Playwright screenshot) | `30552b7` |
+| M2 | Padam draft Hanif + tapis draft GROQ + live search /admin/pegawai + urus rekod (padam/edit) /admin/staf berganda-gate | admin 93; guard admin+staf | `34e09b0` |
+| M3 | CSP sanity-cdn (bridge Studio) + cloudflareinsights; runbook build bersih (FAQ azanmalek) | soalan-lazim 0 azanmalek | `bc73a75` |
+| M4 | geocode 55 masjid (bbox wilayah) + sempadan KL/PJ/Labuan + MasjidMap fitBounds/butang wilayah | 55/94 koordinat; default fokus KL | `ef63332` |
+| M5 | sorok /sukarelawan (nav+sitemap+redirect) + CTA terapung boleh-tutup (sessionStorage) | — | `6d9d5e1` |
+| M6 | E2E + docs + build bersih + deploy | — | (docs) |
+
+## Punca disahkan (bukan spekulasi)
+- **Foto keluar arch:** `#archClip` full-bleed (x=0..1) tapi `ArchOutline` inset 2 unit → garis emas 2% ke dalam. Fix: path outline full-bleed padan clip + svg overflow-visible.
+- **Duplikat Hanif 94 vs 93:** GROQ sahkan `drafts.pegawai-1991` + published; `getWriteClient` perspective `raw` + admin-data tiada tapis draft.
+- **Studio blank:** Playwright — Studio mount OK (skrin login) tapi CSP sekat `core.sanity-cdn.com/bridge.js` (auth bridge Sanity v5) → gagal boot workspace.
+- **FAQ azanmalek:** `.next/cache/fetch-cache` (14 Jul 01:04) basi dibakar ke HTML statik; Sanity + fallback sebenarnya bersih.
+
+## Cabaran & penyelesaian v3.3
+- **Padam/edit terdedah admin biasa** — arahan tegas Hakim: HANYA /admin/staf. Guard BERGANDA setiap action (`isAdminAuthenticated && isStafGateAuthenticated`) + UI di sebalik gate; dialog padam wajib taip nombor rujukan (PDPA).
+- **setState-in-effect (lint)** — 2 kali (UrusRekod loadErr reset, Header CTA sessionStorage). Diselesai: komponen di-key (remount) hilangkan reset; CTA guna **ref** (bukan state) baca sessionStorage.
+- **Geocode kualiti** — Nominatim hanya jumpa 55/94 (liputan OSM terhad, Labuan teruk); bbox per wilayah tolak koordinat tersasar (0 ditolak — semua 55 dalam bbox); baki tanpa koordinat kekal senarai fallback.
+- **Peta "Semua" blob** — bila fit semua koordinat (KL↔Labuan 1300km), marker KL bertindih. Diselesai: **default fokus KL** (majoriti) + butang wilayah asing (padan permintaan "highlight sempadan KL sahaja").
+
+## Deployment v3.3 (15 Jul)
+Build BERSIH (`rm -rf .next`) → standalone → tar-pipe `ubuntu@43.133.34.55` → kekal `.env.local` → backup `standalone.bak-20260715-v33` → `pm2 restart perkib`. Disahkan LIVE: E2E 10/10 terhadap perkib.my + `/soalan-lazim` 0 azanmalek + `/studio` tiada sekatan sanity-cdn. Rollback: `standalone.bak-20260715-v33`.

@@ -95,3 +95,41 @@ test.describe("PERKIB v3.2 — interaktiviti awam (LIVE)", () => {
     expect(glowCount).toBeGreaterThan(50); // ~93 kad
   });
 });
+
+test.describe("PERKIB v3.3 — pembaikan (LIVE)", () => {
+  test("M1 · /ajk Presiden + Timbalan Presiden featured", async ({ page }) => {
+    await page.goto("/ajk");
+    // Kad featured (P + TP) ada gold-topline; sekurang-kurangnya 2.
+    await expect(page.locator(".gold-topline").first()).toBeVisible();
+    expect(await page.locator(".gold-topline").count()).toBeGreaterThanOrEqual(2);
+  });
+
+  test("M1 · homepage kepimpinan ada bingkai arch (arch-glow)", async ({ page }) => {
+    await page.goto("/");
+    await page.locator("#kepimpinan").scrollIntoViewIfNeeded();
+    expect(await page.locator("#kepimpinan .arch-glow").count()).toBeGreaterThan(2);
+  });
+
+  test("M5 · /sukarelawan redirect ke utama", async ({ page }) => {
+    await page.goto("/sukarelawan");
+    await expect(page).toHaveURL(/\/$/);
+  });
+
+  test("M4 · /direktori-masjid butang fokus wilayah", async ({ page }) => {
+    await page.goto("/direktori-masjid?view=peta");
+    await expect(page.getByRole("button", { name: "KL", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Putrajaya", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Labuan", exact: true })).toBeVisible();
+  });
+
+  test("M5 · CTA terapung boleh-tutup (mobile)", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.evaluate(() => window.scrollTo(0, 1400));
+    await page.waitForTimeout(500);
+    const x = page.getByRole("button", { name: "Tutup butang Mohon Saguhati" });
+    await expect(x).toBeVisible(); // CTA muncul selepas skrol
+    await x.click();
+    await expect(x).toBeHidden(); // ditutup
+  });
+});
