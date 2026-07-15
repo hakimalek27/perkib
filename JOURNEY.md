@@ -207,3 +207,32 @@ Kemas kini bersasar atas v3 LIVE: satu pegawai baharu, ciri borang maklum balas 
 
 ## Deployment (15 Jul)
 `main @ 9a4118c` · standalone 46.4MB → tgz 12.5MB → server. **Disahkan LIVE** (Cloudflare): semua route 200, Menara MAIWP, Helmy bin Yahya, motif Kubah + `.pattern-girih` dalam HTML, CSP utuh, jiran `bpp` (57D) tidak terganggu. Rollback: `standalone.bak-20260715`.
+
+---
+
+# v3.2 — Adopsi Design System (Claude Design) + Pembaikan Mobile (15 Julai 2026)
+
+Hakim menjana design system **"PERKIB Nadi"** di claude.ai/design (reverse-engineered dari repo produksi → majoriti token/komponen SUDAH padan). Tugas: guna pakai **delta** baharu sahaja + 2 pembaikan mobile. Ditarik guna tool `DesignSync` (`list_files`/`get_file`) → dibanding dengan kod live (2 ejen Explore + Plan) → EnterPlanMode. **6 milestone, setiap satu lint+build hijau + commit + push**. Kandungan/data/kadar/medan/API/skema **BEKU**; malah **buang** 1 dependency (`@radix-ui/react-accordion`).
+
+| # | Milestone | Hasil |
+|---|---|---|
+| M1 | Pembaikan mobile /pegawai (butang Tapis collapsible + pill overflow-x) + admin yuran (kolum sticky sempit, nama 2 baris, baiki smear header) | `b68b2fe` |
+| M2 | Token additive (`--border-ghost`, `--dur-*`, `--shadow-cta`, `--color-neutral`) + utiliti `.arch-glow` | `5ea3daf` |
+| M3 | Komponen kongsi `Badge`/`Field`/`Select` + Input 52px + nyahduplikasi `STATUS_TONE` (4 lokasi) + migrasi 8 borang | `ec0f7fc` |
+| M4 | `.arch-glow` (ArchOutline berdenyut) atas potret pegawai+AJK, kubah kekal; AJK bulatan→arch 5:6; Badge tona kategori | `96c620d` |
+| M5 | Accordion tanpa Radix (Context + CSS grid-rows) + kad /saguhati (kod S1–S9 + Badge + kadar maroon) | `58916a8` |
+| M6 | QA + docs + deploy | (docs) |
+
+## Keputusan reka bentuk (disahkan Hakim via soalan)
+1. **Kubah KEKAL + tambah arch-glow** (bukan buang kubah spt design system) — kad = "fasad masjid" penuh.
+2. Potret AJK bulatan → **arch 5:6** (konsisten dgn pegawai + dapat glow).
+
+## Cabaran & penyelesaian v3.2
+- **Prestasi arch-glow ×117 kad** — animasi `filter` = repaint setiap bingkai (berisiko). Diselesaikan awal: filter STATIK + denyut melalui animasi **opacity** (dikomposit GPU) → jimat walau 93 kad /pegawai; `.tier-essential` + reduced-motion matikan denyut.
+- **Ring fokus design system terlalu halus** — design system Input guna `--tint` 6% (regresi a11y). Keputusan: **kekal ring `primary/40`** sedia ada (lebih jelas) + tambah keadaan ralat `aria-[invalid=true]`.
+- **`Field` cloneElement + react-hook-form** — hanya suntik atribut `aria-invalid`/`aria-describedby`; ref & props `register()` TIDAK disentuh (elak pecah RHF).
+- **STATUS_TONE diulang 4 lokasi** — disatukan sebagai eksport tunggal dari `ui/badge.tsx` (bukan `lib/admin-data.ts` yang import klien Sanity bertoken — tak selamat utk bundle klien SemakForm).
+- **Ujian E2E dalam persekitaran automasi terhad** — tab Chrome MCP kekal **background/hidden** (`visibilityState: hidden`), Chrome throttle + React *selective hydration* menangguh hidrasi kandungan-halaman (butang penapis/accordion tak dapat diklik-uji automasi). Disahkan BUKAN bug: semua 16 chunk JS = 200, Header hydrate OK, **0 ralat konsol**, build hijau, SSR + DOM struktur betul. Interaktiviti guna corak React standard → berfungsi di browser foreground (buktinya /admin/yuran termuat dari sesi admin sedia ada pengguna, dan **pembaikan M1b disahkan hadir dalam DOM live**). Pengesahan klik visual akhir: Hakim di telefon sendiri.
+
+## Deployment v3.2 (15 Jul)
+Build `NEXT_PUBLIC_SITE_URL=https://perkib.my` · standalone 52MB → tgz 13MB → `/tmp` server (43.133.34.55). Extract → **kekal `.env.local` (1239B, `DATA_ENCRYPTION_KEY` selamat)** → backup `standalone.bak-20260715-v32` → swap → `pm2 restart perkib`. **Disahkan LIVE** (Cloudflare): 7 route 200, penanda M1 (Tapis)+M4 (arch-glow)+M5 (kad Nadi) hadir, 16 chunk JS 200, jiran wassap tidak terganggu. ⚠️ Nota: tersilap IP kariah (43.134.93.81) sekali — classifier menghalang; dibetulkan ke 43.133.34.55. Rollback: `standalone.bak-20260715-v32`.

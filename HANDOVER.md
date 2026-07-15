@@ -1,6 +1,24 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-15 · **Status:** ✅ **v3.1 DEPLOYED & LIVE di https://perkib.my** (Helmy + reka bentuk kubah/girih + borang maklum balas + kemas kini kandungan).
+**Kemas kini:** 2026-07-15 · **Status:** ✅ **v3.2 DEPLOYED & LIVE di https://perkib.my** (adopsi design system Claude Design + pembaikan mobile /pegawai & admin yuran).
+
+## 🆕 v3.2 (15 Julai 2026) — DEPLOYED (adopsi design system + mobile)
+Adopsi **delta** design system "PERKIB Nadi" (claude.ai/design `6e86173e…`, reverse-engineered dari repo → majoriti token/komponen sudah padan) + 2 pembaikan mobile diminta Hakim. 6 milestone (M1–M6), setiap satu **lint+build hijau + commit**. Kandungan/data/kadar/medan/API/skema **BEKU**. Deploy: build (NEXT_PUBLIC_SITE_URL=perkib.my) → tar-pipe → kekal `.env.local` (1239B) → backup **`standalone.bak-20260715-v32`** → pm2 restart. Disahkan LIVE (7 route Cloudflare 200, 16 chunk JS 200, jiran wassap tidak terganggu).
+- **Mobile `/pegawai`** (`PegawaiExplorer.tsx`): butang **"Tapis"** (`md:hidden`) toggle panel penapis collapsible + badge kiraan penapis aktif; baris pill kategori/zon jadi **overflow-x satu baris** di telefon (bar sticky ~250px → ~90px). Desktop ≥md kekal 100% (panel `md:flex` paksa).
+- **Mobile admin yuran** (`YuranMatrix.tsx`): kolum sticky "Pegawai" **lebar tetap** (`w-[9.5rem]`, sm:13rem) + `border-r` + bayang tepi, **nama balut 2 baris** (`line-clamp-2 sm:whitespace-nowrap`), meta truncate; baiki smear header (bg legap `#F9F7F1`). 12 kolum bulan kini kelihatan penuh. **Disahkan LIVE** (sesi admin sedia ada).
+- **Komponen kongsi baharu:** `ui/badge.tsx` (pil 7 tona + `STATUS_TONE` **satu sumber** — nyahduplikasi 4 lokasi status), `ui/field.tsx` (Label+kawalan+ralat/petunjuk a11y — suntik `aria-invalid`/`aria-describedby` sahaja, ref/`register()` RHF tak disentuh), `ui/select.tsx` (52px + chevron emas). **Input/Textarea → 52px** (`rounded-xl`, keadaan `aria-[invalid=true]`; **kekal ring fokus `primary/40`** — lebih boleh akses drpd `--tint` 6% design system).
+- **Migrasi borang** (markup sahaja): ContactForm (5 medan, buang aria/ralat manual), SemakForm, StatusForm(+Select), MohonWizard(bank), LoginForm → komponen kongsi. STATUS_TONE nyahduplikasi: admin senarai/butiran/semak/maklum-balas.
+- **Kad "fasad masjid":** bingkai cahaya emas **`.arch-glow`** (ArchOutline berdenyut) atas potret pegawai + AJK; **kubah kekal**. Kad AJK potret bulatan → **arch 5:6**. Denyut guna animasi **opacity** (dikomposit GPU — jimat ~117 kad); `.tier-essential`+reduced-motion matikan. Lencana kategori Badge: ketua-imam=brand, timbalan=gold, **bilal=neutral** (drpd primary-light).
+- **Accordion tanpa Radix:** `ui/accordion.tsx` tulis semula (Context + CSS `grid-template-rows` 0fr→1fr, `.acc-panel`) — API serasi, `/soalan-lazim` sifar perubahan. **`@radix-ui/react-accordion` DIBUANG** (tiada dep baharu; malah −1).
+- **Kad `/saguhati`:** kod **S1–S9** (emas letterspaced) + Badge gold "Sekali seumur hidup" + kadar **maroon** + label "kadar saguhati" berpemisah border-top. Homepage chamber saguhati TIDAK disentuh.
+- **Token additive** (`globals.css`): `--border-ghost(-dark)`, `--dur-micro/interface/spatial/cinematic`, `--shadow-cta`, `--color-neutral`; `button.tsx` guna token + `hover:shadow-cta`.
+
+**Nota ujian E2E v3.2:** Build hijau + SSR markup + DOM struktur live semua disahkan (curl + Chrome MCP JS). **Interaktiviti klik** (toggle penapis/accordion) tidak dapat diuji automasi kerana tab MCP **background/hidden** → Chrome throttle + React *selective hydration* tangguh hidrasi kandungan-halaman (Header hydrate OK, 0 ralat konsol) — **berfungsi di browser foreground pengguna** (buktinya /admin/yuran termuat dari sesi mereka). Kod guna corak React standard; tiada mismatch hidrasi.
+
+**Baki Hakim v3.2:** sama seperti v3.1 — (pilihan) `RESEND_API_KEY`+`CONTACT_FROM_EMAIL` server untuk emel maklum balas; WhatsApp 6019 ke group SANTAI+JK PERKIB; geocode 94 masjid. (Pilihan) klik-lalu manual /pegawai (Tapis mobile) + /soalan-lazim (accordion) di telefon sendiri untuk pengesahan visual akhir.
+
+---
+
 
 ## 🆕 v3.1 (15 Julai 2026) — DEPLOYED
 Deploy: `main @ 9a4118c` → build (NEXT_PUBLIC_SITE_URL=perkib.my) → tar-pipe → backup `standalone.bak-20260715` → pm2 restart. Disahkan LIVE (Cloudflare 200: /, /pegawai, /hubungi, /derma, /soalan-lazim, /admin/login; jiran `bpp` tidak terganggu).

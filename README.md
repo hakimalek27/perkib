@@ -22,7 +22,8 @@ Laman web rasmi **Pertubuhan Kebajikan Imam dan Bilal Majlis Agama Islam Wilayah
 - **Tailwind CSS v4** (CSS-first `@theme`)
 - **Sanity v5** — CMS + Studio terbenam di `/studio`
 - Animasi: **CSS + IntersectionObserver + rAF** sahaja (framer-motion dibuang v3); **MapLibre GL** (peta); **react-hook-form + zod** (borang), **Resend** (emel)
-- Tema **"PERKIB Nadi"** (v3): ivory `#F7F3EB` / obsidian `#0D1117` / maroon `#9E1F2E` / gold `#C6A25D`; font **Bricolage Grotesque** (display) + **Plus Jakarta Sans** (body); motif **arch** + **kubah** (dome mahkota kad) + corak latar **girih** Islamik (v3.1)
+- Tema **"PERKIB Nadi"** (v3): ivory `#F7F3EB` / obsidian `#0D1117` / maroon `#9E1F2E` / gold `#C6A25D`; font **Bricolage Grotesque** (display) + **Plus Jakarta Sans** (body); motif **arch** + **kubah** (dome mahkota kad) + corak latar **girih** Islamik (v3.1) + bingkai **arch-glow** bercahaya pada potret kad (v3.2)
+- Perpustakaan UI kongsi (v3.2, adopsi design system): `Badge` (pil status/kategori) · `Field` (label+kawalan+ralat a11y) · `Select`/`Input` 52px · `Accordion` CSS (tanpa Radix). Pembaikan mobile: penapis `/pegawai` (butang Tapis collapsible) + jadual admin yuran (kolum sticky sempit)
 
 ## 🚀 Persediaan
 
