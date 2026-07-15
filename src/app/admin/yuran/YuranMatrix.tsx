@@ -116,7 +116,9 @@ export function YuranMatrix({ rows: initial, tahun }: { rows: YuranRow[]; tahun:
         <table className="w-full min-w-[56rem] border-collapse text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40 text-xs uppercase text-muted-foreground">
-              <th className="sticky left-0 z-10 bg-muted/40 px-3 py-2.5 text-left">Pegawai</th>
+              <th className="sticky left-0 z-10 w-[9.5rem] min-w-[9.5rem] border-r border-border bg-[#F9F7F1] px-3 py-2.5 text-left shadow-[6px_0_8px_-6px_rgb(13_17_23/0.10)] sm:w-auto sm:min-w-[13rem]">
+                Pegawai
+              </th>
               {BULAN.map((b, i) => (
                 <th key={b} className={cn("px-1.5 py-2.5 text-center font-medium", i + 1 === new Date().getMonth() + 1 && "text-primary")}>
                   {b}
@@ -135,10 +137,12 @@ export function YuranMatrix({ rows: initial, tahun }: { rows: YuranRow[]; tahun:
               </tr>
             )}
             {rows.map((r) => (
-              <tr key={r.employeeNo} className="border-b border-border last:border-0 hover:bg-muted/20">
-                <td className="sticky left-0 z-10 bg-card px-3 py-2">
-                  <p className="whitespace-nowrap font-medium text-ink">{r.nama}</p>
-                  <p className="text-[11px] text-muted-foreground">
+              <tr key={r.employeeNo} className="group border-b border-border last:border-0 hover:bg-muted/20">
+                <td className="sticky left-0 z-10 border-r border-border bg-card px-3 py-2 shadow-[6px_0_8px_-6px_rgb(13_17_23/0.10)] transition-colors group-hover:bg-[#FBFAF6]">
+                  <p className="line-clamp-2 break-words font-medium text-ink sm:line-clamp-none sm:whitespace-nowrap">
+                    {r.nama}
+                  </p>
+                  <p className="truncate text-[11px] text-muted-foreground">
                     {r.gred} · {formatRM(r.kadar)}/bln · Zon {r.zonNombor ?? "-"}
                   </p>
                 </td>

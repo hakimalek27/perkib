@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search, Users } from "lucide-react";
+import { Search, Users, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PegawaiCard } from "@/components/pegawai/PegawaiCard";
 import { kategoriLabel, type KategoriPegawai, type PegawaiView } from "@/lib/sanity";
@@ -26,6 +26,7 @@ export function PegawaiExplorer({
   const [zon, setZon] = useState<number | "all">("all");
   const [kategori, setKategori] = useState<KategoriPegawai | "all">("all");
   const [query, setQuery] = useState("");
+  const [tapisBuka, setTapisBuka] = useState(false);
 
   const zonOf = (p: PegawaiView) => p.masjidZonNombor ?? BELUM;
 
@@ -71,9 +72,11 @@ export function PegawaiExplorer({
   const zonName = (k: number) =>
     k === BELUM ? "Belum Ditugaskan" : zones.find((z) => z.nombor === k)?.nama ?? `Zon ${k}`;
 
+  const aktif = (kategori !== "all" ? 1 : 0) + (zon !== "all" ? 1 : 0);
+
   const pill = (active: boolean) =>
     cn(
-      "rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors",
+      "shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors",
       active
         ? "bg-primary text-white"
         : "border border-border bg-card text-ink/70 hover:border-primary/40"
@@ -84,37 +87,61 @@ export function PegawaiExplorer({
       {/* Kawalan */}
       <div className="sticky top-[76px] z-20 -mx-4 mb-8 border-b border-border bg-background/90 px-4 py-4 backdrop-blur-lg">
         <div className="flex flex-col gap-4">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Cari nama pegawai…"
-              className="h-11 w-full rounded-full border border-input bg-card pl-11 pr-4 text-sm shadow-soft focus:outline-none focus:ring-2 focus:ring-primary/40"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {KATEGORI.map((k) => (
-              <button key={k} onClick={() => setKategori(k)} className={pill(kategori === k)}>
-                {k === "all"
-                  ? `Semua Kategori (${pegawai.length})`
-                  : `${kategoriLabel[k]} (${kategoriCounts.get(k) ?? 0})`}
-              </button>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => setZon("all")} className={pill(zon === "all")}>
-              Semua Zon
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Cari nama pegawai…"
+                className="h-11 w-full rounded-full border border-input bg-card pl-11 pr-4 text-sm shadow-soft focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setTapisBuka((v) => !v)}
+              aria-expanded={tapisBuka}
+              aria-controls="penapis-pegawai"
+              className={cn(
+                "inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full border bg-card px-4 text-xs font-semibold text-ink shadow-soft md:hidden",
+                tapisBuka ? "border-primary/40" : "border-border"
+              )}
+            >
+              <SlidersHorizontal className="size-4 text-accent" /> Tapis
+              {aktif > 0 && (
+                <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+                  {aktif}
+                </span>
+              )}
             </button>
-            {zones.map((z) => (
-              <button key={z.id} onClick={() => setZon(z.nombor)} className={pill(zon === z.nombor)}>
-                Zon {z.nombor} ({counts.get(z.nombor) ?? 0})
+          </div>
+          <div
+            id="penapis-pegawai"
+            className={cn("flex-col gap-3", tapisBuka ? "flex" : "hidden", "md:flex md:gap-4")}
+          >
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
+              {KATEGORI.map((k) => (
+                <button key={k} onClick={() => setKategori(k)} className={pill(kategori === k)}>
+                  {k === "all"
+                    ? `Semua Kategori (${pegawai.length})`
+                    : `${kategoriLabel[k]} (${kategoriCounts.get(k) ?? 0})`}
+                </button>
+              ))}
+            </div>
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
+              <button onClick={() => setZon("all")} className={pill(zon === "all")}>
+                Semua Zon
               </button>
-            ))}
-            <button onClick={() => setZon(BELUM)} className={pill(zon === BELUM)}>
-              Belum Ditugaskan ({counts.get(BELUM) ?? 0})
-            </button>
+              {zones.map((z) => (
+                <button key={z.id} onClick={() => setZon(z.nombor)} className={pill(zon === z.nombor)}>
+                  Zon {z.nombor} ({counts.get(z.nombor) ?? 0})
+                </button>
+              ))}
+              <button onClick={() => setZon(BELUM)} className={pill(zon === BELUM)}>
+                Belum Ditugaskan ({counts.get(BELUM) ?? 0})
+              </button>
+            </div>
           </div>
         </div>
       </div>
