@@ -12,7 +12,6 @@ const ROUTES = [
   "/pegawai",
   "/program",
   "/keahlian",
-  "/sukarelawan",
   "/saguhati",
   "/saguhati/semak",
   "/derma",

@@ -19,7 +19,6 @@ const NAV: NavItem[] = [
       { label: "Perutusan Presiden", href: "/perutusan" },
       { label: "Visi & Misi", href: "/visi-misi" },
       { label: "Keahlian", href: "/keahlian" },
-      { label: "Sukarelawan", href: "/sukarelawan" },
       { label: "Soalan Lazim", href: "/soalan-lazim" },
     ],
   },
@@ -41,7 +40,6 @@ const FLAT_LINKS: NavLink[] = [
   { label: "Pegawai", href: "/pegawai" },
   { label: "Program", href: "/program" },
   { label: "Keahlian", href: "/keahlian" },
-  { label: "Sukarelawan", href: "/sukarelawan" },
   { label: "Saguhati", href: "/saguhati" },
   { label: "Derma", href: "/derma" },
   { label: "Soalan Lazim", href: "/soalan-lazim" },
@@ -56,6 +54,7 @@ export function Header() {
   const [docked, setDocked] = useState(false); // > 90 → morph dock penuh
   const [showSticky, setShowSticky] = useState(false); // > 640 → sticky CTA
   const [mobileOpen, setMobileOpen] = useState(false);
+  const ctaTutupRef = useRef(false); // CTA terapung ditutup (sesi ini) — ref elak setState-in-effect
   const pathname = usePathname();
 
   const navRef = useRef<HTMLElement>(null);
@@ -70,10 +69,12 @@ export function Header() {
   const hideSticky = pathname.startsWith("/saguhati/mohon"); // elak bertindih butang wizard
 
   useEffect(() => {
+    // Baca pilihan "tutup CTA" ke dalam ref (bukan setState → elak cascading render).
+    ctaTutupRef.current = sessionStorage.getItem("perkib-cta-tutup") === "1";
     const onScroll = () => {
       const y = window.scrollY;
       setDocked(y > 90);
-      setShowSticky(y > 640);
+      setShowSticky(y > 640 && !ctaTutupRef.current);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -287,16 +288,32 @@ export function Header() {
         )}
       </header>
 
-      {/* Sticky bottom CTA (mobile) */}
+      {/* Sticky bottom CTA (mobile) — boleh ditutup (X); kekal tersembunyi sepanjang sesi */}
       {!hideSticky && showSticky && !mobileOpen && (
-        <Link
-          href="/saguhati"
-          className="fixed inset-x-4 bottom-4 z-40 inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-primary px-6 font-semibold text-white shadow-[0_10px_30px_rgba(158,31,46,.35)] sm:hidden"
+        <div
+          className="fixed inset-x-4 bottom-4 z-40 flex items-stretch gap-2 sm:hidden"
           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
-          <HeartHandshake className="size-4" />
-          Mohon Saguhati
-        </Link>
+          <Link
+            href="/saguhati"
+            className="inline-flex min-h-[52px] flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-6 font-semibold text-white shadow-[0_10px_30px_rgba(158,31,46,.35)]"
+          >
+            <HeartHandshake className="size-4" />
+            Mohon Saguhati
+          </Link>
+          <button
+            type="button"
+            onClick={() => {
+              sessionStorage.setItem("perkib-cta-tutup", "1");
+              ctaTutupRef.current = true;
+              setShowSticky(false);
+            }}
+            aria-label="Tutup butang Mohon Saguhati"
+            className="inline-flex min-h-[52px] w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-[0_10px_30px_rgba(158,31,46,.35)] hover:bg-primary-dark"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
       )}
     </>
   );
