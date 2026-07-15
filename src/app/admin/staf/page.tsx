@@ -2,8 +2,10 @@ import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { isStafGateAuthenticated, isStafGateConfigured } from "@/lib/staf-gate";
 import { stafLainCount } from "@/lib/staf-lain";
+import { getPermohonanList, getMaklumBalasList } from "@/lib/admin-data";
 import { StafGateForm } from "./StafGateForm";
 import { StafSearch } from "./StafSearch";
+import { UrusRekod } from "./UrusRekod";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Staf MAIWP — Admin PERKIB", robots: { index: false } };
@@ -30,5 +32,13 @@ export default async function StafPage() {
     return <StafGateForm />;
   }
 
-  return <StafSearch total={stafLainCount()} />;
+  // Di sebalik gate: carian staf + urus rekod (padam/edit permohonan & maklum balas).
+  const [permohonan, maklumBalas] = await Promise.all([getPermohonanList(), getMaklumBalasList()]);
+
+  return (
+    <>
+      <StafSearch total={stafLainCount()} />
+      <UrusRekod permohonan={permohonan} maklumBalas={maklumBalas} />
+    </>
+  );
 }

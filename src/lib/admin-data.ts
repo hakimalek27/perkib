@@ -51,8 +51,8 @@ export async function getPermohonanList(status?: string): Promise<PermohonanRing
   if (!client) return [];
   const filter =
     status && STATUS_LIST.includes(status as StatusPermohonan)
-      ? `_type=="permohonanSaguhati" && status==$status`
-      : `_type=="permohonanSaguhati"`;
+      ? `_type=="permohonanSaguhati" && status==$status && !(_id in path("drafts.**"))`
+      : `_type=="permohonanSaguhati" && !(_id in path("drafts.**"))`;
   return client.fetch(
     `*[${filter}]|order(tarikhMohon desc){${RINGKAS_FIELDS}}`,
     status ? { status } : {},
@@ -65,7 +65,7 @@ export async function getStatusCounts(): Promise<Record<string, number>> {
   if (!client) return {};
   // GROQ tiada groupBy mudah — ambil semua status dan kira di JS.
   const all = await client.fetch<{ status: string }[]>(
-    `*[_type=="permohonanSaguhati"]{ status }`,
+    `*[_type=="permohonanSaguhati" && !(_id in path("drafts.**"))]{ status }`,
     {},
     { cache: "no-store" }
   );
@@ -96,7 +96,7 @@ export async function getPermohonanByEmployee(employeeNo: string): Promise<Permo
   const client = getWriteClient();
   if (!client) return [];
   return client.fetch(
-    `*[_type=="permohonanSaguhati" && employeeNo==$emp]|order(tarikhMohon desc){${RINGKAS_FIELDS}}`,
+    `*[_type=="permohonanSaguhati" && employeeNo==$emp && !(_id in path("drafts.**"))]|order(tarikhMohon desc){${RINGKAS_FIELDS}}`,
     { emp: employeeNo },
     { cache: "no-store" }
   );
@@ -116,7 +116,7 @@ export async function getPegawaiAdminAll(): Promise<PegawaiAdminRingkas[]> {
   const client = getWriteClient();
   if (!client) return [];
   return client.fetch(
-    `*[_type=="pegawai"]|order(nama asc){
+    `*[_type=="pegawai" && !(_id in path("drafts.**"))]|order(nama asc){
        employeeNo, nama, kategori, gred,
        "masjidNama": masjid->nama, "zonNombor": masjid->zon->nombor,
        "photoUrl": gambar.asset->url
@@ -143,7 +143,7 @@ export async function getPegawaiAdminDetail(employeeNo: string): Promise<Pegawai
   const client = getWriteClient();
   if (!client) return null;
   return client.fetch(
-    `*[_type=="pegawai" && employeeNo==$emp][0]{
+    `*[_type=="pegawai" && employeeNo==$emp && !(_id in path("drafts.**"))][0]{
        employeeNo, nama, kategori, gred, jawatanPenuh, emelRasmi, bahagian, statusPerjawatan,
        "statusAktif": statusAktif != false,
        "masjidId": masjid._ref,
@@ -183,7 +183,7 @@ export async function getPegawaiForPenugasan(): Promise<PegawaiPenugasan[]> {
   const client = getWriteClient();
   if (!client) return [];
   return client.fetch(
-    `*[_type=="pegawai"]|order(nama asc){
+    `*[_type=="pegawai" && !(_id in path("drafts.**"))]|order(nama asc){
        employeeNo, nama, kategori, gred,
        "masjidId": masjid._ref,
        "masjidNama": masjid->nama,
@@ -253,9 +253,9 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     return { permohonanBaru: 0, permohonanSemua: 0, belumDitugaskan: 0, waGagal: 0, kutipanTahunIni: 0, tahun };
   }
   const [permohonanBaru, permohonanSemua, belumDitugaskan, waGagal, yuranDocs] = await Promise.all([
-    client.fetch<number>(`count(*[_type=="permohonanSaguhati" && status=="baru"])`, {}, { cache: "no-store" }),
-    client.fetch<number>(`count(*[_type=="permohonanSaguhati"])`, {}, { cache: "no-store" }),
-    client.fetch<number>(`count(*[_type=="pegawai" && !defined(masjid)])`, {}, { cache: "no-store" }),
+    client.fetch<number>(`count(*[_type=="permohonanSaguhati" && status=="baru" && !(_id in path("drafts.**"))])`, {}, { cache: "no-store" }),
+    client.fetch<number>(`count(*[_type=="permohonanSaguhati" && !(_id in path("drafts.**"))])`, {}, { cache: "no-store" }),
+    client.fetch<number>(`count(*[_type=="pegawai" && !defined(masjid) && !(_id in path("drafts.**"))])`, {}, { cache: "no-store" }),
     client.fetch<number>(`count(*[_type=="waOutbox" && status=="failed"])`, {}, { cache: "no-store" }),
     client.fetch<Array<Record<string, { dibayar?: boolean; amaun?: number }>>>(
       `*[_type=="yuranTahunan" && tahun==$t]{ m01,m02,m03,m04,m05,m06,m07,m08,m09,m10,m11,m12 }`,
@@ -323,7 +323,7 @@ export async function getMaklumBalasList(): Promise<MaklumBalasItem[]> {
   const client = getWriteClient();
   if (!client) return [];
   const rows = await client.fetch<{ _id: string; masa: string; status: string; dataEnc: string }[]>(
-    `*[_type=="maklumBalas"]|order(masa desc){ "_id": _id, masa, status, dataEnc }`,
+    `*[_type=="maklumBalas" && !(_id in path("drafts.**"))]|order(masa desc){ "_id": _id, masa, status, dataEnc }`,
     {},
     { cache: "no-store" }
   );
@@ -352,7 +352,7 @@ export async function getMaklumBalasBaruCount(): Promise<number> {
   const client = getWriteClient();
   if (!client) return 0;
   return client.fetch<number>(
-    `count(*[_type=="maklumBalas" && status=="baru"])`,
+    `count(*[_type=="maklumBalas" && status=="baru" && !(_id in path("drafts.**"))])`,
     {},
     { cache: "no-store" }
   );
