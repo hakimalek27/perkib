@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { FileText, BadgeCheck, HeartHandshake, Search, Info } from "lucide-react";
 import { formatRM } from "@/lib/utils";
 import { getJenisSaguhati } from "@/lib/sanity";
@@ -56,16 +57,16 @@ export default async function SaguhatiPage() {
               <Reveal key={j.id} delay={Math.min(i * 0.05, 0.3)}>
                 <article className="hover-glow flex h-full flex-col rounded-2xl border border-border bg-card p-6 shadow-soft">
                   <div className="flex items-start justify-between gap-3">
-                    <span className="flex size-11 items-center justify-center rounded-xl bg-primary/8 font-display text-lg font-semibold text-primary">
-                      {j.bil}
+                    <span className="font-display text-lg font-bold tracking-[0.05em] text-accent-deep">
+                      {j.kod}
                     </span>
                     {j.oneOff && (
-                      <span className="rounded-full bg-accent/15 px-2.5 py-1 text-[10px] font-semibold uppercase text-accent-deep">
-                        Sekali sahaja
-                      </span>
+                      <Badge tone="gold" className="uppercase">
+                        Sekali seumur hidup
+                      </Badge>
                     )}
                   </div>
-                  <h3 className="font-display mt-4 text-lg font-semibold leading-tight text-primary-dark">
+                  <h3 className="font-display mt-3 text-lg font-semibold leading-tight text-primary-dark">
                     {j.nama}
                   </h3>
                   {j.catatan && (
@@ -74,12 +75,7 @@ export default async function SaguhatiPage() {
                       {j.catatan}
                     </p>
                   )}
-                  <div className="my-4 flex items-baseline gap-1">
-                    <span className="font-display text-3xl font-semibold text-accent-deep">
-                      {formatRM(j.kadar)}
-                    </span>
-                  </div>
-                  <div className="mt-auto border-t border-border pt-4">
+                  <div className="mt-4">
                     <p className="flex items-center gap-1.5 text-xs font-semibold text-ink">
                       <FileText className="size-3.5 text-accent" /> Dokumen sokongan:
                     </p>
@@ -91,6 +87,14 @@ export default async function SaguhatiPage() {
                         </li>
                       ))}
                     </ul>
+                  </div>
+                  <div className="mt-auto flex items-baseline gap-2 border-t border-border pt-4">
+                    <span className="font-display text-3xl font-bold text-primary">
+                      {formatRM(j.kadar)}
+                    </span>
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      kadar saguhati
+                    </span>
                   </div>
                 </article>
               </Reveal>

@@ -379,17 +379,13 @@
     margin-top: 0.2rem;
   }
 
-  /* Animasi accordion (Radix) */
-  @keyframes accordion-down {
-    from { height: 0; }
-    to { height: var(--radix-accordion-content-height); }
+  /* Accordion Nadi (tanpa Radix) — buka/tutup licin via grid-template-rows 0fr→1fr */
+  .acc-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--dur-interface) var(--ease);
   }
-  @keyframes accordion-up {
-    from { height: var(--radix-accordion-content-height); }
-    to { height: 0; }
-  }
-  .animate-accordion-down { animation: accordion-down 0.25s ease-out; }
-  .animate-accordion-up { animation: accordion-up 0.25s ease-out; }
+  .acc-panel[data-open="true"] { grid-template-rows: 1fr; }
 
   /* Transisi masuk halaman (template.tsx) */
   @keyframes page-enter {
@@ -428,4 +424,5 @@
   .tier-essential .page-enter { animation: none; }
   .tier-essential .arch-draw { animation: none; stroke-dashoffset: 0; }
   .tier-essential .arch-glow { animation: none; }
+  .tier-essential .acc-panel { transition: none; }
 }
