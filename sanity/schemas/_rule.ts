@@ -8,4 +8,7 @@ export type Rule = {
   email: () => Rule;
   error: (msg: string) => Rule;
   warning: (msg: string) => Rule;
+  custom: (
+    fn: (value: unknown, context: { parent?: Record<string, unknown> }) => true | string
+  ) => Rule;
 };

@@ -48,6 +48,54 @@ export async function deletePermohonanAction(
   }
 }
 
+// Soft delete — batalkan permohonan (bukan padam kekal). Selepas ini rekod
+// TERSEMBUNYI dari admin biasa + semak pemohon; hanya /admin/staf boleh pantau
+// & pulihkan. Boleh dipulihkan (pulihPermohonanAction) atau dipadam kekal.
+export async function batalPermohonanAction(id: string, sebab?: string): Promise<ActionResult> {
+  const g = await ensureGate();
+  if (!g.ok) return g;
+  const client = getWriteClient();
+  if (!client) return { ok: false, error: "Sistem tidak tersedia." };
+  try {
+    const doc = await client.fetch<{ nomborRujukan?: string } | null>(`*[_id==$id][0]{ nomborRujukan }`, { id });
+    const sebabBersih = (sebab ?? "").trim().slice(0, 300);
+    await client
+      .patch(id)
+      .set({ dibatalkan: true, dibatalkanPada: new Date().toISOString(), sebabBatal: sebabBersih })
+      .commit();
+    await writeAudit(
+      "batal-saguhati",
+      doc?.nomborRujukan ?? id,
+      `Permohonan dibatalkan (soft delete, gate staf)${sebabBersih ? ` — ${sebabBersih.slice(0, 120)}` : ""}`
+    );
+    revalidatePath("/admin/saguhati");
+    revalidatePath("/admin/staf");
+    revalidatePath("/admin");
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
+// Pulihkan permohonan yang dibatalkan (undo soft delete) — kembali kelihatan.
+export async function pulihPermohonanAction(id: string): Promise<ActionResult> {
+  const g = await ensureGate();
+  if (!g.ok) return g;
+  const client = getWriteClient();
+  if (!client) return { ok: false, error: "Sistem tidak tersedia." };
+  try {
+    const doc = await client.fetch<{ nomborRujukan?: string } | null>(`*[_id==$id][0]{ nomborRujukan }`, { id });
+    await client.patch(id).set({ dibatalkan: false }).unset(["dibatalkanPada", "sebabBatal"]).commit();
+    await writeAudit("pulih-saguhati", doc?.nomborRujukan ?? id, "Permohonan dipulihkan (nyahbatal, gate staf)");
+    revalidatePath("/admin/saguhati");
+    revalidatePath("/admin/staf");
+    revalidatePath("/admin");
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
 export type EditButiran = {
   bankNama: string;
   bankAkaun: string; // kosong = tak ubah

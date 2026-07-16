@@ -1,12 +1,14 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import type { ScrollerItem } from "@/lib/sanity";
 
 // Jalur aktiviti auto-skrol di atas homepage (marquee CSS, dikomposit GPU).
 // Ambil ruang header terapung (pt-[104px]) supaya HeroMihrab boleh jadi compact.
 // reduced-motion / tier-essential → boleh skrol manual (overflow-x).
-export function AktivitiScroller({ items }: { items: ScrollerItem[] }) {
+// `lajuSaat` = durasi 1 pusingan (kecil = laju) — diset admin dari Sanity.
+export function AktivitiScroller({ items, lajuSaat = 42 }: { items: ScrollerItem[]; lajuSaat?: number }) {
   if (!items.length) return null;
   const loop = [...items, ...items]; // gandakan utk gelung lancar
 
@@ -16,7 +18,10 @@ export function AktivitiScroller({ items }: { items: ScrollerItem[] }) {
       className="marquee-mask surface-obsidian relative border-b border-line-dark pt-[104px]"
     >
       <div className="pattern-girih-dark pointer-events-none absolute inset-0 opacity-[0.06]" aria-hidden />
-      <div className="marquee-track flex w-max gap-4 px-4 py-4">
+      <div
+        className="marquee-track flex w-max gap-4 px-4 py-4"
+        style={{ "--marquee-duration": `${lajuSaat}s` } as CSSProperties}
+      >
         {loop.map((it, i) => (
           <figure
             key={i}

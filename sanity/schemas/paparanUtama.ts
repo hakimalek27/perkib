@@ -39,6 +39,23 @@ export default {
         },
       ],
     },
+    {
+      name: "scrollerKelajuan",
+      title: "Kelajuan Pergerakan Jalur",
+      type: "string",
+      group: "scroller",
+      initialValue: "sederhana",
+      description: "Seberapa laju jalur aktiviti bergerak (skrol) di atas homepage.",
+      options: {
+        list: [
+          { title: "Perlahan", value: "perlahan" },
+          { title: "Sederhana", value: "sederhana" },
+          { title: "Laju", value: "laju" },
+          { title: "Sangat Laju", value: "sangat-laju" },
+        ],
+        layout: "radio",
+      },
+    },
     // ── Popup banner ──
     {
       name: "popupAktif",
@@ -47,6 +64,28 @@ export default {
       initialValue: false,
       group: "popup",
       description: "Hidupkan untuk papar popup banner bila pelawat buka homepage.",
+    },
+    {
+      name: "popupMula",
+      title: "Mula Papar (opsyenal)",
+      type: "datetime",
+      group: "popup",
+      description: "Popup hanya muncul BERMULA tarikh/masa ini. Biar kosong = mula serta-merta.",
+    },
+    {
+      name: "popupTamat",
+      title: "Tamat Papar / Auto-Off (opsyenal)",
+      type: "datetime",
+      group: "popup",
+      description: "Popup berhenti muncul SELEPAS tarikh/masa ini (auto-off). Biar kosong = tiada tamat.",
+      validation: (R: Rule) =>
+        R.custom((tamat: unknown, ctx: { parent?: Record<string, unknown> }) => {
+          const mula = ctx?.parent?.popupMula as string | undefined;
+          if (tamat && mula && new Date(tamat as string) <= new Date(mula)) {
+            return "Masa tamat mesti selepas masa mula.";
+          }
+          return true;
+        }),
     },
     { name: "popupTajuk", title: "Tajuk Popup", type: "string", group: "popup" },
     {

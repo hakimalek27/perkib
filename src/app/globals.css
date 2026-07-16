@@ -439,7 +439,7 @@
   .marquee-mask { overflow: hidden; }
   .marquee-track { will-change: transform; }
   @media (prefers-reduced-motion: no-preference) {
-    .marquee-track { animation: marquee 42s linear infinite; }
+    .marquee-track { animation: marquee var(--marquee-duration, 42s) linear infinite; }
     .marquee-mask:hover .marquee-track { animation-play-state: paused; }
     @keyframes marquee { to { transform: translateX(-50%); } }
   }

@@ -64,7 +64,9 @@ export default async function HomePage() {
 
   return (
     <>
-      {scrollerAktif && paparan && <AktivitiScroller items={paparan.scroller} />}
+      {scrollerAktif && paparan && (
+        <AktivitiScroller items={paparan.scroller} lajuSaat={paparan.scrollerLajuSaat} />
+      )}
       {paparan?.popupAktif && <PopupBanner data={paparan} />}
       <ScrollRail items={RAIL} />
       <HeroMihrab compact={scrollerAktif} />

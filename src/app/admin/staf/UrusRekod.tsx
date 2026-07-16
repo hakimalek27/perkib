@@ -3,13 +3,15 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Search, Trash2, Loader2, AlertTriangle, Save, Inbox } from "lucide-react";
+import { Search, Trash2, Loader2, AlertTriangle, Save, Inbox, Ban, RotateCcw, ArchiveX } from "lucide-react";
 import { Input, Textarea } from "@/components/ui/input";
 import { Field } from "@/components/ui/field";
 import { formatRM } from "@/lib/utils";
-import type { PermohonanRingkas, MaklumBalasItem } from "@/lib/admin-data";
+import type { PermohonanRingkas, MaklumBalasItem, PermohonanDibatalkan } from "@/lib/admin-data";
 import {
   deletePermohonanAction,
+  batalPermohonanAction,
+  pulihPermohonanAction,
   updatePermohonanAction,
   bacaButiranPermohonanAction,
   deleteMaklumBalasAction,
@@ -150,6 +152,7 @@ function PermohonanEditor({ row, onDeleted }: { row: PermohonanRingkas; onDelete
   const [pending, start] = useTransition();
   const [dialog, setDialog] = useState(false);
   const [konfirm, setKonfirm] = useState("");
+  const [sebab, setSebab] = useState("");
 
   const [bankNama, setBankNama] = useState("");
   const [bankAkaun, setBankAkaun] = useState("");
@@ -190,16 +193,16 @@ function PermohonanEditor({ row, onDeleted }: { row: PermohonanRingkas; onDelete
     });
   }
 
-  function doDelete() {
+  function doBatal() {
     start(async () => {
-      const res = await deletePermohonanAction(row._id);
+      const res = await batalPermohonanAction(row._id, sebab);
       if (res.ok) {
-        toast.success(`Permohonan ${row.nomborRujukan} dipadam.`);
+        toast.success(`Permohonan ${row.nomborRujukan} dibatalkan.`);
         setDialog(false);
         onDeleted();
         router.refresh();
       } else {
-        toast.error(res.error ?? "Gagal memadam.");
+        toast.error(res.error ?? "Gagal membatalkan.");
       }
     });
   }
@@ -216,11 +219,12 @@ function PermohonanEditor({ row, onDeleted }: { row: PermohonanRingkas; onDelete
         <button
           onClick={() => {
             setKonfirm("");
+            setSebab("");
             setDialog(true);
           }}
-          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-destructive/30 px-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-amber-500/40 px-3 text-sm font-medium text-amber-600 transition-colors hover:bg-amber-500/10"
         >
-          <Trash2 className="size-4" /> Padam
+          <Ban className="size-4" /> Batalkan
         </button>
       </div>
 
@@ -261,14 +265,16 @@ function PermohonanEditor({ row, onDeleted }: { row: PermohonanRingkas; onDelete
           <div className="absolute inset-0 bg-black/50" onClick={() => !pending && setDialog(false)} />
           <div role="dialog" aria-modal="true" className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl">
             <div className="mb-3 flex items-center gap-3">
-              <span className="flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                <AlertTriangle className="size-5" />
+              <span className="flex size-10 items-center justify-center rounded-full bg-amber-500/10 text-amber-600">
+                <Ban className="size-5" />
               </span>
-              <h3 className="font-display text-lg font-semibold text-ink">Padam permohonan?</h3>
+              <h3 className="font-display text-lg font-semibold text-ink">Batalkan permohonan?</h3>
             </div>
             <p className="text-sm text-muted-foreground">
-              Padam <strong className="text-ink">{row.nomborRujukan}</strong> ({row.namaPemohon}) sepenuhnya?
-              Ini memadam data peribadi pemohon (PDPA) dan tidak boleh dibatalkan. Taip nombor rujukan untuk sahkan:
+              Batalkan <strong className="text-ink">{row.nomborRujukan}</strong> ({row.namaPemohon})? Rekod akan{" "}
+              <strong className="text-ink">disembunyikan daripada admin biasa</strong> dan hanya kelihatan di tab
+              &ldquo;Dibatalkan&rdquo; untuk pantauan. Ia <strong className="text-ink">boleh dipulihkan</strong> semula.
+              Taip nombor rujukan untuk sahkan:
             </p>
             <Input
               className="mt-3"
@@ -277,20 +283,31 @@ function PermohonanEditor({ row, onDeleted }: { row: PermohonanRingkas; onDelete
               placeholder={row.nomborRujukan}
               aria-label="Taip nombor rujukan untuk sahkan"
             />
+            <div className="mt-3">
+              <label htmlFor="sebab-batal" className="mb-1 block text-xs font-medium text-ink/70">
+                Sebab pembatalan (opsyenal)
+              </label>
+              <Input
+                id="sebab-batal"
+                value={sebab}
+                onChange={(e) => setSebab(e.target.value)}
+                placeholder="cth. Permohonan berganda / ujian"
+              />
+            </div>
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setDialog(false)}
                 disabled={pending}
                 className="inline-flex h-10 items-center rounded-lg border border-input px-4 text-sm font-medium text-ink hover:bg-muted disabled:opacity-60"
               >
-                Batal
+                Kembali
               </button>
               <button
-                onClick={doDelete}
+                onClick={doBatal}
                 disabled={pending || konfirm.trim() !== row.nomborRujukan}
-                className="inline-flex h-10 items-center gap-2 rounded-lg bg-destructive px-4 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                className="inline-flex h-10 items-center gap-2 rounded-lg bg-amber-600 px-4 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
               >
-                {pending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} Padam Kekal
+                {pending ? <Loader2 className="size-4 animate-spin" /> : <Ban className="size-4" />} Batalkan Permohonan
               </button>
             </div>
           </div>
@@ -380,6 +397,137 @@ export function MaklumBalasPanel({ rows }: { rows: MaklumBalasItem[] }) {
                 className="inline-flex h-10 items-center gap-2 rounded-lg bg-destructive px-4 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60"
               >
                 {pending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} Padam
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ── Permohonan DIBATALKAN (soft delete): pantau + pulih + padam kekal ────────
+// Hanya di /admin/staf (gate kedua). Admin biasa tidak nampak rekod ini.
+export function DibatalkanPanel({ rows }: { rows: PermohonanDibatalkan[] }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [padamId, setPadamId] = useState<string | null>(null);
+  const [konfirm, setKonfirm] = useState("");
+  const target = rows.find((r) => r._id === padamId) ?? null;
+
+  function pulih(id: string, ruj: string) {
+    start(async () => {
+      const res = await pulihPermohonanAction(id);
+      if (res.ok) {
+        toast.success(`Permohonan ${ruj} dipulihkan.`);
+        router.refresh();
+      } else {
+        toast.error(res.error ?? "Gagal memulihkan.");
+      }
+    });
+  }
+
+  function padamKekal(id: string, ruj: string) {
+    start(async () => {
+      const res = await deletePermohonanAction(id);
+      if (res.ok) {
+        toast.success(`Permohonan ${ruj} dipadam kekal.`);
+        setPadamId(null);
+        router.refresh();
+      } else {
+        toast.error(res.error ?? "Gagal memadam.");
+      }
+    });
+  }
+
+  if (rows.length === 0) {
+    return (
+      <div className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-border p-10 text-sm text-muted-foreground">
+        <ArchiveX className="size-5" /> Tiada permohonan dibatalkan.
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <p className="mb-3 text-xs text-muted-foreground">
+        Permohonan yang dibatalkan (soft delete) — tersembunyi daripada admin biasa &amp; semakan pemohon.
+        Pulihkan untuk kembalikan, atau padam kekal (tidak boleh diundur).
+      </p>
+      <ul className="max-h-[480px] space-y-3 overflow-auto pr-1">
+        {rows.map((r) => (
+          <li key={r._id} className="rounded-xl border border-amber-500/25 bg-amber-500/[0.04] p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-ink">{r.nomborRujukan}</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {r.namaPemohon} · {r.employeeNo} · {r.jenisNama}
+                </p>
+                <p className="mt-1 text-xs text-amber-700">
+                  Dibatalkan {r.dibatalkanPada ? new Date(r.dibatalkanPada).toLocaleString("ms-MY") : ""}
+                  {r.sebabBatal ? ` — ${r.sebabBatal}` : ""}
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-col gap-2">
+                <button
+                  onClick={() => pulih(r._id, r.nomborRujukan)}
+                  disabled={pending}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-primary/30 px-3 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-60"
+                >
+                  <RotateCcw className="size-4" /> Pulihkan
+                </button>
+                <button
+                  onClick={() => {
+                    setKonfirm("");
+                    setPadamId(r._id);
+                  }}
+                  disabled={pending}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-destructive/30 px-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-60"
+                >
+                  <Trash2 className="size-4" /> Padam Kekal
+                </button>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {target && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => !pending && setPadamId(null)} />
+          <div role="dialog" aria-modal="true" className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl">
+            <div className="mb-3 flex items-center gap-3">
+              <span className="flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                <AlertTriangle className="size-5" />
+              </span>
+              <h3 className="font-display text-lg font-semibold text-ink">Padam kekal?</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Padam <strong className="text-ink">{target.nomborRujukan}</strong> ({target.namaPemohon}) sepenuhnya?
+              Ini memadam data peribadi pemohon (PDPA) dan <strong className="text-ink">tidak boleh diundur</strong>.
+              Taip nombor rujukan untuk sahkan:
+            </p>
+            <Input
+              className="mt-3"
+              value={konfirm}
+              onChange={(e) => setKonfirm(e.target.value)}
+              placeholder={target.nomborRujukan}
+              aria-label="Taip nombor rujukan untuk sahkan"
+            />
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setPadamId(null)}
+                disabled={pending}
+                className="inline-flex h-10 items-center rounded-lg border border-input px-4 text-sm font-medium text-ink hover:bg-muted disabled:opacity-60"
+              >
+                Kembali
+              </button>
+              <button
+                onClick={() => padamKekal(target._id, target.nomborRujukan)}
+                disabled={pending || konfirm.trim() !== target.nomborRujukan}
+                className="inline-flex h-10 items-center gap-2 rounded-lg bg-destructive px-4 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+              >
+                {pending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />} Padam Kekal
               </button>
             </div>
           </div>

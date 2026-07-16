@@ -49,10 +49,11 @@ const RINGKAS_FIELDS = `
 export async function getPermohonanList(status?: string): Promise<PermohonanRingkas[]> {
   const client = getWriteClient();
   if (!client) return [];
+  // dibatalkan != true → permohonan yang di-soft-delete TERSEMBUNYI dari admin biasa.
   const filter =
     status && STATUS_LIST.includes(status as StatusPermohonan)
-      ? `_type=="permohonanSaguhati" && status==$status && !(_id in path("drafts.**"))`
-      : `_type=="permohonanSaguhati" && !(_id in path("drafts.**"))`;
+      ? `_type=="permohonanSaguhati" && status==$status && dibatalkan != true && !(_id in path("drafts.**"))`
+      : `_type=="permohonanSaguhati" && dibatalkan != true && !(_id in path("drafts.**"))`;
   return client.fetch(
     `*[${filter}]|order(tarikhMohon desc){${RINGKAS_FIELDS}}`,
     status ? { status } : {},
@@ -65,7 +66,7 @@ export async function getStatusCounts(): Promise<Record<string, number>> {
   if (!client) return {};
   // GROQ tiada groupBy mudah — ambil semua status dan kira di JS.
   const all = await client.fetch<{ status: string }[]>(
-    `*[_type=="permohonanSaguhati" && !(_id in path("drafts.**"))]{ status }`,
+    `*[_type=="permohonanSaguhati" && dibatalkan != true && !(_id in path("drafts.**"))]{ status }`,
     {},
     { cache: "no-store" }
   );
@@ -91,13 +92,32 @@ export async function getPermohonanById(id: string): Promise<PermohonanPenuh | n
   );
 }
 
-// Sejarah permohonan seorang pegawai (untuk profil admin).
+// Sejarah permohonan seorang pegawai (untuk profil admin). Yang dibatalkan disorok.
 export async function getPermohonanByEmployee(employeeNo: string): Promise<PermohonanRingkas[]> {
   const client = getWriteClient();
   if (!client) return [];
   return client.fetch(
-    `*[_type=="permohonanSaguhati" && employeeNo==$emp && !(_id in path("drafts.**"))]|order(tarikhMohon desc){${RINGKAS_FIELDS}}`,
+    `*[_type=="permohonanSaguhati" && employeeNo==$emp && dibatalkan != true && !(_id in path("drafts.**"))]|order(tarikhMohon desc){${RINGKAS_FIELDS}}`,
     { emp: employeeNo },
+    { cache: "no-store" }
+  );
+}
+
+export type PermohonanDibatalkan = PermohonanRingkas & {
+  dibatalkanPada: string | null;
+  sebabBatal: string | null;
+};
+
+// Permohonan yang DIBATALKAN (soft delete) — HANYA untuk pantauan /admin/staf
+// (gate kedua). Admin biasa tidak nampak rekod ini di mana-mana.
+export async function getPermohonanDibatalkan(): Promise<PermohonanDibatalkan[]> {
+  const client = getWriteClient();
+  if (!client) return [];
+  return client.fetch(
+    `*[_type=="permohonanSaguhati" && dibatalkan == true && !(_id in path("drafts.**"))]|order(dibatalkanPada desc){
+       ${RINGKAS_FIELDS}, "dibatalkanPada": dibatalkanPada, "sebabBatal": sebabBatal
+     }`,
+    {},
     { cache: "no-store" }
   );
 }
@@ -253,8 +273,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     return { permohonanBaru: 0, permohonanSemua: 0, belumDitugaskan: 0, waGagal: 0, kutipanTahunIni: 0, tahun };
   }
   const [permohonanBaru, permohonanSemua, belumDitugaskan, waGagal, yuranDocs] = await Promise.all([
-    client.fetch<number>(`count(*[_type=="permohonanSaguhati" && status=="baru" && !(_id in path("drafts.**"))])`, {}, { cache: "no-store" }),
-    client.fetch<number>(`count(*[_type=="permohonanSaguhati" && !(_id in path("drafts.**"))])`, {}, { cache: "no-store" }),
+    client.fetch<number>(`count(*[_type=="permohonanSaguhati" && status=="baru" && dibatalkan != true && !(_id in path("drafts.**"))])`, {}, { cache: "no-store" }),
+    client.fetch<number>(`count(*[_type=="permohonanSaguhati" && dibatalkan != true && !(_id in path("drafts.**"))])`, {}, { cache: "no-store" }),
     client.fetch<number>(`count(*[_type=="pegawai" && !defined(masjid) && !(_id in path("drafts.**"))])`, {}, { cache: "no-store" }),
     client.fetch<number>(`count(*[_type=="waOutbox" && status=="failed"])`, {}, { cache: "no-store" }),
     client.fetch<Array<Record<string, { dibayar?: boolean; amaun?: number }>>>(

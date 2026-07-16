@@ -14,14 +14,19 @@ loadEnv({ path: path.resolve(process.cwd(), ".env.local") });
 type Kontak = { id: string; nama?: string; telefon?: string; emel?: string; sumber?: string };
 type Doc = { _id: string; nama: string; telefon?: string; emel?: string };
 
-// Telefon MY: 0 + 1-2 digit kod + 6-8 digit (ruang/sengkang dibenarkan utk paparan).
-const TEL_RE = /^0\d{1,2}[-\s]?\d{3,4}[\s-]?\d{3,4}$/;
+// Telefon MY: 0 + 1-2 digit kod + 6-8 digit. Boleh berbilang nombor dipisah " / "
+// (cth talian pejabat + mobile) — nombor utama (pertama) digunakan untuk tel: link.
+const TEL_ONE = String.raw`0\d{1,2}[-\s]?\d{3,4}[\s-]?\d{3,4}`;
+const TEL_RE = new RegExp(`^${TEL_ONE}(\\s*/\\s*${TEL_ONE})*$`);
 const EMEL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 async function main() {
   const commit = process.argv.includes("--commit");
-  const file = path.resolve(process.cwd(), "scripts/data/masjid-kontak.json");
-  const rows = JSON.parse(fs.readFileSync(file, "utf8")) as Kontak[];
+  // Baca SEMUA fail scripts/data/masjid-kontak*.json (gabung sumber).
+  const dir = path.resolve(process.cwd(), "scripts/data");
+  const files = fs.readdirSync(dir).filter((f) => /^masjid-kontak.*\.json$/.test(f)).sort();
+  const rows: Kontak[] = files.flatMap((f) => JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")) as Kontak[]);
+  console.log(`Fail sumber: ${files.join(", ")}`);
 
   const client = seedClient();
   const ids = rows.map((r) => r.id);

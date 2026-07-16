@@ -25,8 +25,13 @@ export function PopupBanner({ data }: { data: PaparanUtama }) {
     }
   }, [data.popupKekerapan, key]);
 
-  // Papar ikut kekerapan (baca storage dlm effect — elak hydration mismatch).
+  // Papar ikut julat masa + kekerapan (baca storage dlm effect — elak hydration mismatch).
   useEffect(() => {
+    // Julat masa: jangan papar sebelum popupMula atau selepas popupTamat (auto-off).
+    const now = Date.now();
+    if (data.popupMula && now < new Date(data.popupMula).getTime()) return;
+    if (data.popupTamat && now > new Date(data.popupTamat).getTime()) return;
+
     let patut = true;
     try {
       if (data.popupKekerapan === "sesi") patut = sessionStorage.getItem(key) !== "1";
@@ -37,7 +42,7 @@ export function PopupBanner({ data }: { data: PaparanUtama }) {
     if (!patut) return;
     const t = setTimeout(() => setOpen(true), 1200);
     return () => clearTimeout(t);
-  }, [data.popupKekerapan, key]);
+  }, [data.popupKekerapan, data.popupMula, data.popupTamat, key]);
 
   // ESC tutup + fokus butang tutup bila buka.
   useEffect(() => {

@@ -82,6 +82,11 @@ export default {
     },
     { name: "tarikhMohon", title: "Tarikh Mohon", type: "datetime", readOnly: true },
     { name: "tarikhKemaskini", title: "Tarikh Kemas Kini", type: "datetime" },
+    // ── Pembatalan (soft delete) — hanya admin/staf (gate kedua) boleh pantau.
+    //    Bila dibatalkan=true, rekod TERSEMBUNYI dari admin biasa + semak pemohon.
+    { name: "dibatalkan", title: "Dibatalkan?", type: "boolean", initialValue: false, readOnly: true },
+    { name: "dibatalkanPada", title: "Tarikh Pembatalan", type: "datetime", readOnly: true },
+    { name: "sebabBatal", title: "Sebab Pembatalan", type: "string", readOnly: true },
   ],
   orderings: [
     {

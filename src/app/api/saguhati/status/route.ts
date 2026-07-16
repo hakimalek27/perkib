@@ -69,7 +69,7 @@ export async function POST(req: Request) {
   } | null;
   try {
     row = await client.fetch(
-      `*[_type=="permohonanSaguhati" && nomborRujukan==$ref && employeeNo==$emp][0]{
+      `*[_type=="permohonanSaguhati" && nomborRujukan==$ref && employeeNo==$emp && dibatalkan != true][0]{
          nomborRujukan, status, jenisNama, jenisKadar, tarikhMohon, tarikhKemaskini, catatanAdmin
        }`,
       { ref: refNo, emp: employeeNo }

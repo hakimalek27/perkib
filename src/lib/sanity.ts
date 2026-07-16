@@ -513,13 +513,24 @@ export type PopupKekerapan = "sesi" | "harian" | "setiap";
 export type PaparanUtama = {
   scrollerAktif: boolean;
   scroller: ScrollerItem[];
+  scrollerLajuSaat: number; // durasi 1 pusingan marquee (saat)
   popupAktif: boolean;
   popupTajuk?: string;
   popupGambar?: string;
   popupPautan?: string;
   popupButang?: string;
   popupKekerapan: PopupKekerapan;
+  popupMula?: string; // ISO — popup mula muncul (opsyenal)
+  popupTamat?: string; // ISO — popup auto-off selepas ini (opsyenal)
   updatedAt?: string;
+};
+
+// Peta pilihan kelajuan jalur → durasi 1 pusingan (saat). Kecil = laju.
+const SCROLLER_LAJU_SAAT: Record<string, number> = {
+  perlahan: 60,
+  sederhana: 42,
+  laju: 26,
+  "sangat-laju": 16,
 };
 
 // null = tiada doc / CMS mati → homepage biasa (fallback selamat).
@@ -530,17 +541,20 @@ export async function getPaparanUtama(): Promise<PaparanUtama | null> {
     const doc = await client.fetch<{
       scrollerAktif?: boolean;
       scrollerGambar?: Array<{ gambar?: unknown; keterangan?: string }>;
+      scrollerKelajuan?: string;
       popupAktif?: boolean;
       popupTajuk?: string;
       popupGambar?: unknown;
       popupPautan?: string;
       popupButang?: string;
       popupKekerapan?: string;
+      popupMula?: string;
+      popupTamat?: string;
       _updatedAt?: string;
     } | null>(
       `*[_id=="paparanUtama"][0]{
-        scrollerAktif, scrollerGambar, popupAktif, popupTajuk, popupGambar,
-        popupPautan, popupButang, popupKekerapan, _updatedAt
+        scrollerAktif, scrollerGambar, scrollerKelajuan, popupAktif, popupTajuk, popupGambar,
+        popupPautan, popupButang, popupKekerapan, popupMula, popupTamat, _updatedAt
       }`
     );
     if (!doc) return null;
@@ -552,15 +566,22 @@ export async function getPaparanUtama(): Promise<PaparanUtama | null> {
     )
       ? (doc.popupKekerapan as PopupKekerapan)
       : "sesi";
+    const scrollerLajuSaat = SCROLLER_LAJU_SAAT[doc.scrollerKelajuan ?? "sederhana"] ?? 42;
+    // Backstop auto-off di server: jika sudah lepas popupTamat, matikan popup
+    // (PopupBanner klien tapis julat masa dgn tepat — elak ISR lag ~5 min).
+    const belumTamat = !doc.popupTamat || new Date(doc.popupTamat).getTime() > Date.now();
     return {
       scrollerAktif: Boolean(doc.scrollerAktif) && scroller.length > 0,
       scroller,
-      popupAktif: Boolean(doc.popupAktif) && Boolean(doc.popupGambar || doc.popupTajuk),
+      scrollerLajuSaat,
+      popupAktif: Boolean(doc.popupAktif) && Boolean(doc.popupGambar || doc.popupTajuk) && belumTamat,
       popupTajuk: doc.popupTajuk,
       popupGambar: urlForWidth(doc.popupGambar, 900),
       popupPautan: doc.popupPautan,
       popupButang: doc.popupButang,
       popupKekerapan: kekerapan,
+      popupMula: doc.popupMula,
+      popupTamat: doc.popupTamat,
       updatedAt: doc._updatedAt,
     };
   } catch (err) {

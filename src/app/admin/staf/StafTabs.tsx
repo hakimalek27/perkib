@@ -1,22 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Users, FileText, MessageSquare, KeyRound, type LucideIcon } from "lucide-react";
-import type { PermohonanRingkas, MaklumBalasItem } from "@/lib/admin-data";
+import { Users, FileText, MessageSquare, KeyRound, Ban, type LucideIcon } from "lucide-react";
+import type { PermohonanRingkas, MaklumBalasItem, PermohonanDibatalkan } from "@/lib/admin-data";
 import { StafSearch } from "./StafSearch";
-import { PermohonanPanel, MaklumBalasPanel } from "./UrusRekod";
+import { PermohonanPanel, MaklumBalasPanel, DibatalkanPanel } from "./UrusRekod";
 import { KataLaluanTab } from "./KataLaluanTab";
 
-type TabKey = "cari" | "permohonan" | "maklumbalas" | "katalaluan";
+type TabKey = "cari" | "permohonan" | "maklumbalas" | "dibatalkan" | "katalaluan";
 
 export function StafTabs({
   total,
   permohonan,
   maklumBalas,
+  dibatalkan,
 }: {
   total: number;
   permohonan: PermohonanRingkas[];
   maklumBalas: MaklumBalasItem[];
+  dibatalkan: PermohonanDibatalkan[];
 }) {
   const [tab, setTab] = useState<TabKey>("cari");
 
@@ -24,6 +26,7 @@ export function StafTabs({
     { key: "cari", label: "Cari Staf MAIWP", icon: Users },
     { key: "permohonan", label: "Permohonan", icon: FileText, badge: permohonan.length },
     { key: "maklumbalas", label: "Maklum Balas", icon: MessageSquare, badge: maklumBalas.length },
+    { key: "dibatalkan", label: "Dibatalkan", icon: Ban, badge: dibatalkan.length },
     { key: "katalaluan", label: "Kata Laluan", icon: KeyRound },
   ];
 
@@ -66,6 +69,7 @@ export function StafTabs({
         {tab === "cari" && <StafSearch total={total} />}
         {tab === "permohonan" && <PermohonanPanel rows={permohonan} />}
         {tab === "maklumbalas" && <MaklumBalasPanel rows={maklumBalas} />}
+        {tab === "dibatalkan" && <DibatalkanPanel rows={dibatalkan} />}
         {tab === "katalaluan" && <KataLaluanTab />}
       </div>
     </div>

@@ -35,6 +35,11 @@ const LABEL_SRC = "masjid-labels";
 const LABEL_LAYER = "masjid-labels";
 const B3D_LAYER = "bangunan-3d";
 
+// Marker kubah emas — dome bawang (ogee) + finial + tapak titik (anchor bottom).
+// Menggantikan pin arch maroon; motif kubah PERKIB (rujuk Kubah.tsx). Emas #C6A25D
+// + outline putih supaya jelas atas peta positron yang cerah.
+const KUBAH_MARKER_SVG = `<svg width="30" height="38" viewBox="0 0 30 38" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="15" cy="3.4" r="1.9" fill="#C6A25D"/><rect x="14.1" y="3.8" width="1.8" height="3.6" rx="0.9" fill="#C6A25D"/><path d="M15 7C20.6 12.6 22.2 16.6 19.8 20.2C17.9 23.1 23.2 26.2 22 32.2L8 32.2C6.8 26.2 12.1 23.1 10.2 20.2C7.8 16.6 9.4 12.6 15 7Z" fill="#C6A25D" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M15 10.6C18 14 19 17 17.6 19.6" stroke="#EBDCB4" stroke-width="1.2" stroke-linecap="round" opacity="0.85"/><path d="M8 32.2H22L15 37.6Z" fill="#C6A25D" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+
 // Peta direktori masjid — MapLibre GL + OpenFreeMap (positron). Marker arch maroon
 // (klik → drawer) + LABEL nama (symbol layer, collision auto). Fokus wilayah + toggle
 // 3D bangunan. Hanya masjid dgn koordinat dipaparkan. Ralat muat → onError (fallback).
@@ -105,10 +110,12 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
       const el = document.createElement("button");
       el.setAttribute("aria-label", m.nama);
       el.className = "perkib-pin";
+      // Marker kubah emas (dome ogee + finial + tapak) — motif kubah PERKIB.
+      el.innerHTML = KUBAH_MARKER_SVG;
       el.style.cssText =
-        "width:22px;height:26px;background:var(--primary);clip-path:url(#archClip);border:1.5px solid #fff;box-shadow:0 2px 6px rgba(13,17,23,.4);cursor:pointer;";
+        "width:30px;height:38px;padding:0;border:0;background:transparent;cursor:pointer;line-height:0;filter:drop-shadow(0 2px 3px rgba(13,17,23,.45));";
       el.addEventListener("click", () => setSelected(m));
-      const marker = new maplibregl.Marker({ element: el })
+      const marker = new maplibregl.Marker({ element: el, anchor: "bottom" })
         .setLngLat([m.longitude!, m.latitude!])
         .addTo(map);
       markers.push(marker);
@@ -223,7 +230,7 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
           )}
           {selected.telefon && (
             <a
-              href={`tel:${selected.telefon.replace(/\s/g, "")}`}
+              href={`tel:${selected.telefon.split("/")[0].replace(/[^\d+]/g, "")}`}
               className="mt-3 flex items-center gap-2 text-sm text-ink transition-colors hover:text-primary"
             >
               <Phone className="size-4 shrink-0 text-accent" />

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { isStafGateAuthenticated, isStafGateConfigured } from "@/lib/staf-gate";
 import { stafLainCount } from "@/lib/staf-lain";
-import { getPermohonanList, getMaklumBalasList } from "@/lib/admin-data";
+import { getPermohonanList, getMaklumBalasList, getPermohonanDibatalkan } from "@/lib/admin-data";
 import { StafGateForm } from "./StafGateForm";
 import { StafTabs } from "./StafTabs";
 
@@ -33,7 +33,11 @@ export default async function StafPage() {
 
   // Di sebalik gate: 4 tab — cari staf MAIWP, urus permohonan, maklum balas,
   // tukar kata laluan. (Padam/edit rekod HANYA di sini, bukan di admin biasa.)
-  const [permohonan, maklumBalas] = await Promise.all([getPermohonanList(), getMaklumBalasList()]);
+  const [permohonan, maklumBalas, dibatalkan] = await Promise.all([
+    getPermohonanList(),
+    getMaklumBalasList(),
+    getPermohonanDibatalkan(),
+  ]);
 
   return (
     <div>
@@ -44,7 +48,12 @@ export default async function StafPage() {
           dan tukar kata laluan halaman admin.
         </p>
       </div>
-      <StafTabs total={stafLainCount()} permohonan={permohonan} maklumBalas={maklumBalas} />
+      <StafTabs
+        total={stafLainCount()}
+        permohonan={permohonan}
+        maklumBalas={maklumBalas}
+        dibatalkan={dibatalkan}
+      />
     </div>
   );
 }
