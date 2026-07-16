@@ -36,10 +36,13 @@ async function main() {
   console.log(`Nombor rujukan tertinggi: ${perm.tertinggi ?? "(tiada)"}`);
   console.log(`\nReset ke 0000 → permohonan seterusnya = PKB-${year}-0001`);
 
-  const selamat = perm.aktif === 0;
+  // Selamat HANYA bila TIADA rekod langsung (aktif ATAU dibatalkan) — rekod dibatalkan
+  // masih memegang nomborRujukan, jadi reset boleh cipta nombor BERTINDIH bila dipulihkan.
+  const selamat = perm.total === 0;
   if (!selamat) {
-    console.log(`\n⚠️  AMARAN: ada ${perm.aktif} permohonan AKTIF. Reset boleh cipta nombor rujukan BERTINDIH`);
-    console.log(`   dengan permohonan sedia ada. Batalkan/padam permohonan aktif dahulu, atau guna --force.`);
+    console.log(`\n⚠️  AMARAN: ada ${perm.total} rekod (${perm.aktif} aktif · ${perm.dibatalkan} dibatalkan).`);
+    console.log(`   Rekod dibatalkan masih pegang nombor rujukan — reset boleh cipta nombor BERTINDIH.`);
+    console.log(`   Padam Kekal rekod dibatalkan + batalkan/padam yang aktif dahulu, atau guna --force.`);
   }
 
   if (!commit) {

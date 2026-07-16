@@ -31,8 +31,8 @@ export default async function StafPage() {
     return <StafGateForm />;
   }
 
-  // Di sebalik gate: 4 tab — cari staf MAIWP, urus permohonan, maklum balas,
-  // tukar kata laluan. (Padam/edit rekod HANYA di sini, bukan di admin biasa.)
+  // Di sebalik gate: 5 tab — cari staf MAIWP, urus permohonan, maklum balas,
+  // pantau rekod dibatalkan, tukar kata laluan. (Padam/edit/batal rekod HANYA di sini.)
   const [permohonan, maklumBalas, dibatalkan] = await Promise.all([
     getPermohonanList(),
     getMaklumBalasList(),

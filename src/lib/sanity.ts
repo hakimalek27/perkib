@@ -426,7 +426,7 @@ export async function getJenisSaguhatiByKod(
 }
 
 // Kiraan permohonan sedia ada per jenis (kod) untuk seorang pegawai.
-// Kira semua status KECUALI "tolak" (permohonan ditolak tidak mengira had).
+// Kira semua status KECUALI "tolak" dan yang dibatalkan (kedua-duanya tidak mengira had).
 export async function getSaguhatiUsage(
   employeeNo: string
 ): Promise<Record<string, number>> {
@@ -434,7 +434,7 @@ export async function getSaguhatiUsage(
   if (!client) return {};
   try {
     const rows = await client.fetch<Array<{ jenisKod: string }>>(
-      `*[_type=="permohonanSaguhati" && employeeNo==$emp && status != "tolak"]{ jenisKod }`,
+      `*[_type=="permohonanSaguhati" && employeeNo==$emp && status != "tolak" && dibatalkan != true]{ jenisKod }`,
       { emp: employeeNo }
     );
     const kira: Record<string, number> = {};

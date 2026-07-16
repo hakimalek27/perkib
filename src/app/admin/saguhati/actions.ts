@@ -32,6 +32,16 @@ export async function updateStatusAction(
   if (!client) return { ok: false, error: "Sistem tidak tersedia." };
 
   try {
+    // Rekod yang dibatalkan (soft delete) tidak boleh diubah status di sini —
+    // elak admin biasa menghidupkan / mencetus WhatsApp via URL terus. Urus di /admin/staf.
+    const sedia = await client.fetch<{ dibatalkan?: boolean } | null>(
+      `*[_type=="permohonanSaguhati" && _id==$id][0]{ dibatalkan }`,
+      { id }
+    );
+    if (sedia?.dibatalkan) {
+      return { ok: false, error: "Rekod telah dibatalkan — urus di Kawalan Staf." };
+    }
+
     const now = new Date().toISOString();
     const patch: Record<string, unknown> = {
       status: update.status,

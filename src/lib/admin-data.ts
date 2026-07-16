@@ -79,8 +79,10 @@ export async function getStatusCounts(): Promise<Record<string, number>> {
 export async function getPermohonanById(id: string): Promise<PermohonanPenuh | null> {
   const client = getWriteClient();
   if (!client) return null;
+  // dibatalkan != true → rekod di-soft-delete TAK boleh dibuka admin biasa
+  // walaupun _id diketahui (URL terus). Pengurusan hanya di /admin/staf (gate kedua).
   return client.fetch(
-    `*[_type=="permohonanSaguhati" && _id==$id][0]{
+    `*[_type=="permohonanSaguhati" && _id==$id && dibatalkan != true][0]{
        ${RINGKAS_FIELDS},
        emelPemohon, jawatanPemohon, jenisKod, catatan, catatanAdmin, tarikhKemaskini,
        bankNama, bankAkaunEnc, telefonPemohonEnc,

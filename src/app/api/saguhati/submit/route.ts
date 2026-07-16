@@ -139,10 +139,18 @@ export async function POST(req: Request) {
   try {
     const result = await runExclusive(idemKey, async () => {
       // Idempotency: jika permohonan dengan idemKey ini sudah wujud, pulangkan sedia ada.
-      const existing = await client.fetch<{ nomborRujukan?: string } | null>(
-        `*[_type=="permohonanSaguhati" && _id==$id][0]{ nomborRujukan }`,
+      const existing = await client.fetch<{ nomborRujukan?: string; dibatalkan?: boolean } | null>(
+        `*[_type=="permohonanSaguhati" && _id==$id][0]{ nomborRujukan, dibatalkan }`,
         { id: docId }
       );
+      // Rekod asal telah dibatalkan pentadbir — jangan pulangkan ref lama (pemohon tak jumpa
+      // via semak status kerana ditapis). Minta mula permohonan baharu (sesi baru = idemKey baru).
+      if (existing?.dibatalkan) {
+        throw new SubmitError(
+          409,
+          "Permohonan asal telah dibatalkan oleh pentadbir. Sila mulakan permohonan baharu."
+        );
+      }
       if (existing?.nomborRujukan) {
         return { refNo: existing.nomborRujukan, created: false };
       }
@@ -173,10 +181,10 @@ export async function POST(req: Request) {
       if (!pegawai) throw new SubmitError(404, "Rekod pegawai tidak dijumpai.");
       if (!jenis) throw new SubmitError(400, "Jenis saguhati tidak sah.");
 
-      // Kuatkuasa had maksimum (seumur hidup; tidak kira yang ditolak).
+      // Kuatkuasa had maksimum (seumur hidup; tidak kira yang ditolak atau dibatalkan).
       if (jenis.hadMaksimum != null) {
         const used = await client.fetch<number>(
-          `count(*[_type=="permohonanSaguhati" && employeeNo==$emp && jenisKod==$kod && status != "tolak"])`,
+          `count(*[_type=="permohonanSaguhati" && employeeNo==$emp && jenisKod==$kod && status != "tolak" && dibatalkan != true])`,
           { emp: employeeNo, kod: jenisKod }
         );
         if (used >= jenis.hadMaksimum) {
