@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Search, Trash2, Loader2, AlertTriangle, Save, Inbox, Ban, RotateCcw, ArchiveX } from "lucide-react";
+import { Search, Trash2, Loader2, AlertTriangle, Save, Inbox, Ban, RotateCcw, ArchiveX, RefreshCw } from "lucide-react";
 import { Input, Textarea } from "@/components/ui/input";
 import { Field } from "@/components/ui/field";
 import { formatRM } from "@/lib/utils";
@@ -15,7 +15,10 @@ import {
   updatePermohonanAction,
   bacaButiranPermohonanAction,
   deleteMaklumBalasAction,
+  bacaKaunterAction,
+  resetKaunterAction,
   type ButiranPermohonan,
+  type KaunterInfo,
 } from "./actions";
 
 type Tab = "permohonan" | "maklumbalas";
@@ -99,6 +102,7 @@ export function PermohonanPanel({ rows }: { rows: PermohonanRingkas[] }) {
   }, [rows, query]);
 
   return (
+    <div className="space-y-6">
     <div className="grid gap-5 lg:grid-cols-[1fr_1.1fr]">
       <div>
         <div className="relative">
@@ -141,6 +145,153 @@ export function PermohonanPanel({ rows }: { rows: PermohonanRingkas[] }) {
           </div>
         )}
       </div>
+    </div>
+
+      <ResetRujukanCard />
+    </div>
+  );
+}
+
+// ── Reset nombor rujukan (zon bahaya) — HANYA /admin/staf ────────────────────
+// Set semula kaunter → permohonan seterusnya PKB-<tahun>-0001. Guard di server
+// (resetKaunterAction) BLOK jika ada rekod aktif/dibatalkan yang pegang nombor
+// rujukan — elak nombor bertindih. Dialog papar diagnosis + taip RESET.
+function ResetRujukanCard() {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [dialog, setDialog] = useState(false);
+  const [memuat, setMemuat] = useState(false);
+  const [info, setInfo] = useState<KaunterInfo | null>(null);
+  const [konfirm, setKonfirm] = useState("");
+
+  function buka() {
+    setKonfirm("");
+    setInfo(null);
+    setMemuat(true);
+    setDialog(true);
+    bacaKaunterAction().then((res) => {
+      if (res.ok && res.info) setInfo(res.info);
+      else toast.error(res.error ?? "Gagal membaca kaunter.");
+      setMemuat(false);
+    });
+  }
+
+  function doReset() {
+    start(async () => {
+      const res = await resetKaunterAction();
+      if (res.ok) {
+        toast.success(`Kaunter direset — permohonan seterusnya ${res.info?.seterusnya ?? "PKB-0001"}.`);
+        setDialog(false);
+        router.refresh();
+      } else {
+        toast.error(res.error ?? "Gagal reset kaunter.");
+        if (res.info) setInfo(res.info); // segarkan kiraan jika guard menolak
+      }
+    });
+  }
+
+  const bolehReset = info?.bolehReset ?? false;
+
+  return (
+    <div className="rounded-xl border border-destructive/25 bg-destructive/[0.03] p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="flex size-9 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
+            <RefreshCw className="size-5" />
+          </span>
+          <div>
+            <h3 className="font-display text-base font-semibold text-ink">Reset Nombor Rujukan</h3>
+            <p className="text-xs text-muted-foreground">
+              Set semula kaunter → permohonan seterusnya bermula <strong>0001</strong>. Untuk go-live / permulaan tahun.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={buka}
+          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg border border-destructive/40 px-4 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10"
+        >
+          <RefreshCw className="size-4" /> Reset No. Rujukan
+        </button>
+      </div>
+
+      {dialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => !pending && setDialog(false)} />
+          <div role="dialog" aria-modal="true" className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl">
+            <div className="mb-3 flex items-center gap-3">
+              <span className="flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                <RefreshCw className="size-5" />
+              </span>
+              <h3 className="font-display text-lg font-semibold text-ink">Reset nombor rujukan?</h3>
+            </div>
+
+            {memuat ? (
+              <p className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" /> Membaca kaunter…
+              </p>
+            ) : info ? (
+              <>
+                <dl className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
+                  <div className="flex justify-between py-0.5">
+                    <dt className="text-muted-foreground">Seq semasa</dt>
+                    <dd className="font-semibold text-ink">{info.seq}</dd>
+                  </div>
+                  <div className="mt-1 flex justify-between border-t border-border pt-1.5">
+                    <dt className="text-muted-foreground">Selepas reset</dt>
+                    <dd className="font-mono font-semibold text-primary">{info.seterusnya}</dd>
+                  </div>
+                  <div className="mt-1 flex justify-between border-t border-border pt-1.5">
+                    <dt className="text-muted-foreground">Permohonan {info.tahun}</dt>
+                    <dd className="text-ink">
+                      {info.total} ({info.aktif} aktif · {info.dibatalkan} dibatalkan)
+                    </dd>
+                  </div>
+                </dl>
+
+                {bolehReset ? (
+                  <>
+                    <p className="mt-3 text-sm text-muted-foreground">
+                      Taip <strong className="text-ink">RESET</strong> untuk sahkan:
+                    </p>
+                    <Input
+                      className="mt-2"
+                      value={konfirm}
+                      onChange={(e) => setKonfirm(e.target.value)}
+                      placeholder="RESET"
+                      aria-label="Taip RESET untuk sahkan"
+                    />
+                  </>
+                ) : (
+                  <p className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-700">
+                    Tidak boleh reset — ada <strong>{info.total}</strong> rekod ({info.aktif} aktif · {info.dibatalkan}{" "}
+                    dibatalkan) yang masih memegang nombor rujukan. Batalkan &amp; Padam Kekal rekod berkenaan dahulu
+                    (elak nombor bertindih).
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="py-4 text-sm text-destructive">Gagal membaca maklumat kaunter.</p>
+            )}
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setDialog(false)}
+                disabled={pending}
+                className="inline-flex h-10 items-center rounded-lg border border-input px-4 text-sm font-medium text-ink hover:bg-muted disabled:opacity-60"
+              >
+                Kembali
+              </button>
+              <button
+                onClick={doReset}
+                disabled={pending || !bolehReset || konfirm.trim() !== "RESET"}
+                className="inline-flex h-10 items-center gap-2 rounded-lg bg-destructive px-4 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+              >
+                {pending ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />} Reset Sekarang
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

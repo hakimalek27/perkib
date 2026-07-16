@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { SanityClient } from "next-sanity";
 import { isAdminAuthenticated, checkAdminPassword } from "@/lib/admin-auth";
 import { isStafGateAuthenticated, checkStafGatePassword } from "@/lib/staf-gate";
 import { getWriteClient } from "@/lib/sanity-write";
@@ -180,6 +181,92 @@ export async function bacaButiranPermohonanAction(
         catatanAdmin: doc.catatanAdmin ?? "",
       },
     };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
+// ── Kaunter nombor rujukan ───────────────────────────────────────────────
+// Reset kaunter saguhati → seq 0 (permohonan seterusnya PKB-<tahun>-0001).
+// HANYA di sebalik gate staf. BLOK jika ada rekod (aktif ATAU dibatalkan) yang
+// masih pegang nombor rujukan — reset ketika itu boleh cipta nombor BERTINDIH
+// (rekod dibatalkan boleh dipulihkan). Skrip CLI --force kekal untuk kecemasan.
+export type KaunterInfo = {
+  tahun: number;
+  seq: number;
+  total: number;
+  aktif: number;
+  dibatalkan: number;
+  tertinggi: string | null;
+  seterusnya: string;
+  bolehReset: boolean;
+};
+
+async function bacaKaunterInfo(client: SanityClient): Promise<KaunterInfo> {
+  const tahun = new Date().getFullYear();
+  const counterId = `counter-saguhati-${tahun}`;
+  const counter = await client.fetch<{ seq?: number } | null>(`*[_id==$id][0]{ seq }`, { id: counterId });
+  const perm = await client.fetch<{
+    total: number;
+    aktif: number;
+    dibatalkan: number;
+    tertinggi: string | null;
+  }>(`{
+    "total": count(*[_type=="permohonanSaguhati" && !(_id in path("drafts.**"))]),
+    "aktif": count(*[_type=="permohonanSaguhati" && dibatalkan != true && !(_id in path("drafts.**"))]),
+    "dibatalkan": count(*[_type=="permohonanSaguhati" && dibatalkan == true && !(_id in path("drafts.**"))]),
+    "tertinggi": *[_type=="permohonanSaguhati" && !(_id in path("drafts.**"))] | order(nomborRujukan desc)[0].nomborRujukan
+  }`);
+  return {
+    tahun,
+    seq: counter?.seq ?? 0,
+    total: perm.total,
+    aktif: perm.aktif,
+    dibatalkan: perm.dibatalkan,
+    tertinggi: perm.tertinggi,
+    seterusnya: `PKB-${tahun}-0001`,
+    bolehReset: perm.total === 0,
+  };
+}
+
+export async function bacaKaunterAction(): Promise<{ ok: boolean; info?: KaunterInfo; error?: string }> {
+  const g = await ensureGate();
+  if (!g.ok) return { ok: false, error: g.error };
+  const client = getWriteClient();
+  if (!client) return { ok: false, error: "Sistem tidak tersedia." };
+  try {
+    return { ok: true, info: await bacaKaunterInfo(client) };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
+export async function resetKaunterAction(): Promise<ActionResult & { info?: KaunterInfo }> {
+  const g = await ensureGate();
+  if (!g.ok) return g;
+  const client = getWriteClient();
+  if (!client) return { ok: false, error: "Sistem tidak tersedia." };
+  try {
+    const info = await bacaKaunterInfo(client);
+    // Guard: rekod dibatalkan pun masih pegang nombor rujukan → reset = risiko bertindih.
+    if (!info.bolehReset) {
+      return {
+        ok: false,
+        info,
+        error: `Tidak boleh reset — ada ${info.total} rekod (${info.aktif} aktif · ${info.dibatalkan} dibatalkan) yang masih pegang nombor rujukan. Batalkan &amp; Padam Kekal rekod berkenaan dahulu.`,
+      };
+    }
+    const counterId = `counter-saguhati-${info.tahun}`;
+    await client.createIfNotExists({ _id: counterId, _type: "counter", seq: 0 });
+    await client.patch(counterId).set({ seq: 0 }).commit();
+    await writeAudit(
+      "reset-kaunter-saguhati",
+      counterId,
+      `Kaunter no. rujukan direset ke 0 — seterusnya ${info.seterusnya} (gate staf)`
+    );
+    revalidatePath("/admin/staf");
+    revalidatePath("/admin");
+    return { ok: true, info: { ...info, seq: 0 } };
   } catch (err) {
     return { ok: false, error: (err as Error).message };
   }
