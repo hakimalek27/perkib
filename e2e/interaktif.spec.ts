@@ -174,3 +174,25 @@ test.describe("PERKIB v3.4 — jenama/peta/yuran (LIVE)", () => {
     await expect(page.getByRole("button", { name: /Semak Rekod Yuran/ })).toBeVisible();
   });
 });
+
+test.describe("PERKIB v3.6 — marker Claude Design (LIVE)", () => {
+  test("marker masjid = rekaan Claude Design + klik → drawer + pin aktif", async ({ page }) => {
+    await page.goto("/direktori-masjid?view=peta");
+    const pin = page.locator(".perkib-pin").first();
+    await pin.waitFor({ state: "attached", timeout: 20000 });
+    // SVG marker mengandungi gradien design (teardrop shell + kubah bawang) — bukan kubah lama.
+    const design = await pin.evaluate(
+      (el) => el.innerHTML.includes("mm-shell-n") && el.innerHTML.includes("mm-dome-n") && el.innerHTML.includes("64 82")
+    );
+    expect(design).toBeTruthy();
+    // Klik pin → drawer terbuka.
+    await pin.click({ force: true });
+    await expect(page.getByRole("link", { name: /Dapatkan Arah/ })).toBeVisible({ timeout: 8000 });
+    // Pin dipilih jadi aktif (aria-current + gradien varian -a).
+    const aktif = await page.evaluate(() => {
+      const el = document.querySelector('.perkib-pin[aria-current="true"]');
+      return !!el && el.innerHTML.includes("mm-shell-a");
+    });
+    expect(aktif).toBeTruthy();
+  });
+});
