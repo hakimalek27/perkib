@@ -99,3 +99,50 @@ export function ringkasan(rows: YuranRow[], bulanSemasa: number): YuranRingkasan
   }
   return { kutipanTahun, kutipanBulanIni, bilPegawai: rows.length, bilLunas };
 }
+
+// ── Semakan yuran individu (UI /yuran/semak + webhook WhatsApp) ───────────
+export const BULAN_PENUH = [
+  "Januari", "Februari", "Mac", "April", "Mei", "Jun",
+  "Julai", "Ogos", "September", "Oktober", "November", "Disember",
+];
+
+export type RekodYuranTahun = {
+  tahun: number;
+  bulan: YuranBulan[]; // 12 (indeks 0 = Januari)
+  bilDibayar: number;
+  jumlahDibayar: number;
+};
+
+export async function ambilRekodYuran(employeeNo: string, tahun: number): Promise<RekodYuranTahun> {
+  const client = getWriteClient();
+  const doc = client
+    ? await client.fetch<Record<string, YuranBulan> | null>(
+        `*[_id==$id][0]{ ${MONTH_KEYS.join(", ")} }`,
+        { id: `yuran-${employeeNo}-${tahun}` },
+        { cache: "no-store" }
+      )
+    : null;
+  const bulan: YuranBulan[] = MONTH_KEYS.map((k) => {
+    const m = (doc?.[k] as YuranBulan | undefined) ?? { dibayar: false };
+    return { dibayar: Boolean(m.dibayar), tarikh: m.tarikh, amaun: m.amaun, kaedah: m.kaedah };
+  });
+  const bilDibayar = bulan.filter((b) => b.dibayar).length;
+  const jumlahDibayar = bulan.reduce((s, b) => s + (b.dibayar ? b.amaun ?? 0 : 0), 0);
+  return { tahun, bulan, bilDibayar, jumlahDibayar };
+}
+
+// Teks WhatsApp BM ringkas untuk balasan keyword "yuran".
+export function formatYuranMesej(nama: string, employeeNo: string, rekod: RekodYuranTahun[]): string {
+  const baris: string[] = ["*Rekod Yuran Keahlian PERKIB*", `Nama: ${nama}`, `No. Pekerja: ${employeeNo}`];
+  for (const r of rekod) {
+    baris.push("", `*Tahun ${r.tahun}*`);
+    baris.push(r.bulan.map((b, i) => `${b.dibayar ? "✅" : "⬜"} ${BULAN_PENDEK[i]}`).join("  "));
+    baris.push(
+      r.bilDibayar > 0
+        ? `Dibayar: ${r.bilDibayar}/12 bulan${r.jumlahDibayar > 0 ? ` (RM${r.jumlahDibayar.toFixed(2)})` : ""}`
+        : "Belum ada rekod bayaran."
+    );
+  }
+  baris.push("", "_Semakan rasmi: perkib.my/yuran/semak_");
+  return baris.join("\n");
+}

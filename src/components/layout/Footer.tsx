@@ -25,6 +25,7 @@ const NAV_PERKHIDMATAN = [
   { label: "Maklumat Pegawai", href: "/pegawai" },
   { label: "Mohon Saguhati", href: "/saguhati" },
   { label: "Semak Status Saguhati", href: "/saguhati/semak" },
+  { label: "Semak Yuran Keahlian", href: "/yuran/semak" },
   { label: "Derma", href: "/derma" },
 ];
 

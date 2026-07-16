@@ -145,7 +145,6 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
       if (map.getLayer(B3D_LAYER)) map.setLayoutProperty(B3D_LAYER, "visibility", "none");
       map.easeTo({ pitch: 30, duration: 600 });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [is3D, ready]);
 
   return (
