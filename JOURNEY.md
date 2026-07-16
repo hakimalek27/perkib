@@ -351,3 +351,29 @@ Hakim laporkan: `yuran 1880` dari 0189030363 **dapat rekod**, tetapi nombor lain
 
 ## Deployment (16 Jul, lewat)
 Build BERSIH (`rm -rf .next`) → standalone → tar-pipe 12M `ubuntu@43.133.34.55` → kekal `.env.local` → backup **`standalone.bak-20260716-wafix`** → `pm2 restart perkib`. Disahkan LIVE: route 200 (/, /yuran/semak, /studio) + webhook bad-sig 401. Rollback: `standalone.bak-20260716-wafix`. **Baki:** Hakim uji semula `yuran <noPekerja>` dari 2 nombor → saya semak engine log (tiada "gagal") + pm2 log (`[wa/webhook]`).
+
+---
+
+# v3.5 — 6 Permintaan Hakim (16 Julai 2026)
+
+Selepas fix webhook, Hakim beri 6 permintaan (fail `semakan_kontak_85_masjid.csv/xlsx` dilampir). 6 milestone (M1–M6), setiap satu lint+build hijau. Data disiasat langsung (dump masjid Sanity, baca skema/komponen) sebelum ubah.
+
+| # | Permintaan | Milestone |
+|---|---|---|
+| 1 | Tambah kontak masjid dari senarai | M1 — 56 kontak JAWI |
+| 2 | Popup: set bila mula & sampai bila (auto-off) | M2 — popupMula/popupTamat |
+| 3 | Kelajuan jalur aktiviti boleh set | M3 — scrollerKelajuan |
+| 4 | Peta: tukar arch merah → kubah crown gold | M4 — marker kubah SVG |
+| 5 | Nombor rujukan reset ke 0000 | M5 — purge + reset kaunter |
+| 6 | Pembatalan = soft delete (admin/staf sahaja nampak) | M6 — dibatalkan flag |
+
+## Pendekatan & cabaran
+- **M1 padanan _id (ketelitian):** dump 97 masjid Sanity (`list-masjid-kontak.ts`) → padan 56 baris CSV yg ada kontak ke `_id` sebenar. Bahaya diasingkan: **Al-Hidayah Sentul (Z2) vs Al-Hidayah (Z6)**, **Al-Mukhlisin plain (dilangkau — CSV amaran) vs Alam Damai (diisi)**, **Nur Iman vs Nurul Iman**. Skrip additive-only + dry-run (0 ditolak/hilang) sebelum commit. Telefon 2 nombor (`03-x / 01x-x`): longgar TEL_RE + `tel:` guna nombor pertama.
+- **M2 popup masa (client vs ISR):** homepage `revalidate=300` → server `now` boleh lag ~5 min. Selesai: **client `PopupBanner` tapis julat masa tepat** (masa pelawat vs ISO absolute) + **backstop server** matikan bila lepas `popupTamat`. Validasi tamat>mula perlu `Rule.custom` → tambah ke `_rule.ts`.
+- **M3 kelajuan:** CSS var `--marquee-duration` (default 42s) di-override inline dari nilai Sanity → radio 4 tahap map ke saat.
+- **M4 kubah marker:** reka SVG dome ogee (rujuk `Kubah.tsx`) emas `#C6A25D` + outline putih (kontras atas positron cerah) + tapak titik, anchor `bottom` (titik = lokasi tepat). `el.innerHTML` (SVG statik, tiada data pengguna).
+- **M5 reset selamat:** kaunter seq=2, **1 permohonan AKTIF PKB-2026-0002** → reset naif cipta nombor BERTINDIH. Skrip diagnosis papar keadaan + guard. Hakim pilih "padam kekal" (rekod = ujian Muhammad Azan, status tolak) → purge + reset seq=0 → PKB-2026-0001 (0 tinggal).
+- **M6 soft delete:** batalkan (bukan padam terus) → `dibatalkan=true`. Tapis dari SEMUA view admin biasa + semak pemohon (dilayan "tidak dijumpai"). Hanya `/admin/staf` (gate berganda) nampak tab "Dibatalkan" — pantau + pulih (undo) + padam kekal. Konsisten dgn reka bentuk "urus rekod hanya di sebalik gate kedua".
+
+## Deployment v3.5 (16 Jul)
+Build BERSIH → standalone 50M → tar-pipe 12M `ubuntu@43.133.34.55` → kekal `.env.local` → backup **`standalone.bak-20260716-v35`** → pm2 restart. `main @ 077b562`. **Disahkan LIVE:** 5 route 200 + kontak masjid (Al-Firdaus/Abdul Rahman Auf/Al-Bukhary) dlm HTML. Marker kubah + soft delete + popup/kelajuan = pengesahan visual Hakim (peta ssr:false + gate admin). Rollback: `standalone.bak-20260716-v35`. Data Sanity (kontak + medan dibatalkan/kaunter) additive & boleh pulih.
