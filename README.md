@@ -8,7 +8,9 @@ Laman web rasmi **Pertubuhan Kebajikan Imam dan Bilal Majlis Agama Islam Wilayah
 
 - **Halaman organisasi penuh** — Profil & makna logo, Perutusan Presiden, Visi & Misi, Program, Keahlian, Sukarelawan, Soalan Lazim, Hubungi.
 - **Carta Organisasi AJK** — 3 lapis (Majlis Tertinggi, Perwakilan Zon, AJK Kluster), 24 ahli sesi 2025/2026.
-- **Direktori Masjid** — 94 masjid Wilayah Persekutuan mengikut **8 zon rasmi JAWI** (KL, Putrajaya, Labuan) + peta MapLibre (**93/94 berkoordinat** — rekod rasmi JAWI + pin peta; **fokus wilayah** KL/Putrajaya/Labuan + sempadan wilayah), dengan penapis + carian + lencana Masjid Induk/Negeri.
+- **Direktori Masjid** — 94 masjid Wilayah Persekutuan mengikut **8 zon rasmi JAWI** (KL, Putrajaya, Labuan) + peta MapLibre (**93/94 berkoordinat**; **label nama** masjid pada peta + toggle **3D** bangunan + **fokus wilayah** + sempadan; drawer **telefon/emel** kontak rasmi), dengan penapis + carian + lencana Masjid Induk/Negeri.
+- **Semak Yuran Keahlian** — pegawai semak rekod bayaran yuran 2 cara: halaman `/yuran/semak` (No. Pekerja + 4 digit IC + captcha) atau **WhatsApp** (`yuran <No. Pekerja>` dari nombor berdaftar → auto-balas rekod; webhook HMAC, pengesahan telefon PDPA).
+- **Paparan Utama boleh urus (Sanity)** — jalur aktiviti auto-skrol + popup banner iklan di homepage, dihidup/matikan + set A-Z melalui Studio ("🖼️ Paparan Utama").
 - **Maklumat Pegawai** — 93 pegawai (Ketua Imam, Timbalan Ketua Imam, Bilal) mengikut zon; admin urus penugasan + CRUD terus dari panel. Paparan awam patuh PDPA (tiada telefon/IC).
 - **Sistem Permohonan Saguhati** — 9 jenis. Ahli sahkan identiti (No. Pekerja + 4 digit IC + **captcha**) → pilih jenis → **maklumat bank + telefon** → muat naik dokumen → nombor rujukan. Cegah double-submit (idempotency), had per jenis, semak status dalam talian.
 - **Notifikasi WhatsApp** (wassap.wehdah.my) — pemohon & admin/group terima notifikasi automatik pada permohonan baharu dan perubahan status (lulus/tolak/dibayar).
@@ -22,7 +24,7 @@ Laman web rasmi **Pertubuhan Kebajikan Imam dan Bilal Majlis Agama Islam Wilayah
 - **Tailwind CSS v4** (CSS-first `@theme`)
 - **Sanity v5** — CMS + Studio terbenam di `/studio`
 - Animasi: **CSS + IntersectionObserver + rAF** sahaja (framer-motion dibuang v3); **MapLibre GL** (peta); **react-hook-form + zod** (borang), **Resend** (emel)
-- Tema **"PERKIB Nadi"** (v3): ivory `#F7F3EB` / obsidian `#0D1117` / maroon `#9E1F2E` / gold `#C6A25D`; font **Bricolage Grotesque** (display) + **Plus Jakarta Sans** (body); motif **arch** + **kubah** (dome mahkota kad) + corak latar **girih** Islamik (v3.1) + bingkai **arch-glow** bercahaya pada potret kad (v3.2)
+- Tema **"PERKIB Nadi"** (v3): ivory `#F7F3EB` / obsidian `#0D1117` / maroon `#9E1F2E` / gold `#C6A25D`; font **Bricolage Grotesque** (display) + **Plus Jakarta Sans** (body); motif **arch** + **kubah** (dome mahkota kad) + corak latar **girih** Islamik (v3.1) + bingkai **arch-glow** bercahaya pada potret kad (v3.2) + **medali emas** hero (logo diangkat, v3.4)
 - Perpustakaan UI kongsi (v3.2, adopsi design system): `Badge` (pil status/kategori) · `Field` (label+kawalan+ralat a11y) · `Select`/`Input` 52px · `Accordion` CSS (tanpa Radix). Pembaikan mobile: penapis `/pegawai` (butang Tapis collapsible) + jadual admin yuran (kolum sticky sempit)
 
 ## 🚀 Persediaan

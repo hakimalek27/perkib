@@ -143,3 +143,34 @@ test.describe("PERKIB koordinat masjid (LIVE)", () => {
     expect(pins).toBeGreaterThan(40); // majoriti masjid KL kini berkoordinat
   });
 });
+
+test.describe("PERKIB v3.4 — jenama/peta/yuran (LIVE)", () => {
+  test("M1 · homepage hero medali emas (logo diangkat)", async ({ page }) => {
+    await page.goto("/");
+    // Medali di panel arch (desktop lg:block) — sinaran radial .medali-halo.
+    await expect(page.locator(".medali-halo").first()).toBeAttached();
+    // Logo guna mark transparan (bukan logo.png kotak).
+    const logo = page.getByAltText("Logo PERKIB").first();
+    await expect(logo).toBeVisible();
+  });
+
+  test("M1 · OG thumbnail WhatsApp = /og/perkib-og.png", async ({ page }) => {
+    await page.goto("/");
+    const og = await page.locator('meta[property="og:image"]').getAttribute("content");
+    expect(og).toContain("/og/perkib-og.png");
+  });
+
+  test("M3 · peta butang toggle 3D wujud", async ({ page }) => {
+    await page.goto("/direktori-masjid?view=peta");
+    await page.locator(".perkib-pin").first().waitFor({ state: "attached", timeout: 20000 });
+    await expect(page.getByRole("button", { name: /Paparan 3D/ })).toBeVisible();
+  });
+
+  test("M6 · /yuran/semak borang + captcha render", async ({ page }) => {
+    await page.goto("/yuran/semak");
+    await expect(page.getByRole("heading", { name: /Semak Yuran/ })).toBeVisible();
+    await expect(page.locator("#emp")).toBeVisible(); // No. Pekerja
+    await expect(page.locator("#captcha")).toBeVisible(); // pengesahan
+    await expect(page.getByRole("button", { name: /Semak Rekod Yuran/ })).toBeVisible();
+  });
+});

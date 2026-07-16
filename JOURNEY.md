@@ -287,3 +287,37 @@ Susulan v3.3 (M4 geocode Nominatim hanya jumpa 55/94), Hakim bekalkan **koordina
 
 ## Deployment (15 Jul, petang)
 Build BERSIH (`rm -rf .next`, bake 93 koordinat fresh Sanity) → standalone 52M → tar-pipe 13M `ubuntu@43.133.34.55` → kekal `.env.local` (1239B) → backup **`standalone.bak-20260715-v33map`** → `pm2 restart perkib`. **Disahkan LIVE:** 5 route 200; koordinat baru dlm HTML live (Al-Ehsan 115.187944 + Abi Ayyub 3.22717 + 15 Labuan unik); **E2E Playwright 11/11 lulus** (+ujian pin peta). Data mutasi additive & boleh pulih (koordinat boleh ubah/padam dlm Studio). Rollback: `standalone.bak-20260715-v33map`.
+
+---
+
+# v3.4 — 8 Maklum Balas Hakim (16 Julai 2026)
+
+Selepas v3.4 dirancang (EnterPlanMode, 3 soalan disahkan), 8 permintaan dilaksana sebagai 6 milestone (M1–M6), setiap satu lint+typecheck+build hijau + commit; **E2E Playwright 15/15 lulus** (11 + 4 baharu). Punca setiap isu disiasat langsung (baca kod, bukan spekulasi).
+
+| # | Permintaan | Milestone | Commit |
+|---|---|---|---|
+| 1,5 | Logo hero "tenggelam" + thumbnail WhatsApp hodoh | M1 medali + OG baharu | `9db…` |
+| 3,4 | /admin/staf bercampur + tukar kata laluan | M2 4 tab + scrypt | — |
+| 2 | Peta pin kubah shj (nama/kontak/3D) | M3 label+3D+medan | — |
+| 2 | Data telefon/emel masjid | M4 kontak sahih | — |
+| 6,7 | Scroller aktiviti + popup banner (Sanity) | M5 paparanUtama | — |
+| 8 | Semak yuran (WhatsApp keyword + UI) | M6 webhook+/yuran/semak | — |
+
+## Keputusan reka bentuk (AskUserQuestion)
+- **Logo: medali emas bercahaya** (bukan transparan penuh / foto) — cakera gelap + cincin emas + glow; risiko rendah.
+- **Kontak masjid: cari & isi SAHIH sahaja** (laman/FB rasmi/JAWI) + laporan; ragu = kosong.
+- **Yuran: WhatsApp + UI sandaran** (UI pasti jalan hari pertama; WA bergantung webhook gateway).
+
+## Cabaran & penyelesaian v3.4
+- **Logo kotak hitam dlm medali** — logo.png ada latar hitam baked-in → kotak nampak dlm cakera. Diselesai: proses `logo-mark.png` (sharp luminance ramp buang hitam → transparan) → emblem emas terapung bersih. Digunakan di hero medali + OG.
+- **Cache OG WhatsApp** — WhatsApp cache OG ikut URL. Diselesai: laluan fail **BAHARU** `public/og/perkib-og.png` (bukan ganti route lama) + `opengraph-image.tsx` DIPADAM (konvensyen fail Next mengatasi metadata). OG dijana via Playwright screenshot HTML (Bricolage/Jakarta Google Fonts) → sharp <300KB (101KB).
+- **Kata laluan: hash vs lockout** — simpan hash scrypt dlm Sanity singleton `adminTetapan`; `checkAdminPassword` async **fallback env** bila hash tiada / Sanity gagal dibaca (fail-open ke env — elak admin terkunci bila Sanity down). Guard berganda + sahkan semasa + rate limit 5/15min + audit. Roundtrip scrypt diuji (betul/salah/kosong/rosak).
+- **Font glyph label peta** — `text-font` diambil dari layer symbol style positron sedia ada (`map.getStyle()`) masa runtime → elak glyph tak wujud; collision auto MapLibre (`text-optional`) kemaskan label pada semua zum.
+- **3D bangunan** — `fill-extrusion` source openmaptiles `building` (minzoom 14) dgn try/catch graceful; toggle tetap condongkan peta (pitch 58) walau bangunan tiada.
+- **Jarak atas homepage** bila scroller aktif — scroller ambil `pt-[104px]` (ruang header terapung); HeroMihrab terima prop `compact` (pt kecil) elak jurang berganda.
+- **Pra-syarat webhook** — SSH sahkan wassap.wehdah.my (Laravel, sama repo Whatsapp Multi Tenant) LIVE ada `WebhookController::fanoutReceived` + `DispatchCustomerWebhook` + jadual `webhooks`/`webhook_deliveries` (migrated) + `wassap-queue.service` RUNNING (queue database) + 0 webhook didaftar. **Ciri yuran WA boleh dibina** — cuma perlu daftar webhook (baki Hakim).
+- **PDPA yuran WhatsApp** — webhook decrypt telefon pegawai + banding nombor penghantar; hanya pegawai dari nombor berdaftar terima rekod sendiri. Keyword ketat "yuran <noPekerja>"; mesej lain 200 senyap (nombor terima mesej manusia biasa).
+- **Chrome MCP tab background** (isu berulang) — komponen `dynamic ssr:false` (MasjidMap) gantung hidrasi dlm tab background → butang/pin 0. DOM query page SSR statik (homepage medali/OG, /yuran/semak borang) berfungsi. Peta disahkan via **Playwright headless** (butang 3D + pin>40 + wilayah, 15/15).
+
+## Deployment v3.4 (16 Jul)
+Build BERSIH (`rm -rf .next`) → standalone 50M → tar-pipe 12.3M `ubuntu@43.133.34.55` → kekal `.env.local` (1239B) + tambah `WASSAP_WEBHOOK_SECRET` (via stdin, 1326B) → backup **`standalone.bak-20260716-v34`** → `pm2 restart perkib`. **Disahkan LIVE:** 6 route 200; og:image=/og/perkib-og.png (200, 101KB); medali-halo + Semak Yuran dlm HTML live; webhook HMAC gate 401; **E2E Playwright 15/15** + Chrome MCP DOM (homepage medali/logo-mark/OG + /yuran/semak borang+captcha). Rollback: `standalone.bak-20260716-v34`. Data Sanity (kontak + paparanUtama) additive & boleh pulih.
