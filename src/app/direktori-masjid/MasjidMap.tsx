@@ -35,18 +35,40 @@ const LABEL_SRC = "masjid-labels";
 const LABEL_LAYER = "masjid-labels";
 const B3D_LAYER = "bangunan-3d";
 
-// Marker kubah emas — dome bawang (ogee) + finial + tapak titik (anchor bottom).
-// Menggantikan pin arch maroon; motif kubah PERKIB (rujuk Kubah.tsx). Emas #C6A25D
-// + outline putih supaya jelas atas peta positron yang cerah.
-const KUBAH_MARKER_SVG = `<svg width="30" height="38" viewBox="0 0 30 38" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="15" cy="3.4" r="1.9" fill="#C6A25D"/><rect x="14.1" y="3.8" width="1.8" height="3.6" rx="0.9" fill="#C6A25D"/><path d="M15 7C20.6 12.6 22.2 16.6 19.8 20.2C17.9 23.1 23.2 26.2 22 32.2L8 32.2C6.8 26.2 12.1 23.1 10.2 20.2C7.8 16.6 9.4 12.6 15 7Z" fill="#C6A25D" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M15 10.6C18 14 19 17 17.6 19.6" stroke="#EBDCB4" stroke-width="1.2" stroke-linecap="round" opacity="0.85"/><path d="M8 32.2H22L15 37.6Z" fill="#C6A25D" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+// Marker masjid — rekaan Claude Design "Masjid Map Marker": teardrop maroon
+// berpuncak arch + rim emas, recess ivory (mihrab), kubah bawang emas 3D + bulan
+// sabit, bayang tapak + glow. Tip pin di bawah-tengah → guna anchor "bottom".
+// viewBox 0 0 64 82; SVG width/height 100% → saiz sebenar dikawal oleh pinStyle.
+// active = pin dipilih (maroon lebih cerah + glow); suffix id gradien "a"/"n"
+// mengasingkan def normal vs aktif (id berulang antara pin OK — def sama).
+function masjidMarkerSvg(active: boolean): string {
+  const p = active ? "a" : "n";
+  const shellA = active ? "#D24157" : "#C23347";
+  const shellMid = active ? "#B0233A" : "#9E1F2E";
+  const shellB = active ? "#7C1622" : "#6E121E";
+  const glow = active ? `<ellipse cx="32" cy="34" rx="30" ry="30" fill="url(#mm-glow-${p})"/>` : "";
+  return `<svg viewBox="0 0 64 82" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="mm-shell-${p}" x1="0.2" y1="0" x2="0.85" y2="1"><stop offset="0" stop-color="${shellA}"/><stop offset="0.45" stop-color="${shellMid}"/><stop offset="1" stop-color="${shellB}"/></linearGradient><radialGradient id="mm-dome-${p}" cx="0.38" cy="0.32" r="0.85"><stop offset="0" stop-color="#FBEEC8"/><stop offset="0.4" stop-color="#E7CB8E"/><stop offset="0.75" stop-color="#C6A25D"/><stop offset="1" stop-color="#93712F"/></radialGradient><linearGradient id="mm-rim-${p}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2DCA6"/><stop offset="1" stop-color="#9A7838"/></linearGradient><radialGradient id="mm-glow-${p}" cx="0.5" cy="0.42" r="0.55"><stop offset="0" stop-color="#D9BC82" stop-opacity="0.6"/><stop offset="1" stop-color="#D9BC82" stop-opacity="0"/></radialGradient></defs><ellipse cx="32" cy="76" rx="12" ry="3.4" fill="#0D1117" opacity="0.22"/>${glow}<path d="M32 2 C15.4 2 3 14.4 3 31 C3 46.5 20 62 30.4 78.2 C31.2 79.4 32.8 79.4 33.6 78.2 C44 62 61 46.5 61 31 C61 14.4 48.6 2 32 2 Z" fill="url(#mm-shell-${p})" stroke="url(#mm-rim-${p})" stroke-width="2"/><path d="M8 20 C13 9 26 5 36 6 C24 8 15 14 11 24 Z" fill="#FFFFFF" opacity="0.16"/><path d="M32 11 C22 11 15 18.6 15 29.5 L15 45 L49 45 L49 29.5 C49 18.6 42 11 32 11 Z" fill="#F7F3EB" opacity="0.97"/><path d="M32 11 C22 11 15 18.6 15 29.5 L15 45 L18.5 45 L18.5 29.5 C18.5 19.8 24.3 12.6 32 11.4 Z" fill="#0D1117" opacity="0.05"/><line x1="32" y1="18.6" x2="32" y2="21" stroke="#B98F47" stroke-width="1.3" stroke-linecap="round"/><path d="M33.6 12.2 A3.2 3.2 0 1 0 33.6 18.6 A2.35 2.35 0 1 1 33.6 12.2 Z" fill="url(#mm-rim-${p})"/><path d="M32 21 C27.2 24.8 25.6 28.8 28.2 32.3 C29.9 34.6 24.6 36.2 25.3 41 L38.7 41 C39.4 36.2 34.1 34.6 35.8 32.3 C38.4 28.8 36.8 24.8 32 21 Z" fill="url(#mm-dome-${p})" stroke="#8A6A2E" stroke-width="0.7" stroke-linejoin="round"/><path d="M32 21 C30.4 22.3 29.4 23.8 29 25.3 C29.8 24 30.8 22.6 32 21 Z" fill="#FFFFFF" opacity="0.5"/><path d="M30 33 C29 36 27.6 38.4 27.4 41 L25.3 41 C24.6 36.2 29.9 34.6 28.2 32.3 C28.7 32.6 29.4 32.8 30 33 Z" fill="#0D1117" opacity="0.12"/><rect x="24.2" y="41" width="15.6" height="3.6" rx="1.3" fill="url(#mm-dome-${p})" stroke="#8A6A2E" stroke-width="0.6"/><rect x="24.2" y="43" width="15.6" height="1.6" rx="0.8" fill="#0D1117" opacity="0.14"/></svg>`;
+}
 
-// Peta direktori masjid — MapLibre GL + OpenFreeMap (positron). Marker arch maroon
-// (klik → drawer) + LABEL nama (symbol layer, collision auto). Fokus wilayah + toggle
-// 3D bangunan. Hanya masjid dgn koordinat dipaparkan. Ralat muat → onError (fallback).
+// Saiz + gaya butang marker. Pin dipilih lebih besar + z-index tinggi (atas pin lain).
+// Nisbah lebar:tinggi = 64:82 padan viewBox supaya SVG (width/height 100%) tak herot.
+function pinStyle(active: boolean): string {
+  const w = active ? 46 : 36;
+  const h = Math.round((w * 82) / 64);
+  return `width:${w}px;height:${h}px;padding:0;border:0;background:transparent;cursor:pointer;line-height:0;z-index:${active ? 3 : 1};filter:drop-shadow(0 1px 2px rgba(13,17,23,.35));`;
+}
+
+// Peta direktori masjid — MapLibre GL + OpenFreeMap (positron). Marker masjid
+// (klik → drawer, pin dipilih diserlahkan) + LABEL nama (symbol layer, collision
+// auto). Fokus wilayah + toggle 3D. Hanya masjid berkoordinat. Ralat muat → onError.
 export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError?: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const essentialRef = useRef(false);
+  // Registry pin (id → butang) + id pin aktif — utk serlah keadaan dipilih tanpa
+  // cipta semula semua marker (swap innerHTML/saiz pin lama→biasa, baru→aktif).
+  const pinsRef = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const activeIdRef = useRef<string | null>(null);
   const [ready, setReady] = useState(false);
   const [selected, setSelected] = useState<MasjidView | null>(null);
   // Default fokus KL (majoriti masjid + permintaan "highlight sempadan KL sahaja").
@@ -106,24 +128,56 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
     const map = mapRef.current;
     if (!map || !ready) return;
     const markers: maplibregl.Marker[] = [];
+    const pins = pinsRef.current;
+    pins.clear();
     for (const m of visible) {
       const el = document.createElement("button");
       el.setAttribute("aria-label", m.nama);
       el.className = "perkib-pin";
-      // Marker kubah emas (dome ogee + finial + tapak) — motif kubah PERKIB.
-      el.innerHTML = KUBAH_MARKER_SVG;
-      el.style.cssText =
-        "width:30px;height:38px;padding:0;border:0;background:transparent;cursor:pointer;line-height:0;filter:drop-shadow(0 2px 3px rgba(13,17,23,.45));";
+      // Marker masjid Claude Design (teardrop + kubah emas 3D + sabit) — normal dulu;
+      // keadaan dipilih diserlah oleh effect [selected] tanpa cipta semula.
+      el.innerHTML = masjidMarkerSvg(false);
+      el.style.cssText = pinStyle(false);
       el.addEventListener("click", () => setSelected(m));
       const marker = new maplibregl.Marker({ element: el, anchor: "bottom" })
         .setLngLat([m.longitude!, m.latitude!])
         .addTo(map);
       markers.push(marker);
+      pins.set(m.id, el);
     }
     const src = map.getSource(LABEL_SRC) as maplibregl.GeoJSONSource | undefined;
     if (src) src.setData(labelGeojson(visible));
-    return () => markers.forEach((mk) => mk.remove());
+    return () => {
+      markers.forEach((mk) => mk.remove());
+      pins.clear();
+    };
   }, [visible, ready]);
+
+  // Serlah pin dipilih — swap pin lama → biasa, pin baru → aktif (murah, ≤2 pin).
+  // Bergantung [selected, visible]: selepas marker dicipta semula (semua biasa),
+  // effect ini pakai semula keadaan aktif pada pin yang masih dipilih.
+  useEffect(() => {
+    const pins = pinsRef.current;
+    const prev = activeIdRef.current;
+    const next = selected?.id ?? null;
+    if (prev && prev !== next) {
+      const lama = pins.get(prev);
+      if (lama) {
+        lama.innerHTML = masjidMarkerSvg(false);
+        lama.style.cssText = pinStyle(false);
+        lama.removeAttribute("aria-current");
+      }
+    }
+    if (next) {
+      const baru = pins.get(next);
+      if (baru) {
+        baru.innerHTML = masjidMarkerSvg(true);
+        baru.style.cssText = pinStyle(true);
+        baru.setAttribute("aria-current", "true");
+      }
+    }
+    activeIdRef.current = next;
+  }, [selected, visible]);
 
   // Fokus wilayah bila butang ditukar.
   useEffect(() => {
