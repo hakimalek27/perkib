@@ -434,6 +434,21 @@
   }
   .tier-essential .medali-halo { animation: none; opacity: 0.55; }
 
+  /* Jalur aktiviti marquee — auto-skrol (translateX, dikomposit GPU); hover pause;
+     reduced-motion / tier-essential → skrol manual (overflow-x). */
+  .marquee-mask { overflow: hidden; }
+  .marquee-track { will-change: transform; }
+  @media (prefers-reduced-motion: no-preference) {
+    .marquee-track { animation: marquee 42s linear infinite; }
+    .marquee-mask:hover .marquee-track { animation-play-state: paused; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-mask { overflow-x: auto; }
+  }
+  .tier-essential .marquee-mask { overflow-x: auto; }
+  .tier-essential .marquee-track { animation: none; }
+
   /* Tier Essential — matikan animasi spatial */
   .tier-essential .odo-reel { transition: none; }
   .tier-essential .reveal { opacity: 1; transform: none; transition: none; }

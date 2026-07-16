@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, HeartHandshake } from "lucide-react";
 import { HeroMihrab } from "@/components/sections/HeroMihrab";
+import { AktivitiScroller } from "@/components/sections/AktivitiScroller";
+import { PopupBanner } from "@/components/sections/PopupBanner";
 import { DermaCopy } from "@/components/sections/DermaCopy";
 import { Reveal } from "@/components/Reveal";
 import { Odometer } from "@/components/nadi/Odometer";
@@ -15,8 +17,11 @@ import { CinematicSlot } from "@/components/nadi/CinematicSlot";
 import { ScrollRail } from "@/components/nadi/ScrollRail";
 import { Icon } from "@/components/Icon";
 import { initials, formatRM } from "@/lib/utils";
-import { getPrograms, getAjk, getJenisSaguhati, getSiteSettings } from "@/lib/sanity";
+import { getPrograms, getAjk, getJenisSaguhati, getSiteSettings, getPaparanUtama } from "@/lib/sanity";
 import { visiMisi } from "@/content/pages";
+
+// ISR — toggle scroller/popup dari Sanity terpakai ≤5 min walau webhook tak diset.
+export const revalidate = 300;
 
 const RAIL = [
   { id: "utama", label: "Utama" },
@@ -44,12 +49,14 @@ const QUICK: { glyph: GlyphName; title: string; desc: string; href: string; cta:
 ];
 
 export default async function HomePage() {
-  const [programs, ajk, jenis, settings] = await Promise.all([
+  const [programs, ajk, jenis, settings, paparan] = await Promise.all([
     getPrograms(),
     getAjk(),
     getJenisSaguhati(),
     getSiteSettings(),
+    getPaparanUtama(),
   ]);
+  const scrollerAktif = Boolean(paparan?.scrollerAktif);
   const tertinggi = ajk.filter((a) => a.kumpulan === "tertinggi");
   const presiden = tertinggi[0];
   const timbalan = tertinggi[1];
@@ -57,8 +64,10 @@ export default async function HomePage() {
 
   return (
     <>
+      {scrollerAktif && paparan && <AktivitiScroller items={paparan.scroller} />}
+      {paparan?.popupAktif && <PopupBanner data={paparan} />}
       <ScrollRail items={RAIL} />
-      <HeroMihrab />
+      <HeroMihrab compact={scrollerAktif} />
 
       {/* (3) Strip statistik odometer — obsidian */}
       <section id="statistik" className="surface-obsidian relative overflow-hidden border-y border-line-dark py-14 md:py-16">

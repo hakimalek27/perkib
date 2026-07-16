@@ -8,10 +8,15 @@ import { CinematicSlot } from "@/components/nadi/CinematicSlot";
 import { homepageContent } from "@/content/homepage";
 
 // Hero Spatial Mihrab — latar ivory (teks gelap), panel arch obsidian di kanan.
-export function HeroMihrab() {
+// compact: bila jalur aktiviti hadir di atas (ia sudah ambil ruang header),
+// kurangkan padding atas supaya tiada jurang berganda.
+export function HeroMihrab({ compact = false }: { compact?: boolean }) {
   const { hero } = homepageContent;
   return (
-    <section id="utama" className="relative overflow-hidden bg-background pt-[104px]">
+    <section
+      id="utama"
+      className={`relative overflow-hidden bg-background ${compact ? "pt-8 md:pt-10" : "pt-[104px]"}`}
+    >
       <div className="pattern-girih pointer-events-none absolute inset-0 opacity-[0.05]" aria-hidden />
       <div className="container-wide relative grid items-center gap-12 py-12 md:py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
         {/* Kiri — teks */}

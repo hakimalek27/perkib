@@ -87,6 +87,20 @@ function urlForSquare(src: unknown, size: number): string | undefined {
   }
 }
 
+// Imej lebar tetap (nisbah asal dikekalkan) — untuk jalur aktiviti + popup banner.
+function urlForWidth(src: unknown, width: number): string | undefined {
+  if (!src || !builder) return undefined;
+  try {
+    return builder
+      .image(src as { _type: string; asset: { _ref: string } })
+      .width(width)
+      .auto("format")
+      .url();
+  } catch {
+    return undefined;
+  }
+}
+
 export function isCmsEnabled(): boolean {
   return Boolean(projectId);
 }
@@ -490,5 +504,67 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   } catch (err) {
     console.error("getSiteSettings: fetch gagal, guna fallback", err);
     return siteSettingsFallback;
+  }
+}
+
+// ── Paparan Utama (jalur aktiviti + popup banner) ────────────────────
+export type ScrollerItem = { url: string; keterangan?: string };
+export type PopupKekerapan = "sesi" | "harian" | "setiap";
+export type PaparanUtama = {
+  scrollerAktif: boolean;
+  scroller: ScrollerItem[];
+  popupAktif: boolean;
+  popupTajuk?: string;
+  popupGambar?: string;
+  popupPautan?: string;
+  popupButang?: string;
+  popupKekerapan: PopupKekerapan;
+  updatedAt?: string;
+};
+
+// null = tiada doc / CMS mati → homepage biasa (fallback selamat).
+export async function getPaparanUtama(): Promise<PaparanUtama | null> {
+  const client = getClient();
+  if (!client) return null;
+  try {
+    const doc = await client.fetch<{
+      scrollerAktif?: boolean;
+      scrollerGambar?: Array<{ gambar?: unknown; keterangan?: string }>;
+      popupAktif?: boolean;
+      popupTajuk?: string;
+      popupGambar?: unknown;
+      popupPautan?: string;
+      popupButang?: string;
+      popupKekerapan?: string;
+      _updatedAt?: string;
+    } | null>(
+      `*[_id=="paparanUtama"][0]{
+        scrollerAktif, scrollerGambar, popupAktif, popupTajuk, popupGambar,
+        popupPautan, popupButang, popupKekerapan, _updatedAt
+      }`
+    );
+    if (!doc) return null;
+    const scroller: ScrollerItem[] = (doc.scrollerGambar ?? [])
+      .map((s) => ({ url: urlForWidth(s.gambar, 640) ?? "", keterangan: s.keterangan }))
+      .filter((s) => s.url.length > 0);
+    const kekerapan: PopupKekerapan = (["sesi", "harian", "setiap"] as const).includes(
+      doc.popupKekerapan as PopupKekerapan
+    )
+      ? (doc.popupKekerapan as PopupKekerapan)
+      : "sesi";
+    return {
+      scrollerAktif: Boolean(doc.scrollerAktif) && scroller.length > 0,
+      scroller,
+      popupAktif: Boolean(doc.popupAktif) && Boolean(doc.popupGambar || doc.popupTajuk),
+      popupTajuk: doc.popupTajuk,
+      popupGambar: urlForWidth(doc.popupGambar, 900),
+      popupPautan: doc.popupPautan,
+      popupButang: doc.popupButang,
+      popupKekerapan: kekerapan,
+      updatedAt: doc._updatedAt,
+    };
+  } catch (err) {
+    console.error("getPaparanUtama: fetch gagal", err);
+    return null;
   }
 }

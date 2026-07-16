@@ -130,6 +130,10 @@ export const structure = (S: StructureBuilder, _context: StructureResolverContex
         .child(
           S.document().schemaType("notifikasiTetapan").documentId("notifikasiTetapan")
         ),
+      S.listItem()
+        .id("paparanUtama")
+        .title("🖼️ Paparan Utama (Homepage)")
+        .child(S.document().schemaType("paparanUtama").documentId("paparanUtama")),
       S.divider(),
       // Sistem — rujukan sahaja (diurus melalui panel admin)
       S.listItem()

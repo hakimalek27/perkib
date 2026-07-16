@@ -14,6 +14,7 @@ const PATHS_BY_TYPE: Record<string, string[]> = {
   program: ["/program", "/"],
   faq: ["/soalan-lazim"],
   siteSettings: ["/", "/derma", "/hubungi"],
+  paparanUtama: ["/"],
 };
 
 type WebhookBody = { _type?: string };
