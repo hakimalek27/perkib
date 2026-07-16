@@ -418,6 +418,22 @@
     }
   }
 
+  /* Sinaran radial emas di belakang medali logo hero (denyut opacity+scale,
+     dikomposit GPU). Memisahkan logo daripada panel obsidian gelap. */
+  .medali-halo {
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 60%, transparent) 0%, transparent 66%);
+    filter: blur(6px);
+    opacity: 0.6;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .medali-halo { animation: medali-glow 3.8s var(--ease) infinite; }
+    @keyframes medali-glow {
+      0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.05); }
+    }
+  }
+  .tier-essential .medali-halo { animation: none; opacity: 0.55; }
+
   /* Tier Essential — matikan animasi spatial */
   .tier-essential .odo-reel { transition: none; }
   .tier-essential .reveal { opacity: 1; transform: none; transition: none; }

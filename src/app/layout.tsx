@@ -35,8 +35,22 @@ export const metadata: Metadata = {
     title: "PERKIB — Pertubuhan Kebajikan Imam dan Bilal MAIWP",
     description:
       "Wadah kebajikan Naqib Masjid, Imam dan Bilal lantikan MAIWP di masjid-masjid Wilayah Persekutuan.",
+    images: [
+      {
+        url: "/og/perkib-og.png",
+        width: 1200,
+        height: 630,
+        alt: "PERKIB — Pertubuhan Kebajikan Imam dan Bilal MAIWP",
+      },
+    ],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: {
+    card: "summary_large_image",
+    title: "PERKIB — Pertubuhan Kebajikan Imam dan Bilal MAIWP",
+    description:
+      "Wadah kebajikan Naqib Masjid, Imam dan Bilal lantikan MAIWP di masjid-masjid Wilayah Persekutuan.",
+    images: ["/og/perkib-og.png"],
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

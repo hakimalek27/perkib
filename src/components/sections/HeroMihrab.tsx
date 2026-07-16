@@ -61,14 +61,28 @@ export function HeroMihrab() {
             <CinematicSlot srcWide="/media/perkib-hero-wide.mp4" srcVert="/media/perkib-hero-vert.mp4" className="size-full">
               <div className="pattern-star8 size-full" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <Image
-                  src="/logo.png"
-                  alt="Logo PERKIB"
-                  width={200}
-                  height={200}
-                  className="size-44 object-contain drop-shadow-2xl"
-                  priority
-                />
+                {/* Medali emas — logo diangkat dari panel gelap: cakera bercincin
+                    emas + sinaran radial berdenyut supaya logo tidak "tenggelam". */}
+                <div className="relative">
+                  <div
+                    className="medali-halo pointer-events-none absolute left-1/2 top-1/2 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full"
+                    aria-hidden
+                  />
+                  <div className="relative grid size-44 place-items-center rounded-full bg-[radial-gradient(circle_at_50%_32%,#222a34,#090c11)] shadow-[0_12px_44px_-10px_rgba(0,0,0,0.75),inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-[color:var(--accent)]/70">
+                    <span
+                      className="pointer-events-none absolute inset-[6px] rounded-full ring-1 ring-[color:var(--accent-bright)]/35"
+                      aria-hidden
+                    />
+                    <Image
+                      src="/logo-mark.png"
+                      alt="Logo PERKIB"
+                      width={200}
+                      height={200}
+                      className="size-[88%] object-contain drop-shadow-[0_2px_10px_rgba(198,162,93,0.35)]"
+                      priority
+                    />
+                  </div>
+                </div>
               </div>
             </CinematicSlot>
             {/* Gradien legibiliti bawah */}
