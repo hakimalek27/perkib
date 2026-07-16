@@ -82,7 +82,7 @@ function TabBtn({
 }
 
 // ── Permohonan: senarai (live search) + editor ─────────────────────────────
-function PermohonanPanel({ rows }: { rows: PermohonanRingkas[] }) {
+export function PermohonanPanel({ rows }: { rows: PermohonanRingkas[] }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<PermohonanRingkas | null>(null);
   const list = useMemo(() => {
@@ -301,7 +301,7 @@ function PermohonanEditor({ row, onDeleted }: { row: PermohonanRingkas; onDelete
 }
 
 // ── Maklum balas: senarai + padam ──────────────────────────────────────────
-function MaklumBalasPanel({ rows }: { rows: MaklumBalasItem[] }) {
+export function MaklumBalasPanel({ rows }: { rows: MaklumBalasItem[] }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [dialogId, setDialogId] = useState<string | null>(null);

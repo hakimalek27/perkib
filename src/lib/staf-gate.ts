@@ -7,6 +7,8 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { getWriteClient } from "@/lib/sanity-write";
+import { verifyPassword } from "@/lib/password-hash";
 
 export const STAF_COOKIE = "perkib_staf";
 const TTL_MS = 2 * 60 * 60 * 1000; // 2 jam — lebih pendek drpd sesi admin (8j)
@@ -37,12 +39,32 @@ export function isStafGateConfigured(): boolean {
   return Boolean(gatePassword());
 }
 
-export function checkStafPassword(input: string): boolean {
+// Banding kata laluan gate mentah dgn env (timing-safe). Fallback bila hash tiada.
+function checkStafPasswordEnv(input: string): boolean {
   const pw = gatePassword();
   if (!pw) return false;
   const a = Buffer.from(input);
   const b = Buffer.from(pw);
   return a.length === b.length && timingSafeEqual(a, b);
+}
+
+// Hash kata laluan gate staf tersimpan dlm singleton Sanity (jika pernah ditukar).
+async function storedStafHash(): Promise<string | null> {
+  const client = getWriteClient();
+  if (!client) return null;
+  try {
+    const hash = await client.fetch<string | null>(`*[_id=="adminTetapan"][0].stafGatePasswordHash`);
+    return hash ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// Semak kata laluan gate staf: hash Sanity jika ada; jika tiada / gagal → env.
+export async function checkStafGatePassword(input: string): Promise<boolean> {
+  const hash = await storedStafHash();
+  if (hash) return verifyPassword(input, hash);
+  return checkStafPasswordEnv(input);
 }
 
 export function makeStafSessionValue(): string {

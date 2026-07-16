@@ -11,6 +11,7 @@ import siteSettings from "./siteSettings";
 import yuranTetapan from "./yuranTetapan";
 import yuranTahunan from "./yuranTahunan";
 import notifikasiTetapan from "./notifikasiTetapan";
+import adminTetapan from "./adminTetapan";
 import auditLog from "./auditLog";
 import waOutbox from "./waOutbox";
 import maklumBalas from "./maklumBalas";
@@ -25,6 +26,7 @@ export const schemaTypes = [
   yuranTahunan,
   yuranTetapan,
   notifikasiTetapan,
+  adminTetapan,
   program,
   faq,
   siteSettings,

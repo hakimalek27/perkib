@@ -4,8 +4,7 @@ import { isStafGateAuthenticated, isStafGateConfigured } from "@/lib/staf-gate";
 import { stafLainCount } from "@/lib/staf-lain";
 import { getPermohonanList, getMaklumBalasList } from "@/lib/admin-data";
 import { StafGateForm } from "./StafGateForm";
-import { StafSearch } from "./StafSearch";
-import { UrusRekod } from "./UrusRekod";
+import { StafTabs } from "./StafTabs";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Staf MAIWP — Admin PERKIB", robots: { index: false } };
@@ -32,13 +31,20 @@ export default async function StafPage() {
     return <StafGateForm />;
   }
 
-  // Di sebalik gate: carian staf + urus rekod (padam/edit permohonan & maklum balas).
+  // Di sebalik gate: 4 tab — cari staf MAIWP, urus permohonan, maklum balas,
+  // tukar kata laluan. (Padam/edit rekod HANYA di sini, bukan di admin biasa.)
   const [permohonan, maklumBalas] = await Promise.all([getPermohonanList(), getMaklumBalasList()]);
 
   return (
-    <>
-      <StafSearch total={stafLainCount()} />
-      <UrusRekod permohonan={permohonan} maklumBalas={maklumBalas} />
-    </>
+    <div>
+      <div className="mb-6">
+        <h1 className="font-display text-2xl font-bold text-ink">Kawalan Staf</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Akses terhad (gate kedua). Carian direktori staf MAIWP, urus rekod permohonan &amp; maklum balas,
+          dan tukar kata laluan halaman admin.
+        </p>
+      </div>
+      <StafTabs total={stafLainCount()} permohonan={permohonan} maklumBalas={maklumBalas} />
+    </div>
   );
 }

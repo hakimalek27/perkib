@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { fixedWindow, fixedWindowReset, clientIp } from "@/lib/rate-limit";
 import {
   ADMIN_COOKIE,
-  checkPassword,
+  checkAdminPassword,
   isAdminConfigured,
   makeSessionValue,
 } from "@/lib/admin-auth";
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Payload tidak sah" }, { status: 400 });
   }
 
-  if (!body.password || !checkPassword(body.password)) {
+  if (!body.password || !(await checkAdminPassword(body.password))) {
     return NextResponse.json({ ok: false, error: "Kata laluan tidak sah." }, { status: 401 });
   }
 

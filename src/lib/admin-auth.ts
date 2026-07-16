@@ -3,6 +3,8 @@
 
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { getWriteClient } from "@/lib/sanity-write";
+import { verifyPassword } from "@/lib/password-hash";
 
 export const ADMIN_COOKIE = "perkib_admin";
 const TTL_MS = 8 * 60 * 60 * 1000; // 8 jam
@@ -29,16 +31,39 @@ function sign(payload: string): string {
   return b64url(createHmac("sha256", secret()).update(payload).digest());
 }
 
+// Dianggap terkonfigurasi jika env ADMIN_PASSWORD wujud ATAU hash tersimpan dlm
+// Sanity (env boleh dikosongkan selepas kata laluan ditukar melalui UI).
 export function isAdminConfigured(): boolean {
   return Boolean(password());
 }
 
-export function checkPassword(input: string): boolean {
+// Banding kata laluan mentah dgn env (timing-safe). Fallback bila hash tiada.
+function checkPasswordEnv(input: string): boolean {
   const pw = password();
   if (!pw) return false;
   const a = Buffer.from(input);
   const b = Buffer.from(pw);
   return a.length === b.length && timingSafeEqual(a, b);
+}
+
+// Hash kata laluan admin tersimpan dlm singleton Sanity (jika pernah ditukar).
+async function storedAdminHash(): Promise<string | null> {
+  const client = getWriteClient();
+  if (!client) return null;
+  try {
+    const hash = await client.fetch<string | null>(`*[_id=="adminTetapan"][0].adminPasswordHash`);
+    return hash ?? null;
+  } catch {
+    return null; // Sanity tak tersedia → biar pemanggil fallback ke env
+  }
+}
+
+// Semak kata laluan admin: guna hash Sanity jika ada; jika tiada / Sanity gagal
+// dibaca → fallback env ADMIN_PASSWORD (fail-open ke env, elak lockout).
+export async function checkAdminPassword(input: string): Promise<boolean> {
+  const hash = await storedAdminHash();
+  if (hash) return verifyPassword(input, hash);
+  return checkPasswordEnv(input);
 }
 
 export function makeSessionValue(): string {

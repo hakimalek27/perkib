@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
-import { isStafGateAuthenticated } from "@/lib/staf-gate";
+import { isAdminAuthenticated, checkAdminPassword } from "@/lib/admin-auth";
+import { isStafGateAuthenticated, checkStafGatePassword } from "@/lib/staf-gate";
 import { getWriteClient } from "@/lib/sanity-write";
 import { encryptValue, decryptValue } from "@/lib/crypto";
+import { hashPassword } from "@/lib/password-hash";
+import { fixedWindow, fixedWindowReset } from "@/lib/rate-limit";
 import { writeAudit } from "@/lib/audit";
 
 // ⚠️ Guard BERGANDA: sesi admin + gate kata laluan kedua /admin/staf.
@@ -130,6 +132,59 @@ export async function bacaButiranPermohonanAction(
         catatanAdmin: doc.catatanAdmin ?? "",
       },
     };
+  } catch (err) {
+    return { ok: false, error: (err as Error).message };
+  }
+}
+
+// ── Tukar kata laluan (admin / gate staf) ────────────────────────────────
+// Simpan HASH scrypt dlm singleton adminTetapan (bukan plaintext). Selepas ini,
+// env ADMIN_PASSWORD / STAF_GATE_PASSWORD jadi fallback tak aktif (kekal sbg
+// bootstrap / talian penyelamat bila Sanity gagal dibaca). Guard BERGANDA +
+// sahkan kata laluan semasa + rate limit + audit.
+export async function tukarKataLaluanAction(
+  jenis: "admin" | "staf",
+  semasa: string,
+  baru: string,
+  sahkan: string
+): Promise<ActionResult> {
+  const g = await ensureGate();
+  if (!g.ok) return g;
+
+  // Rate limit — sudah di sebalik gate berganda, jadi kunci global (bukan per-IP).
+  const rlKey = `tukar-kl:${jenis}`;
+  const rl = fixedWindow(rlKey, { limit: 5, windowMs: 15 * 60 * 1000, cooldownMs: 15 * 60 * 1000 });
+  if (!rl.allowed) {
+    const mins = Math.ceil(rl.retryAfterMs / 60000);
+    return { ok: false, error: `Terlalu banyak percubaan. Cuba semula dalam ${mins} minit.` };
+  }
+
+  if (typeof baru !== "string" || baru.length < 12) {
+    return { ok: false, error: "Kata laluan baharu mesti sekurang-kurangnya 12 aksara." };
+  }
+  if (baru !== sahkan) return { ok: false, error: "Kata laluan baharu & pengesahan tidak sepadan." };
+  if (baru === semasa) return { ok: false, error: "Kata laluan baharu mesti berbeza daripada kata laluan semasa." };
+
+  // Sahkan kata laluan semasa (hash Sanity atau env).
+  const semasaBetul = jenis === "admin"
+    ? await checkAdminPassword(semasa)
+    : await checkStafGatePassword(semasa);
+  if (!semasaBetul) return { ok: false, error: "Kata laluan semasa tidak betul." };
+
+  const client = getWriteClient();
+  if (!client) return { ok: false, error: "Sistem tidak tersedia." };
+
+  const field = jenis === "admin" ? "adminPasswordHash" : "stafGatePasswordHash";
+  try {
+    await client.createIfNotExists({ _id: "adminTetapan", _type: "adminTetapan" });
+    await client.patch("adminTetapan").set({ [field]: hashPassword(baru) }).commit();
+    fixedWindowReset(rlKey);
+    await writeAudit(
+      "tukar-kata-laluan",
+      jenis,
+      `Kata laluan ${jenis === "admin" ? "admin" : "gate staf"} ditukar (gate staf)`
+    );
+    return { ok: true };
   } catch (err) {
     return { ok: false, error: (err as Error).message };
   }

@@ -4,7 +4,7 @@ import { fixedWindow, fixedWindowReset, clientIp } from "@/lib/rate-limit";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import {
   STAF_COOKIE,
-  checkStafPassword,
+  checkStafGatePassword,
   isStafGateConfigured,
   makeStafSessionValue,
 } from "@/lib/staf-gate";
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Payload tidak sah" }, { status: 400 });
   }
 
-  if (!body.password || !checkStafPassword(body.password)) {
+  if (!body.password || !(await checkStafGatePassword(body.password))) {
     return NextResponse.json({ ok: false, error: "Kata laluan gate tidak sah." }, { status: 401 });
   }
 
