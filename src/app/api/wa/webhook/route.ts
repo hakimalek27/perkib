@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { getPegawaiAdminDetail } from "@/lib/admin-data";
 import { decryptValue } from "@/lib/crypto";
-import { sendWhatsApp, normalizePhone } from "@/lib/whatsapp";
+import { sendWhatsApp, normalizePhone, maskRecipient } from "@/lib/whatsapp";
 import { fixedWindow } from "@/lib/rate-limit";
 import { ambilRekodYuran, formatYuranMesej } from "@/lib/yuran";
 
@@ -75,29 +75,41 @@ export async function POST(req: Request) {
   });
   if (!rl.allowed) return NextResponse.json({ ok: true });
 
-  // 7. Cari pegawai + banding nombor penghantar dengan telefon berdaftar (PDPA).
-  try {
-    const pegawai = await getPegawaiAdminDetail(employeeNo);
-    const telefonPegawai = pegawai ? normalizePhone(decryptValue(pegawai.telefonEnc) ?? "") : "";
+  // 7. ACK SEGERA, proses berat SELEPAS response. Gateway wassap ada timeout
+  //    webhook pendek (~2-7s); jika kita `await` Sanity + sendWhatsApp (timeout
+  //    10s, +retry) sebelum jawab, gateway anggap "gagal" + retry 3× walaupun
+  //    balasan akhirnya terhantar (punca: balasan tak konsisten/tergugur).
+  //    `after()` menjalankan kerja ini selepas 200 dihantar — ACK <50ms.
+  after(async () => {
+    try {
+      // Banding nombor penghantar dengan telefon pegawai berdaftar (PDPA).
+      const pegawai = await getPegawaiAdminDetail(employeeNo);
+      const telefonPegawai = pegawai ? normalizePhone(decryptValue(pegawai.telefonEnc) ?? "") : "";
 
-    if (!pegawai || !telefonPegawai || telefonPegawai !== penghantar) {
-      await sendWhatsApp(
-        fromPhone,
-        `Maaf, nombor WhatsApp anda tidak sepadan dengan rekod No. Pekerja ${employeeNo}.\n\nUntuk keselamatan, semak rekod yuran anda di *perkib.my/yuran/semak* (No. Pekerja + 4 digit akhir IC).`
-      );
-      return NextResponse.json({ ok: true });
+      if (!pegawai || !telefonPegawai || telefonPegawai !== penghantar) {
+        const r = await sendWhatsApp(
+          fromPhone,
+          `Maaf, nombor WhatsApp anda tidak sepadan dengan rekod No. Pekerja ${employeeNo}.\n\nUntuk keselamatan, semak rekod yuran anda di *perkib.my/yuran/semak* (No. Pekerja + 4 digit akhir IC).`
+        );
+        console.log(
+          `[wa/webhook] tolak emp=${employeeNo} dari=${maskRecipient(penghantar)} pegawai=${pegawai ? "ada" : "tiada"} telefonPadan=${telefonPegawai === penghantar} balas=${r.status}`
+        );
+        return;
+      }
+
+      // Sah — hantar rekod yuran (tahun semasa + lepas).
+      const tahun = new Date().getFullYear();
+      const rekod = await Promise.all([
+        ambilRekodYuran(employeeNo, tahun),
+        ambilRekodYuran(employeeNo, tahun - 1),
+      ]);
+      const r = await sendWhatsApp(fromPhone, formatYuranMesej(pegawai.nama, employeeNo, rekod));
+      console.log(`[wa/webhook] rekod emp=${employeeNo} dari=${maskRecipient(penghantar)} balas=${r.status}`);
+    } catch (err) {
+      console.error("[wa/webhook] gagal proses yuran", err);
     }
+  });
 
-    // 8. Sah — hantar rekod yuran (tahun semasa + lepas).
-    const tahun = new Date().getFullYear();
-    const rekod = await Promise.all([
-      ambilRekodYuran(employeeNo, tahun),
-      ambilRekodYuran(employeeNo, tahun - 1),
-    ]);
-    await sendWhatsApp(fromPhone, formatYuranMesej(pegawai.nama, employeeNo, rekod));
-  } catch (err) {
-    console.error("[wa/webhook] gagal proses yuran", err);
-    // Jawab 200 supaya gateway tidak retry berterusan.
-  }
+  // Balas segera — gateway dapat ACK pantas (elak timeout + retry 3×).
   return NextResponse.json({ ok: true });
 }

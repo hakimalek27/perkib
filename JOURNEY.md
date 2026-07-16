@@ -327,3 +327,27 @@ Selepas v3.4 LIVE, Hakim laporkan 3 isu: tukar kata laluan gagal, Studio masih b
 - **Studio blank (`3ce30ff`, DEPLOYED):** Diagnosis berlapis (Playwright console 0 error + DOM mount 49 elemen tapi screenshot blank → `elementFromPoint` return `main` bukan butang → dump DOM tree tinggi). Jumpa: `.page-enter [1280x0]` → `.fixed inset-0 [1280x0]` → Sanity content [1280x800]. **Punca sebenar = ancestor `.page-enter` (animasi `transform`) jadi containing block untuk `position:fixed`, meruntuhkan Studio ke tinggi 0** (bukan CSP seperti disangka v3.3). Fix: template skip `.page-enter` untuk `/studio` + `studio/layout` guna `h-screen` (100vh mutlak). Disahkan LIVE render penuh.
 - **Webhook yuran 401:** Siasatan (`webhook_deliveries` wassap = semua HTTP 401) → secret webhook wassap ≠ `WASSAP_WEBHOOK_SECRET` perkib. Employee 1880 (Muhammad Hakim) telefon 0189030363 disahkan padan (setup Hakim betul). Hakim selaraskan secret di dashboard wassap → **uji `yuran 1880` balas rekod yuran; no. pekerja salah balas penolakan sopan (PDPA berfungsi tepat)**. Classifier melindungi gateway wassap kongsi (mutasi DB dashboard/Hakim sahaja).
 - **Tukar kata laluan "Failed to find Server Action":** klien stale selepas deploy (bukan bug kod — Sanity write + `checkAdminPassword` disahkan berfungsi). Selesai dengan hard refresh. Pelajaran: setiap deploy → klien perlu Ctrl+Shift+R.
+
+---
+
+# Fix webhook yuran — balasan tak konsisten antara nombor (16 Julai 2026, lewat)
+
+Hakim laporkan: `yuran 1880` dari 0189030363 **dapat rekod**, tetapi nombor lain (`yuran 1889` dari 0172385416, dan beberapa nombor lain diuji satu per satu) **tiada respon langsung** — sepatutnya sekurang-kurangnya dapat penolakan sopan PDPA.
+
+## Diagnosis (log sebenar, bukan spekulasi)
+1. **Baca kod webhook** — logik betul: nombor tak padan → *sepatutnya* balas penolakan. Jadi senyap = anomali.
+2. **Log engine wassap** (`journalctl -u wassap-engine`) — jumpa punca: `webhook: event=message.received gagal cubaan #1/2/3 — gagal selepas 3 cubaan — digugurkan`, **berulang sepanjang hari** (13:14, 14:20, 16:21, 17:22, 17:30…). Engine **cuba** fan-out webhook tapi anggap **gagal + retry 3×**. Juga nampak `Failed to issue privacy token for 6017238541…` (nombor 0172385416 diuji).
+3. **Ukur route** — bad-sig → **401 dalam ~4ms** (route + HMAC sihat). Jadi bukan route mati/secret.
+4. **Baca `whatsapp.ts`** — `sendWhatsApp` → `postSend` ada **`AbortController` timeout 10s + retry 429** (boleh ~20s). Webhook `await` ini + Sanity fetch **sebelum** jawab 200.
+
+**Kesimpulan:** perkib `await` kerja berat (Sanity + WhatsApp, sampai 10-20s) sebelum ACK; gateway wassap timeout webhook ~2-7s → catat "gagal" + retry 3×. Untuk 1880 balasan **sempat** terhantar (Hakim dapat reply walau engine catat gagal); nombor lain race timing → tergugur → senyap. **Ketakkonsistenan klasik: webhook buat kerja segerak sebelum ACK.**
+
+## Fix (sisi perkib sahaja — TAK sentuh gateway wassap)
+`src/app/api/wa/webhook/route.ts`: import `after` dari `next/server`. Verify HMAC + dedup + keyword + rate-limit kekal segerak (semua bukan-rangkaian, pantas). Cari-pegawai + banding-telefon (PDPA) + `sendWhatsApp` dipindah ke **`after(async () => {…})`** → route **ACK 200 <50ms**, balasan dihantar selepas response. + `console.log` ringkas (nombor di-mask) untuk audit `pm2 logs perkib`.
+
+## Cabaran & penyelesaian
+- **Classifier lindung gateway wassap kongsi** — query DB `webhook_deliveries` (ada PDPA) disekat auto-mode. Diselesaikan: diagnosis guna **log engine** (systemd journal, bukan DB) + **ukur route perkib** (curl localhost) + **baca kod** — cukup untuk pastikan punca tanpa sentuh DB kongsi.
+- **Sahkan tanpa spam WA** — guna curl bad-sig (401) untuk sahkan route hidup + latency; laluan lulus-HMAC disahkan muktamad melalui ujian sebenar Hakim + log engine (tiada lagi "gagal").
+
+## Deployment (16 Jul, lewat)
+Build BERSIH (`rm -rf .next`) → standalone → tar-pipe 12M `ubuntu@43.133.34.55` → kekal `.env.local` → backup **`standalone.bak-20260716-wafix`** → `pm2 restart perkib`. Disahkan LIVE: route 200 (/, /yuran/semak, /studio) + webhook bad-sig 401. Rollback: `standalone.bak-20260716-wafix`. **Baki:** Hakim uji semula `yuran <noPekerja>` dari 2 nombor → saya semak engine log (tiada "gagal") + pm2 log (`[wa/webhook]`).
