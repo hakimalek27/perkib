@@ -1,6 +1,11 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-16 · **Status:** ✅ **v3.4 DEPLOYED & LIVE di https://perkib.my** (8 maklum balas: logo medali + OG WhatsApp, admin/staf 4 tab + tukar kata laluan, peta label/3D/kontak, kontak masjid, scroller+popup Sanity, semak yuran WhatsApp+UI). Atas: v3.3 + koordinat 93/94.
+**Kemas kini:** 2026-07-16 · **Status:** ✅ **v3.4 DEPLOYED & LIVE di https://perkib.my** (8 maklum balas: logo medali + OG WhatsApp, admin/staf 4 tab + tukar kata laluan, peta label/3D/kontak, kontak masjid, scroller+popup Sanity, semak yuran WhatsApp+UI). Atas: v3.3 + koordinat 93/94. **+ Studio blank FIXED + webhook yuran WhatsApp DISAHKAN BERFUNGSI** (`main @ 3ce30ff`).
+
+## 🔧 Susulan v3.4 (16 Julai 2026, malam) — Studio FIXED + webhook yuran BERFUNGSI
+- **Sanity Studio blank DIBETULKAN (`3ce30ff`, DEPLOYED):** Punca SEBENAR (bukan CSP spt disangka v3.3) = animasi **`.page-enter`** (`template.tsx`) guna `transform:translateY` → menjadi *containing block* untuk `position:fixed` anak → `studio/layout` `fixed inset-0` **runtuh ke tinggi 0** (Sanity mount betul, content sebenar 800px tapi tak dipaint). Fix: (1) `template.tsx` skip `.page-enter` untuk `/studio` (`usePathname`); (2) `studio/layout` guna `h-screen` (100vh mutlak) ganti `fixed inset-0`. **Disahkan LIVE:** Studio render penuh (skrin login Google/GitHub/E-mail). Diagnosis: DOM mount + 0 console error + screenshot blank → guna `elementFromPoint` + dump DOM tree tinggi → jumpa `.page-enter [1280x0]` → `fixed [1280x0]` → Sanity content [1280x800].
+- **Webhook yuran WhatsApp DISAHKAN BERFUNGSI:** Hakim uji `yuran 1880` dari 0189030363 → **balas rekod yuran** (nombor padan pegawai). Uji no. pekerja salah → **balas penolakan sopan** (PDPA: nombor tak sepadan). Punca awal 401 = secret webhook wassap ≠ `WASSAP_WEBHOOK_SECRET` perkib → Hakim selaraskan di dashboard wassap (secret sama). ⚠️ Classifier BLOK mutasi DB wassap automatik (gateway kongsi — dashboard/Hakim sahaja).
+- **⚠️ Nota deploy penting:** selepas SETIAP deploy, klien perlu **hard refresh** (Ctrl+Shift+R) — jika tidak "Failed to find Server Action" (action ID lama) → punca tukar kata laluan /admin/staf pernah "gagal" (bukan bug kod). Pertimbang `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` (stabilkan action ID merentas build) jika mahu elak ini.
 
 ## 🆕 v3.4 (16 Julai 2026) — DEPLOYED (8 maklum balas Hakim)
 6 milestone (M1–M6), setiap satu lint+typecheck+build hijau + commit; **E2E Playwright 15/15 lulus** (11 + 4 v3.4). Deploy: build BERSIH → tar-pipe → kekal `.env.local` + tambah `WASSAP_WEBHOOK_SECRET` → backup **`standalone.bak-20260716-v34`** → pm2 restart. Verifikasi: route 200, OG live (101KB), medali/yuran live (Chrome MCP DOM), webhook 401.
@@ -12,11 +17,11 @@
 - **Semak yuran (M6):** (1) **UI `/yuran/semak`** — verify No.Pekerja+4 digit IC+captcha → jadual bulan dibayar/belum. (2) **WhatsApp** — hantar `yuran <noPekerja>` dari nombor berdaftar → auto-balas rekod (webhook HMAC `api/wa/webhook`, banding telefon PDPA, keyword ketat, mesej lain senyap).
 
 **Baki Hakim v3.4:**
-1. **Daftar webhook di wassap** untuk aktifkan semak yuran WhatsApp: di dashboard wassap (tenant "Perkib.my"/masjid_id 9) → Settings → Webhooks → URL `https://perkib.my/api/wa/webhook`, event `message.received`, **secret = sama dengan `WASSAP_WEBHOOK_SECRET`** dlm `.env.local` server (sudah ditambah). Uji butang "Test" + hantar `yuran 1889` dari telefon Hakim. (Gateway live disahkan ada fan-out webhook + queue worker berjalan.)
-2. **Tukar kata laluan** admin+gate melalui /admin/staf tab "Kata Laluan" (min 12 aksara) — lepas ni env jadi sandaran.
-3. **Isi gambar** Paparan Utama (scroller aktiviti + popup) dlm Studio "🖼️ Paparan Utama" + hidupkan suis bila sedia.
-4. **Lengkapkan kontak** 85 masjid baki + koordinat Al-Hijrah dlm Studio (medan Telefon/Emel/latitude/longitude).
-5. Uji log masuk Studio (CSP dah betul sejak v3.3).
+1. ~~Daftar webhook wassap~~ ✅ **SIAP — semak yuran WhatsApp BERFUNGSI** (uji `yuran <noPekerja>` balas rekod; nombor tak sepadan ditolak sopan — PDPA). Secret diselaraskan di dashboard wassap. (🔒 secret pernah terpapar di terminal semasa setup — pertimbang rotate.)
+2. ~~Uji log masuk Studio~~ ✅ **SIAP — Studio load penuh** (`3ce30ff`). Boleh log masuk (Google/GitHub/E-mail).
+3. **Tukar kata laluan** admin+gate melalui /admin/staf tab "Kata Laluan" (min 12 aksara) — **hard refresh dulu** (Ctrl+Shift+R). Lepas ni env jadi sandaran.
+4. **Isi gambar** Paparan Utama (scroller aktiviti + popup) dlm Studio "🖼️ Paparan Utama" + hidupkan suis bila sedia.
+5. **Lengkapkan kontak** 85 masjid baki + koordinat Al-Hijrah dlm Studio (medan Telefon/Emel/latitude/longitude). Senarai 85: `scripts/output/kontak-review.md`.
 
 ## 🗺️ Koordinat masjid dilengkapkan (15 Julai 2026, petang) — DEPLOYED
 Hakim bekalkan koordinat manual (rekod rasmi JAWI + pin peta) untuk **38 masjid** yang sebelum ni tiada koordinat. Ditulis ke Sanity via `scripts/apply-manual-coords.ts` (**_id EKSPLISIT** — padanan nama dibuat & disahkan manual, BUKAN padan automatik; additive-only + validasi bbox wilayah; dry-run dulu). Kini **93/94 masjid awam berkoordinat** (naik dari 55). Baki: **hanya Masjid Al-Hijrah, Labuan** (Hakim: "belum dapat disahkan"). 3 Posting Khas Zon 9 (Ibu Pejabat MAIWP + 2 Surau Istana Negara) tiada koordinat — bukan masjid awam, tak dipapar dalam peta. Build BERSIH (`rm -rf .next`) bake 93 koordinat fresh dari Sanity → deploy tar-pipe → backup **`standalone.bak-20260715-v33map`** → pm2 restart. **Disahkan LIVE:** semua route 200; koordinat baru dalam HTML live (Al-Ehsan/Abi Ayyub + 15 Labuan unik); **E2E Playwright 11/11 lulus** (+1 ujian baharu: peta papar >40 pin dari koordinat Sanity). ⚠️ Nota data: beberapa nota kampung Hakim untuk Labuan berbeza dgn medan `lokasi` Sanity — padanan tetap ikut **nama masjid** (pengecam unik); `lokasi` Sanity tidak diubah.
