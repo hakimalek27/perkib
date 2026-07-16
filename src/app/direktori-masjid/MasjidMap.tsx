@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { X, MapPin, Navigation, Star, Landmark } from "lucide-react";
+import { X, MapPin, Navigation, Star, Landmark, Phone, Mail, Box } from "lucide-react";
 import type { MasjidView } from "@/lib/sanity";
 
 type Region = "semua" | "kl" | "putrajaya" | "labuan";
@@ -31,17 +31,22 @@ const REGION_BTN: { key: Region; label: string }[] = [
   { key: "labuan", label: "Labuan" },
 ];
 
-// Peta direktori masjid — MapLibre GL + OpenFreeMap (positron). Marker arch maroon;
-// klik → drawer. Fokus wilayah (KL/Putrajaya/Labuan) + sempadan. Hanya masjid dgn
-// koordinat dipaparkan. Ralat muat → onError (fallback senarai).
+const LABEL_SRC = "masjid-labels";
+const LABEL_LAYER = "masjid-labels";
+const B3D_LAYER = "bangunan-3d";
+
+// Peta direktori masjid — MapLibre GL + OpenFreeMap (positron). Marker arch maroon
+// (klik → drawer) + LABEL nama (symbol layer, collision auto). Fokus wilayah + toggle
+// 3D bangunan. Hanya masjid dgn koordinat dipaparkan. Ralat muat → onError (fallback).
 export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError?: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-  const loadedRef = useRef(false);
+  const essentialRef = useRef(false);
+  const [ready, setReady] = useState(false);
   const [selected, setSelected] = useState<MasjidView | null>(null);
   // Default fokus KL (majoriti masjid + permintaan "highlight sempadan KL sahaja").
-  // Putrajaya/Labuan diakses via butang (peta berasingan).
   const [region, setRegion] = useState<Region>("kl");
+  const [is3D, setIs3D] = useState(false);
 
   const withCoords = useMemo(
     () => masjids.filter((m) => typeof m.latitude === "number" && typeof m.longitude === "number"),
@@ -56,12 +61,13 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
     const essential = matchMedia("(max-width: 720px)").matches;
+    essentialRef.current = essential;
     let map: maplibregl.Map;
     try {
       map = new maplibregl.Map({
         container: containerRef.current,
         style: "https://tiles.openfreemap.org/styles/positron",
-        center: [101.6869, 3.139], // KL — diganti fitBounds bila koordinat ada
+        center: [101.6869, 3.139],
         zoom: 10,
         pitch: essential ? 0 : 30,
         attributionControl: { compact: true },
@@ -76,24 +82,24 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
       if (e?.error && String(e.error).match(/style|tiles|fetch/i)) onError?.();
     });
     map.on("load", () => {
-      loadedRef.current = true;
-      // Fokus awal = KL (default region) — bukan center tetap.
       map.fitBounds(REGION_BOUNDS.kl, { padding: 60, maxZoom: 12, duration: 0 });
+      addLabelLayer(map);
       loadBoundaries(map);
+      setReady(true);
     });
 
     return () => {
       map.remove();
       mapRef.current = null;
-      loadedRef.current = false;
+      setReady(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Marker: cipta semula bila senarai visible berubah.
+  // Marker (klik → drawer) + label data: cipta semula bila visible/ready berubah.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
+    if (!map || !ready) return;
     const markers: maplibregl.Marker[] = [];
     for (const m of visible) {
       const el = document.createElement("button");
@@ -107,13 +113,15 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
         .addTo(map);
       markers.push(marker);
     }
+    const src = map.getSource(LABEL_SRC) as maplibregl.GeoJSONSource | undefined;
+    if (src) src.setData(labelGeojson(visible));
     return () => markers.forEach((mk) => mk.remove());
-  }, [visible]);
+  }, [visible, ready]);
 
   // Fokus wilayah bila butang ditukar.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !loadedRef.current) return;
+    if (!map || !ready) return;
     if (region === "semua") {
       if (withCoords.length > 0) {
         const b = new maplibregl.LngLatBounds();
@@ -124,7 +132,21 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
       map.fitBounds(REGION_BOUNDS[region], { padding: 60, maxZoom: 13, duration: 800 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [region]);
+  }, [region, ready]);
+
+  // Toggle 3D — condongkan peta + layer fill-extrusion bangunan (graceful skip).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || essentialRef.current) return;
+    if (is3D) {
+      addBuildings(map);
+      map.easeTo({ pitch: 58, duration: 600 });
+    } else {
+      if (map.getLayer(B3D_LAYER)) map.setLayoutProperty(B3D_LAYER, "visibility", "none");
+      map.easeTo({ pitch: 30, duration: 600 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [is3D, ready]);
 
   return (
     <div className="relative">
@@ -134,19 +156,30 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
         style={{ background: "var(--muted)" }}
       />
 
-      {/* Butang fokus wilayah */}
-      <div className="absolute left-3 top-3 z-10 flex gap-1 rounded-xl border border-border bg-card/95 p-1 shadow-soft backdrop-blur">
-        {REGION_BTN.map((r) => (
-          <button
-            key={r.key}
-            onClick={() => setRegion(r.key)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
-              region === r.key ? "bg-primary text-white" : "text-ink/70 hover:bg-muted"
-            }`}
-          >
-            {r.label}
-          </button>
-        ))}
+      {/* Kawalan: butang fokus wilayah + toggle 3D */}
+      <div className="absolute left-3 top-3 z-10 flex flex-col items-start gap-2">
+        <div className="flex gap-1 rounded-xl border border-border bg-card/95 p-1 shadow-soft backdrop-blur">
+          {REGION_BTN.map((r) => (
+            <button
+              key={r.key}
+              onClick={() => setRegion(r.key)}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                region === r.key ? "bg-primary text-white" : "text-ink/70 hover:bg-muted"
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => setIs3D((v) => !v)}
+          aria-pressed={is3D}
+          className={`hidden items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold shadow-soft backdrop-blur transition-colors sm:inline-flex ${
+            is3D ? "border-primary bg-primary text-white" : "border-border bg-card/95 text-ink/70 hover:bg-muted"
+          }`}
+        >
+          <Box className="size-3.5" /> {is3D ? "Paparan 2D" : "Paparan 3D"}
+        </button>
       </div>
 
       {withCoords.length === 0 && (
@@ -189,6 +222,24 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
               {selected.lokasi}
             </p>
           )}
+          {selected.telefon && (
+            <a
+              href={`tel:${selected.telefon.replace(/\s/g, "")}`}
+              className="mt-3 flex items-center gap-2 text-sm text-ink transition-colors hover:text-primary"
+            >
+              <Phone className="size-4 shrink-0 text-accent" />
+              {selected.telefon}
+            </a>
+          )}
+          {selected.emel && (
+            <a
+              href={`mailto:${selected.emel}`}
+              className="mt-2 flex items-center gap-2 break-all text-sm text-ink transition-colors hover:text-primary"
+            >
+              <Mail className="size-4 shrink-0 text-accent" />
+              {selected.emel}
+            </a>
+          )}
           <a
             href={`https://www.google.com/maps/dir/?api=1&destination=${selected.latitude},${selected.longitude}`}
             target="_blank"
@@ -201,6 +252,99 @@ export function MasjidMap({ masjids, onError }: { masjids: MasjidView[]; onError
       )}
     </div>
   );
+}
+
+// GeoJSON label daripada senarai masjid visible.
+function labelGeojson(list: MasjidView[]): GeoJSON.FeatureCollection {
+  return {
+    type: "FeatureCollection",
+    features: list.map((m) => ({
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [m.longitude!, m.latitude!] },
+      properties: { nama: m.nama },
+    })),
+  };
+}
+
+// Ambil text-font daripada layer symbol sedia ada dlm style — elak glyph tak wujud.
+function styleTextFont(map: maplibregl.Map): string[] {
+  try {
+    const layers = map.getStyle()?.layers ?? [];
+    for (const l of layers) {
+      const tf = (l as { layout?: Record<string, unknown> }).layout?.["text-font"];
+      if (l.type === "symbol" && Array.isArray(tf) && tf.length) return tf as string[];
+    }
+  } catch {
+    /* guna fallback */
+  }
+  return ["Noto Sans Regular"];
+}
+
+// Layer label nama masjid (halo ivory, collision auto MapLibre). Source kosong dulu;
+// diisi oleh effect [visible].
+function addLabelLayer(map: maplibregl.Map) {
+  if (map.getSource(LABEL_SRC)) return;
+  map.addSource(LABEL_SRC, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+  map.addLayer({
+    id: LABEL_LAYER,
+    type: "symbol",
+    source: LABEL_SRC,
+    minzoom: 9.5,
+    layout: {
+      "text-field": ["get", "nama"],
+      "text-font": styleTextFont(map),
+      "text-size": 11,
+      "text-offset": [0, 1.35],
+      "text-anchor": "top",
+      "text-optional": true,
+      "text-max-width": 8,
+    },
+    paint: {
+      "text-color": "#0D1117",
+      "text-halo-color": "#F7F3EB",
+      "text-halo-width": 1.5,
+    },
+  });
+}
+
+// Cari source vector pertama dlm style (openmaptiles) untuk fill-extrusion bangunan.
+function firstVectorSource(map: maplibregl.Map): string | null {
+  try {
+    const sources = map.getStyle()?.sources ?? {};
+    for (const [id, s] of Object.entries(sources)) {
+      if ((s as { type?: string })?.type === "vector") return id;
+    }
+  } catch {
+    /* skip */
+  }
+  return null;
+}
+
+// Layer bangunan 3D (fill-extrusion). Graceful: jika source/source-layer tiada, skip.
+function addBuildings(map: maplibregl.Map) {
+  if (map.getLayer(B3D_LAYER)) {
+    map.setLayoutProperty(B3D_LAYER, "visibility", "visible");
+    return;
+  }
+  const srcId = firstVectorSource(map);
+  if (!srcId) return;
+  try {
+    map.addLayer({
+      id: B3D_LAYER,
+      type: "fill-extrusion",
+      source: srcId,
+      "source-layer": "building",
+      minzoom: 14,
+      paint: {
+        "fill-extrusion-color": "#d9d3c8",
+        "fill-extrusion-height": ["coalesce", ["get", "render_height"], ["get", "height"], 8],
+        "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
+        "fill-extrusion-opacity": 0.55,
+      },
+    });
+  } catch {
+    /* schema tiada 'building' — biar peta condong tanpa bangunan */
+  }
 }
 
 // Muat sempadan wilayah dari public/map/boundaries/*.json — layer line maroon +

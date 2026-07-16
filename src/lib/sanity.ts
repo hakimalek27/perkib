@@ -109,6 +109,8 @@ export type MasjidView = {
   wilayah: Wilayah;
   latitude?: number;
   longitude?: number;
+  telefon?: string;
+  emel?: string;
 };
 
 function masjidFallback(): MasjidView[] {
@@ -145,12 +147,14 @@ export async function getMasjids(): Promise<MasjidView[]> {
         wilayah?: Wilayah;
         latitude?: number;
         longitude?: number;
+        telefon?: string;
+        emel?: string;
       }>
     >(
       `*[_type=="masjid"]|order(zon->nombor asc, isInduk desc, nama asc){
          "id": _id, nama, lokasi, isInduk, isNegeri, jenisTempat,
          "zonNombor": zon->nombor, "zonNama": zon->nama, "wilayah": zon->wilayah,
-         latitude, longitude
+         latitude, longitude, telefon, emel
        }`
     );
     if (!rows || rows.length === 0) return masjidFallback();
@@ -166,6 +170,8 @@ export async function getMasjids(): Promise<MasjidView[]> {
       wilayah: m.wilayah ?? "kl",
       latitude: typeof m.latitude === "number" ? m.latitude : undefined,
       longitude: typeof m.longitude === "number" ? m.longitude : undefined,
+      telefon: m.telefon || undefined,
+      emel: m.emel || undefined,
     }));
   } catch (err) {
     console.error("getMasjids: fetch gagal, guna fallback", err);

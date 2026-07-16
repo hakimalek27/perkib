@@ -51,6 +51,19 @@ export default {
     // v3: koordinat peta (opsyenal, additive) — dijana skrip geocode + semakan manual.
     { name: "latitude", title: "Latitude", type: "number", description: "Koordinat peta (opsyenal)." },
     { name: "longitude", title: "Longitude", type: "number", description: "Koordinat peta (opsyenal)." },
+    // v3.4: kontak rasmi awam (opsyenal) — dipapar dlm drawer peta direktori.
+    {
+      name: "telefon",
+      title: "No. Telefon",
+      type: "string",
+      description: "Kontak rasmi masjid (dipapar awam). Kosongkan jika tiada.",
+    },
+    {
+      name: "emel",
+      title: "Emel",
+      type: "string",
+      description: "Emel rasmi masjid (dipapar awam). Kosongkan jika tiada.",
+    },
   ],
   orderings: [
     {
