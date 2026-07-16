@@ -377,3 +377,41 @@ Selepas fix webhook, Hakim beri 6 permintaan (fail `semakan_kontak_85_masjid.csv
 
 ## Deployment v3.5 (16 Jul)
 Build BERSIH → standalone 50M → tar-pipe 12M `ubuntu@43.133.34.55` → kekal `.env.local` → backup **`standalone.bak-20260716-v35`** → pm2 restart. `main @ 077b562`. **Disahkan LIVE:** 5 route 200 + kontak masjid (Al-Firdaus/Abdul Rahman Auf/Al-Bukhary) dlm HTML. Marker kubah + soft delete + popup/kelajuan = pengesahan visual Hakim (peta ssr:false + gate admin). Rollback: `standalone.bak-20260716-v35`. Data Sanity (kontak + medan dibatalkan/kaunter) additive & boleh pulih.
+
+---
+
+# v3.6 — Audit v3.5 + Fix + Butang Reset + Marker Claude Design (16 Julai 2026)
+
+Hakim tidak yakin kerja v3.5 (commit `077b562`, dibuat oleh sesi Opus terdahulu) dibuat betul tanpa bug, minta **audit menyeluruh + fix** + 2 ciri baharu. Pendekatan: siasat dahulu (2 ejen Explore audit kod + cross-check data + tarik rekaan DesignSync), fix satu per satu, verifikasi hujung-ke-hujung.
+
+## Audit (bukti, bukan andaian)
+- **Cross-check kontak (ejen):** 85 baris CSV `semakan_kontak_85_masjid` vs `masjid-kontak-jawi.json` (56 entri) — **56/56 padan sempurna, 0 tertinggal, 0 salah transkripsi**. Emel ejaan pelik JAWI (`masjiakram@`, `masjidtirmizzi@`, `ubaidllah`) dikekalkan tepat; Al-Mukhlisin plain betul dilangkau; 29 baris tanpa kontak (17 Labuan + 12 KL) memang tiada nombor JAWI.
+- **Semakan kod (ejen):** M2 popup (susunan guard + kunci storage betul), M3 scroller, M4 marker (`.perkib-pin` kekal), M6 soft delete (tapisan `dibatalkan != true` lengkap di list/counts/employee/dashboard/status), fix webhook `after()` — semua DISAHKAN BETUL. Data live: kaunter seq=0, 0 permohonan, 65/97 masjid ada kontak.
+- **6 penemuan bermasalah** (1 KRITIKAL + 2 sederhana + 3 kecil) — semua berkisar integrasi soft delete yang tak lengkap.
+
+## Fix (M1)
+- **A1 (KRITIKAL):** `getPermohonanById` (`admin-data.ts`) + `updateStatusAction` (`saguhati/actions.ts`) tak tapis `dibatalkan` → admin biasa boleh buka + ubah status rekod di-soft-delete via URL terus `/admin/saguhati/[id]` (malah cetus WhatsApp ke pemohon). Fix: tambah `&& dibatalkan != true` pada query by-id (null → `notFound()` sedia ada) + semak `dibatalkan` dalam action sebelum patch.
+- **A2:** guard `reset-counter-saguhati.ts` guna `perm.aktif === 0` — rekod dibatalkan (masih pegang nombor rujukan) diabaikan → reset boleh cipta nombor bertindih. Fix: `selamat = perm.total === 0`.
+- **A3:** kiraan had "sekali seumur hidup" (submit route + `getSaguhatiUsage`) guna `status != "tolak"` sahaja → rekod dibatalkan masih makan kuota pemohon. Fix: `&& dibatalkan != true` → pembatalan membebaskan kuota.
+- **A4:** idempotency submit pulang ref rekod dibatalkan (pemohon tak jumpa via semak). Fix: jika `existing.dibatalkan` → `SubmitError(409, "mula permohonan baharu")`.
+- **A5:** komen basi ("4 tab", "arch maroon").
+
+## Butang Reset No. Rujukan (M2)
+UI di sebalik gate kedua `/admin/staf` (bukan CLI sahaja). Kad "zon bahaya" di bawah tab Permohonan → dialog corak sedia ada (taip **RESET** sahkan). Server: `bacaKaunterAction` (diagnosis) + `resetKaunterAction` — `ensureGate()` BERGANDA, **BLOK jika `total > 0`** (aktif ATAU dibatalkan — konsisten dgn A2, elak bertindih), `createIfNotExists`+`patch seq 0`, `writeAudit`. Skrip CLI `--force` kekal untuk kecemasan.
+
+## Marker peta Claude Design (M3)
+Hakim kata kubah emas ringkas "tak lawa" → tukar ke rekaan **"Masjid Map Marker"** dari projek Claude Design (`6e86173e…`, ditarik via DesignSync `get_file`). `MasjidMarker.jsx` (JSX + useId gradien) → `masjidMarkerSvg(active)` (string SVG statik untuk `el.innerHTML`): teardrop maroon berpuncak arch + rim emas, recess ivory (mihrab), **kubah bawang emas 3D** (highlight+bayang) + **bulan sabit**, bayang tapak + glow. Id gradien suffix `a`/`n` (isolasi normal/aktif — id berulang antara pin OK, def sama); `var(--maroon)`/`(--ivory)` → hex terus; `width/height 100%` (saiz oleh `pinStyle`). **A6 keadaan dipilih:** registry `pinsRef` + effect `[selected]` swap innerHTML/saiz (aktif 46px + glow + z-index atas, biasa 36px) — murah (≤2 pin), tak cipta semula semua marker. Kekal `.perkib-pin`+`<button>`+aria-label+`anchor:"bottom"` (E2E #11/#14 selamat).
+
+## Cabaran & penyelesaian v3.6
+- **Diagnostik inline basi (berulang):** banyak ralat TS "declared but never read" / "Cannot find name" / JSX imbalance muncul antara edit berbilang langkah — semua snapshot basi, hilang bila `tsc --noEmit` dijalankan (ground truth). Pelajaran: percaya `tsc`, bukan diagnostik pertengahan-edit.
+- **MasjidView guna `id` bukan `_id`:** registry pin mula guna `m._id` → ralat jenis; betul = `m.id`.
+- **Marker `innerHTML` + id gradien berulang:** ~76 pin sama id `mm-shell-n` — browser guna def pertama (objectBoundingBox → setiap shape dapat gradien relatif bbox sendiri) → semua render betul. Pin aktif guna suffix `-a` berasingan.
+- **Renderer Chrome MCP beku (isu terdokumentasi):** screenshot + klik pada tab MCP latar → timeout 30s (hidrasi terhenti — sama spt sesi lalu). DOM boleh dibaca (`get_page_text`/`read_page` sahkan /admin/staf 5 tab termasuk "Dibatalkan" untuk sesi Hakim yang aktif) tetapi input tak boleh. Marker + drawer disahkan penuh via **Playwright headless** (boleh dipercaya); butang reset disahkan via typecheck+build+corak+logik CLI+mock visual — klik-live = baki Hakim (browser sendiri hidrat normal).
+
+## Verifikasi
+- `tsc --noEmit` + `eslint` + `npm run build` (bersih, `rm -rf .next`) — semua hijau; azanmalek `soalan-lazim.html` = 0.
+- **Playwright 16/16 LULUS** terhadap perkib.my LIVE (15 sedia ada + 1 baharu v3.6 marker; accordion sekali flaky→lulus retry). Marker: 76 pin render, SVG design (`mm-shell/mm-dome`, viewBox 64 82), klik→drawer (Masjid Wilayah Persekutuan + telefon 03-6201 8791 = kontak v3.5 hidup), pin aktif (`aria-current`+`-a`).
+- Screenshot visual: marker (normal/aktif/kluster, latar cerah+gelap), peta LIVE, drawer LIVE, dialog reset (boleh-reset + guard BLOK).
+
+## Deployment v3.6 (16 Jul)
+Build BERSIH → standalone 50M → tar-pipe 12M `ubuntu@43.133.34.55` (server PERKIB, BUKAN kariah) → ekstrak ke `standalone.v36new` → cp `.env.local` (1326B, 20 kunci disahkan) → backup **`standalone.bak-20260716-v36`** → swap → `pm2 restart perkib` + save. `main @ e74d1dc` (push GitHub sync). **Disahkan LIVE:** 7 route 200, webhook GET 405, pm2 online tiada ralat, jiran `bpp` selamat. Rollback: `standalone.bak-20260716-v36` (atau `-v35`). ⚠️ Selepas deploy, klien hard refresh (Ctrl+Shift+R).

@@ -1,6 +1,19 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-16 · **Status:** ✅ **v3.5 DEPLOYED & LIVE di https://perkib.my** (6 permintaan: 56 kontak masjid JAWI, popup banner jadual masa + auto-off, kelajuan jalur aktiviti boleh set, marker peta kubah emas, reset kaunter rujukan → PKB-2026-0001, soft delete pembatalan permohonan). Sebelum: v3.4 (8 maklum balas) + Studio FIXED + webhook yuran KONSISTEN (`main @ 077b562`).
+**Kemas kini:** 2026-07-16 · **Status:** ✅ **v3.6 DEPLOYED & LIVE di https://perkib.my** (audit v3.5 + 6 fix + butang Reset No. Rujukan dalam /admin/staf + marker peta rekaan Claude Design). Sebelum: v3.5 (6 permintaan Hakim) (`main @ e74d1dc`).
+
+## 🆕 v3.6 (16 Julai 2026) — DEPLOYED (audit v3.5 + fix + 2 ciri)
+Hakim minta audit menyeluruh kerja v3.5 + 2 ciri baharu. Audit (2 ejen Explore + data live + DesignSync) → 6 penemuan, semua di-fix. Deploy: build BERSIH → tar-pipe → kekal `.env.local` → backup **`standalone.bak-20260716-v36`** → pm2 restart. Commit: `af11fc4`(M1 fix) `43c9260`(M2 reset) `927c681`(M3 marker) `e74d1dc`(E2E). **Verifikasi: Playwright 16/16 lulus** (LIVE) + screenshot marker + drawer + dialog reset.
+
+**Audit v3.5 — disahkan BETUL:** M1 kontak (cross-check CSV↔JSON 56/56 padan, 0 tertinggal/salah), M2 popup masa (susunan guard + kunci storage betul), M3 scroller, M4 marker (.perkib-pin kekal), M6 soft delete (tapisan lengkap), fix webhook `after()` — semua kukuh. **6 penemuan di-fix:**
+- **M1 fix (`af11fc4`):** (A1 KRITIKAL) `getPermohonanById` + `updateStatusAction` kini tapis `dibatalkan` → rekod di-soft-delete TAK boleh dibuka/diubah admin biasa via URL terus (dulu boleh cetus WhatsApp status). (A2) guard `reset-counter-saguhati.ts` kira SEMUA rekod (aktif+dibatalkan) — elak nombor rujukan bertindih. (A3) kiraan had "sekali seumur hidup" (submit route + `getSaguhatiUsage`) abai rekod dibatalkan → batal bebaskan kuota. (A4) idempotency submit tolak rekod dibatalkan (minta mula baharu). (A5) komen basi.
+- **M2 — Butang Reset No. Rujukan (`43c9260`):** kad "zon bahaya" di bawah tab **Permohonan** /admin/staf (gate kedua). `bacaKaunterAction`+`resetKaunterAction` (ensureGate BERGANDA, **BLOK jika ada rekod aktif ATAU dibatalkan** pegang nombor rujukan — elak bertindih; skrip CLI `--force` kekal utk kecemasan). Dialog papar diagnosis (seq/PKB-2026-0001/kiraan) + taip **RESET** utk sahkan + `writeAudit "reset-kaunter-saguhati"`.
+- **M3 — Marker peta Claude Design (`927c681`):** ganti kubah emas ringkas dgn "Masjid Map Marker" (`components/motif/MasjidMarker.jsx`): teardrop maroon berpuncak arch + rim emas, recess ivory (mihrab), **kubah bawang emas 3D** + **bulan sabit**, bayang tapak + glow. `masjidMarkerSvg(active)` (SVG statik, id gradien suffix a/n, hex terus). (A6) pin dipilih diserlah — registry `pinsRef` + effect swap innerHTML/saiz (aktif 46px + glow + z-index, biasa 36px). Kekal `.perkib-pin`+button+aria-label+anchor bottom (E2E selamat). Disahkan LIVE: 76 pin render, klik→drawer→kontak, pin aktif.
+
+**Baki Hakim v3.6 (perlu sesi admin sendiri — renderer MCP beku, tak dapat auto-klik):**
+1. **Uji butang Reset No. Rujukan:** /admin/staf → tab Permohonan → tatal bawah → "Reset No. Rujukan" → dialog patut tunjuk seq 0 / PKB-2026-0001 / 0 permohonan → taip RESET → Reset Sekarang (selamat, keadaan sekarang 0 permohonan). (Guard akan BLOK jika ada rekod dibatalkan.)
+2. **Uji soft delete penuh** (jika belum): batalkan permohonan ujian → sahkan hilang dari /admin/saguhati + tab Dibatalkan pantau + Pulihkan.
+3. Semak visual marker baharu di peta (hard refresh Ctrl+Shift+R).
 
 ## 🆕 v3.5 (16 Julai 2026) — DEPLOYED (6 permintaan Hakim)
 6 milestone (M1–M6), lint+build hijau, dari fail `semakan_kontak_85_masjid.csv`. Deploy: build BERSIH → tar-pipe → kekal `.env.local` → backup **`standalone.bak-20260716-v35`** → pm2 restart. Disahkan: route 200 (/, /direktori-masjid, /yuran/semak, /studio, /admin/staf) + kontak masjid dlm HTML live.
