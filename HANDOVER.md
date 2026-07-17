@@ -1,6 +1,16 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-16 · **Status:** ✅ **v3.6 DEPLOYED & LIVE di https://perkib.my** (audit v3.5 + 6 fix + butang Reset No. Rujukan dalam /admin/staf + marker peta rekaan Claude Design). Sebelum: v3.5 (6 permintaan Hakim) (`main @ e74d1dc`).
+**Kemas kini:** 2026-07-17 · **Status:** ✅ **v3.7 DEPLOYED & LIVE di https://perkib.my** (carian /admin/pegawai + /admin/staf kini termasuk no. telefon + emel). Sebelum: v3.6 (audit v3.5 + Reset No. Rujukan + marker Claude Design) (`main @ 76e98ed`).
+
+## 🆕 v3.7 (17 Julai 2026) — DEPLOYED (carian termasuk telefon + emel)
+Carian di **`/admin/pegawai`** (Imam/Bilal) dan **`/admin/staf`** (staf MAIWP) kini boleh cari ikut **no. telefon + emel** — bukan hanya nama/no. pekerja. Deploy: build BERSIH → tar-pipe → kekal `.env.local` → backup **`standalone.bak-20260717-v37`** → pm2 restart. Commit `76e98ed`.
+- **Helper kongsi `src/lib/search-text.ts` (BAHARU):** `normalizeCari` + `matchAllTerms(query, text, digitSource)` — haystack **teks** (nama/emp/masjid/emel; @→ruang) + haystack **digit** (telefon/IC/emp buang bukan-digit). Term semua-digit ≥3 → padan digit ATAU teks; term lain → teks. Logik AND. Kendali telefon berformat `013-456 7890`, IC, emel, nama.
+- **Staf (`searchStafLain` di `staf-lain.ts`):** dulu **BUG** — hanya padan nama/emp/jawatan/bahagian walau UI dakwa "IC/telefon"; kini teks=`+emel`, digit=`noTel+noKp+emp`. API `staf-cari` + `StafSearch` tak berubah (sudah pulang + papar telefon/emel/WA); kemas placeholder/hint.
+- **Pegawai (server-side):** telefon `telefonEnc` **TERENKRIPSI** (IV rawak → mustahil cari atas ciphertext) → carian ditukar ke server bila ≥2 aksara. Route BAHARU **`/api/admin/pegawai-cari`** (gate TUNGGAL admin — konsisten halaman butiran; `rateLimit` 30/min; tiru `staf-cari`). `searchPegawaiAdmin` (`admin-data.ts`) fetch ~93 + `decryptValue(telefonEnc)` + `matchAllTerms` → pulang **HITS sahaja** (JANGAN hantar telefon direktori penuh ke klien). `PegawaiAdminList` hibrid: **browse penuh (tanpa PII)** bila kosong, **carian server (telefon+emel dipapar teks, Link ke butiran)** bila taip; debounce 250ms + AbortController.
+- **PDPA:** telefon pegawai dekripsi **server sahaja**, dihantar HANYA utk baris sepadan (cap 30) + rate-limit; konsisten dgn halaman butiran (gate admin sudah dedah telefon). Staf kekal **gate berganda**.
+- **Verifikasi:** tsc + eslint hijau; **ujian unit `matchAllTerms` 18/18** (telefon berformat/tanpa/separa, IC, emel, nama, no. pekerja, AND, bukan-padanan); build bersih; route deployed + **gated (401 tanpa auth)**; 4 route 200. ⚠️ Ujian authenticated-live tersekat (sesi admin luput + renderer Chrome MCP beku) — **baki Hakim: uji carian dalam browser sendiri** (log masuk segar; corak auth identik `staf-cari` yang terbukti berfungsi).
+
+**Baki Hakim v3.7:** uji carian di **/admin/pegawai** — taip no. telefon atau emel pegawai yang diketahui → sepatutnya jumpa + telefon terpapar; dan **/admin/staf** — cari ikut IC/telefon/emel staf. Carian nama/no. pekerja mesti kekal berfungsi.
 
 ## 🆕 v3.6 (16 Julai 2026) — DEPLOYED (audit v3.5 + fix + 2 ciri)
 Hakim minta audit menyeluruh kerja v3.5 + 2 ciri baharu. Audit (2 ejen Explore + data live + DesignSync) → 6 penemuan, semua di-fix. Deploy: build BERSIH → tar-pipe → kekal `.env.local` → backup **`standalone.bak-20260716-v36`** → pm2 restart. Commit: `af11fc4`(M1 fix) `43c9260`(M2 reset) `927c681`(M3 marker) `e74d1dc`(E2E). **Verifikasi: Playwright 16/16 lulus** (LIVE) + screenshot marker + drawer + dialog reset.

@@ -415,3 +415,29 @@ Hakim kata kubah emas ringkas "tak lawa" → tukar ke rekaan **"Masjid Map Marke
 
 ## Deployment v3.6 (16 Jul)
 Build BERSIH → standalone 50M → tar-pipe 12M `ubuntu@43.133.34.55` (server PERKIB, BUKAN kariah) → ekstrak ke `standalone.v36new` → cp `.env.local` (1326B, 20 kunci disahkan) → backup **`standalone.bak-20260716-v36`** → swap → `pm2 restart perkib` + save. `main @ e74d1dc` (push GitHub sync). **Disahkan LIVE:** 7 route 200, webhook GET 405, pm2 online tiada ralat, jiran `bpp` selamat. Rollback: `standalone.bak-20260716-v36` (atau `-v35`). ⚠️ Selepas deploy, klien hard refresh (Ctrl+Shift+R).
+
+---
+
+# v3.7 — Carian termasuk No. Telefon + Emel (17 Julai 2026)
+
+Hakim mahu carian di `/admin/pegawai` (Imam/Bilal) dan `/admin/staf` (staf MAIWP) boleh cari juga ikut **no. telefon + emel**. Siasat dahulu (2 ejen Explore) → dua subsistem carian berbeza + cabaran enkripsi.
+
+## Penemuan
+- **Staf:** carian sudah server-side (`/api/admin/staf-cari` → `searchStafLain`); rekod ada `noTel`+`emel` (plain dlm memori selepas blob dekripsi); API + UI sudah pulang/papar. **BUG:** `searchStafLain` hanya padan nama/emp/jawatan/bahagian — telefon/emel/IC TAK dipadan walau hint UI dakwa. Fix mudah (logik sahaja).
+- **Pegawai:** carian di KLIEN (`PegawaiAdminList` filter array ringkas TANPA PII). Telefon `telefonEnc` **AES-256-GCM, IV rawak → ciphertext non-deterministik → mustahil padan substring**. Emel `emelRasmi` plain. Untuk cari telefon → mesti dekripsi di server; JANGAN hantar telefon 93 pukal ke klien.
+
+## Pelaksanaan
+- **Helper kongsi `src/lib/search-text.ts`:** `normalizeCari` (huruf kecil + buang diakritik + bukan-alnum→ruang) + `matchAllTerms(query, text, digitSource)` — satu logik untuk kedua-dua carian. Term semua-digit ≥3 (telefon/IC/no.pekerja) padan haystack **digit** (buang bukan-digit dua belah) ATAU teks; term lain padan haystack teks. Emel (@→ruang) padan sebagai teks. AND semua terms.
+- **Staf:** `searchStafLain` guna `matchAllTerms` (teks +emel, digit noTel+noKp+emp). Buang `normalize` tempatan (guna helper). Placeholder/hint dikemas.
+- **Pegawai:** route BAHARU `/api/admin/pegawai-cari` (tiru `staf-cari`; gate tunggal admin — konsisten halaman butiran pegawai; `rateLimit` 30/min) → `searchPegawaiAdmin` (`admin-data.ts`): fetch ~93 (projeksi + emelRasmi + telefonEnc) → `decryptValue` telefon → `matchAllTerms` → hits sahaja (telefon+emel dekripsi hanya utk yang sepadan). `PegawaiAdminList` hibrid: browse penuh (tanpa PII) bila kosong, `fetch` server bila ≥2 aksara (debounce 250ms + AbortController), papar telefon+emel teks dlm kad Link ke butiran (elak `<a>` bersarang).
+
+## Cabaran & penyelesaian
+- **Telefon terenkripsi non-deterministik:** tak boleh cari di GROQ/klien → server dekripsi + padan. 93 rekod remeh; fetch segar setiap carian (elak basi selepas CRUD; debounce hadkan kekerapan).
+- **Telefon berformat vs query:** `noTel` simpan format CSV (`013-456 7890`); haystack digit (buang bukan-digit) membolehkan padan sama ada user taip `0134567890` atau berformat. Disahkan ujian unit.
+- **PDPA:** telefon hits sahaja ke klien (bukan direktori penuh) + rate-limit anti-scrape + gate. Tiada telefon dlm URL (guna nama utk ujian).
+- **Diagnostik inline basi (berulang):** "matchAllTerms declared but never read" muncul antara edit import & guna — hilang bila `tsc` dijalankan.
+
+## Verifikasi & Deploy
+- `tsc` + `eslint` hijau; **ujian unit `matchAllTerms` 18/18** (skrip tsx pantas: telefon berformat/tanpa/separa, IC penuh/separa, emel, nama, no.pekerja, AND, semua bukan-padanan); build bersih.
+- Deploy: tar-pipe 12M → `standalone.v37new` → cp `.env.local` (1326B) → backup **`standalone.bak-20260717-v37`** → swap → pm2 restart. `main @ 76e98ed` (push sync). **Disahkan LIVE:** 4 route 200; **`/api/admin/pegawai-cari` + `staf-cari` → 401 tanpa auth** (gated); route baharu dalam bundle; pm2 online tiada ralat.
+- ⚠️ Ujian authenticated-live (dekripsi vs data sebenar) tersekat — sesi admin Hakim luput + renderer Chrome MCP beku (isu berulang). Corak auth identik `staf-cari` yang terbukti berfungsi di produksi → yakin; **Hakim sahkan dalam browser sendiri**. Rollback: `standalone.bak-20260717-v37`.
