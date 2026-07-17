@@ -121,8 +121,8 @@ export function StafSearch({ total }: { total: number }) {
           Direktori Staf MAIWP
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Carian maklumat {total.toLocaleString("ms-MY")} kakitangan MAIWP lain — nama, IC, telefon
-          (klik terus WhatsApp), gred dan bahagian. Akses admin sahaja.
+          Carian maklumat {total.toLocaleString("ms-MY")} kakitangan MAIWP lain — cari ikut nama,
+          no. pekerja, IC, telefon atau emel (klik terus WhatsApp). Akses admin sahaja.
         </p>
       </div>
 
@@ -134,7 +134,7 @@ export function StafSearch({ total }: { total: number }) {
             onChange={(e) => handleChange(e.target.value)}
             autoFocus
             autoComplete="off"
-            placeholder="Taip nama atau no. pekerja…"
+            placeholder="Taip nama, no. pekerja, IC, telefon atau emel…"
             aria-label="Cari staf MAIWP"
             className="h-11 w-full rounded-lg border border-input bg-card pl-10 pr-10 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />

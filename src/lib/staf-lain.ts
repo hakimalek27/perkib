@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { decryptValue } from "./crypto";
+import { matchAllTerms } from "./search-text";
 
 export type StafLain = {
   employeeNo: string;
@@ -62,31 +63,22 @@ export function isStafLainReady(): boolean {
   return loadStafLain().length > 0;
 }
 
-function normalize(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 export type StafLainSearchResult = {
   results: StafLain[];
   total: number;
 };
 
-/** Cari staf ikut nama / no. pekerja. Kosong = kembalikan senarai terhad. */
+/** Cari staf ikut nama, no. pekerja, IC, telefon atau emel. Kosong = senarai terhad. */
 export function searchStafLain(query: string, limit = 50): StafLainSearchResult {
   const all = loadStafLain();
-  const q = normalize(query);
-  if (!q) return { results: all.slice(0, limit), total: all.length };
-  const terms = q.split(" ").filter(Boolean);
-  const matched = all.filter((s) => {
-    const hay = normalize(`${s.nama} ${s.employeeNo} ${s.jawatan} ${s.bahagian}`);
-    return terms.every((t) => hay.includes(t));
-  });
+  if (!query.trim()) return { results: all.slice(0, limit), total: all.length };
+  const matched = all.filter((s) =>
+    matchAllTerms(
+      query,
+      `${s.nama} ${s.employeeNo} ${s.jawatan} ${s.bahagian} ${s.emel}`,
+      `${s.noTel} ${s.noKp} ${s.employeeNo}`
+    )
+  );
   return { results: matched.slice(0, limit), total: matched.length };
 }
 

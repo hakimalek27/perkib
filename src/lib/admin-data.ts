@@ -3,6 +3,7 @@
 
 import { getWriteClient } from "@/lib/sanity-write";
 import { decryptValue } from "@/lib/crypto";
+import { matchAllTerms } from "@/lib/search-text";
 
 export type PermohonanRingkas = {
   _id: string;
@@ -146,6 +147,55 @@ export async function getPegawaiAdminAll(): Promise<PegawaiAdminRingkas[]> {
     {},
     { cache: "no-store" }
   );
+}
+
+export type PegawaiHit = PegawaiAdminRingkas & { telefon: string; emel: string };
+
+// Carian pegawai (admin) termasuk telefon (dekripsi di SERVER) + emel — pulang HITS
+// sahaja (JANGAN dedah telefon seluruh direktori ke klien). ~93 rekod: fetch segar
+// setiap carian (elak basi selepas CRUD; debounce klien hadkan kekerapan).
+export async function searchPegawaiAdmin(
+  query: string,
+  limit = 30
+): Promise<{ results: PegawaiHit[]; total: number }> {
+  const client = getWriteClient();
+  if (!client || !query.trim()) return { results: [], total: 0 };
+  const rows = await client.fetch<
+    Array<PegawaiAdminRingkas & { emelRasmi?: string | null; telefonEnc?: string | null }>
+  >(
+    `*[_type=="pegawai" && !(_id in path("drafts.**"))]|order(nama asc){
+       employeeNo, nama, kategori, gred,
+       "masjidNama": masjid->nama, "zonNombor": masjid->zon->nombor,
+       "photoUrl": gambar.asset->url,
+       emelRasmi, telefonEnc
+     }`,
+    {},
+    { cache: "no-store" }
+  );
+  const matched: PegawaiHit[] = [];
+  for (const r of rows) {
+    const telefon = decryptValue(r.telefonEnc) ?? "";
+    const emel = r.emelRasmi ?? "";
+    const ok = matchAllTerms(
+      query,
+      `${r.nama} ${r.employeeNo} ${r.masjidNama ?? ""} ${emel}`,
+      `${telefon} ${r.employeeNo}`
+    );
+    if (ok) {
+      matched.push({
+        employeeNo: r.employeeNo,
+        nama: r.nama,
+        kategori: r.kategori,
+        gred: r.gred,
+        masjidNama: r.masjidNama,
+        zonNombor: r.zonNombor,
+        photoUrl: r.photoUrl,
+        telefon,
+        emel,
+      });
+    }
+  }
+  return { results: matched.slice(0, limit), total: matched.length };
 }
 
 export type PegawaiAdminDetail = PegawaiAdminRingkas & {
