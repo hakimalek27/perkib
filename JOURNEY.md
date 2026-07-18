@@ -441,3 +441,38 @@ Hakim mahu carian di `/admin/pegawai` (Imam/Bilal) dan `/admin/staf` (staf MAIWP
 - `tsc` + `eslint` hijau; **ujian unit `matchAllTerms` 18/18** (skrip tsx pantas: telefon berformat/tanpa/separa, IC penuh/separa, emel, nama, no.pekerja, AND, semua bukan-padanan); build bersih.
 - Deploy: tar-pipe 12M → `standalone.v37new` → cp `.env.local` (1326B) → backup **`standalone.bak-20260717-v37`** → swap → pm2 restart. `main @ 76e98ed` (push sync). **Disahkan LIVE:** 4 route 200; **`/api/admin/pegawai-cari` + `staf-cari` → 401 tanpa auth** (gated); route baharu dalam bundle; pm2 online tiada ralat.
 - ⚠️ Ujian authenticated-live (dekripsi vs data sebenar) tersekat — sesi admin Hakim luput + renderer Chrome MCP beku (isu berulang). Corak auth identik `staf-cari` yang terbukti berfungsi di produksi → yakin; **Hakim sahkan dalam browser sendiri**. Rollback: `standalone.bak-20260717-v37`.
+
+---
+
+# v3.8 — Popup Besar 1080×1450 + Crop WYSIWYG (17 Julai 2026)
+
+Hakim: popup **kecil sangat** → besarkan 1080×1450; dan dalam Sanity, crop mesti **nisbah tetap sama seperti paparan depan** — editor gerakkan pilih sudut, selepas publish **apa yang di-set itulah yang terpapar** (bukan agak-agak, bukan alih sudut kemudian tengok lain). Sama untuk jalur & gambar lain.
+
+## Punca (ejen + kajian doc Sanity)
+- Popup & jalur guna `urlForWidth` (hanya `.width()`) → **crop/hotspot editor DI-BYPASS**; imej nisbah asal dipaksa masuk kotak CSS dan dipotong oleh `object-cover` berpusat. Editor crop/hotspot langsung tak terpakai. (Pegawai/AJK guna `urlForSquare` = width+height+fit:crop → sudah hormat crop; buktikan builder memang boleh WYSIWYG.)
+- Popup kecil: kad `max-w-lg` (512px) + kotak `aspect-[4/3]`.
+- Jalur: DUA nisbah berbeza ikut breakpoint (`h-36 w-56` 14:9 vs `md:h-44 md:w-72` 18:11) → mustahil WYSIWYG.
+- **Sanity Studio ≥3.86 (kita v5):** `options.hotspot.previews` — dialog crop papar pratonton nisbah tetap bertajuk; editor nampak live betul-betul apa yang keluar bagi nisbah itu.
+
+## Mekanisme WYSIWYG (3 lapisan MESTI sepadan)
+1. **Studio:** `hotspot.previews` nisbah X → pratonton crop = paparan depan.
+2. **URL:** `.width(w).height(h).fit("crop")` nisbah X → builder `@sanity/image-url` hormat crop rectangle (`rect=`) + hotspot (`fp-`).
+3. **CSS:** bekas `aspect-[X]` nisbah X → `object-cover` tiada crop tambahan.
+
+## Pelaksanaan
+- `sanity.ts`: helper BAHARU `urlForRatio(src,w,h)` = `.width().height().fit("crop").auto("format")`. `urlForWidth` dibuang; `urlForSquare` delegate ke `urlForRatio(src,size,size)`. Popup → `urlForRatio(1080,1450)`, jalur → `urlForRatio(720,450)` [16:10].
+- `paparanUtama.ts`: `popupGambar` `options.hotspot.previews [{title:"Popup 1080×1450", aspectRatio:1080/1450}]` + description arahan; `scrollerGambar.gambar` previews "Jalur 16:10" + description.
+- `PopupBanner.tsx`: kotak `aspect-[1080/1450]`; kad besar tapi muat — `w-[92vw]` + `style maxWidth: min(28rem, calc((94svh - 6rem) * 1080 / 1450))` (lebar dihad oleh tinggi viewport supaya imej+strip tak melimpah; nisbah kekal). `sizes` dikemas.
+- `AktivitiScroller.tsx`: `h-[140px] w-56 md:h-[180px] md:w-72` (224×140 & 288×180 — kedua-dua tepat 16:10, padan URL 720×450).
+
+## Keputusan skop — officer photos KEKAL
+`photoUrl` pegawai dikongsi merentas bekas **5:6** (PegawaiCard/homepage/AJK — `ArchFrame ratio="5/6"`) DAN **bulatan 1:1** (perutusan `size-28 rounded-full`) → tiada satu nisbah tetap WYSIWYG untuk kedua-dua konteks. Ia juga sudah hormat crop (bukan pepijat "bypass" ini). Jadi sengaja tidak diubah (elak regresi + mismatch baharu di perutusan). Boleh buat URL per-konteks sebagai tugas berasingan jika perlu. QR derma kekal mentah (QR tak boleh crop).
+
+## Cabaran & penyelesaian
+- **Saiz popup "besar tapi muat":** poster portrait 1450 tinggi boleh melimpah skrin pendek. Selesai: hadkan LEBAR kad ikut tinggi viewport — `calc((94svh - 6rem) * 1080/1450)` (reserve 6rem untuk strip butang) → keseluruhan kad ≤94svh, nisbah 1080:1450 kekal. Disahkan visual desktop 1440×900 (448×725), laptop 1280×680 (405×666), mobile 390×844 (358×604) — semua muat.
+- **Bukti WYSIWYG:** skrip pantas jana URL dari data live — jalur gambar pertama sudah ada crop editor `rect=0,105,2560,1600`; URL LAMA abaikan, BARU hormat. Selepas deploy, homepage HTML sajikan URL `rect=…&fit=crop` (jalur) + `1080x1450…fit=crop` (popup).
+
+## Verifikasi & Deploy
+- `tsc` + `eslint` hijau; build bersih; **E2E Playwright 16/16 LULUS** live (tiada regresi — officer cards tak diubah). Bukti URL `rect=`/`fit=crop` live. Visual popup 3 saiz.
+- Deploy: tar-pipe 12M → `standalone.v38new` → cp `.env.local` (1326B) → backup **`standalone.bak-20260717-v38`** → swap → pm2 restart. `main @ 51424f3` (push sync). Route 200, pm2 online tiada ralat. Rollback: `standalone.bak-20260717-v38`.
+- ⚠️ Selepas deploy, klien hard refresh (Ctrl+Shift+R). **Baki Hakim:** set crop di Studio pada pratonton nisbah bertajuk → publish → WYSIWYG.
