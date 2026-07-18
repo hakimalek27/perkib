@@ -32,7 +32,14 @@ export default {
         {
           type: "object",
           fields: [
-            { name: "gambar", title: "Gambar", type: "image", options: { hotspot: true } },
+            {
+              name: "gambar",
+              title: "Gambar (nisbah 16:10)",
+              type: "image",
+              options: { hotspot: { previews: [{ title: "Jalur 16:10", aspectRatio: 16 / 10 }] } },
+              description:
+                "Klik ikon crop pada gambar → pratonton \"Jalur 16:10\" menunjukkan TEPAT apa yang akan dipaparkan dalam jalur. Gerakkan kawasan crop / titik fokus untuk pilih sudut — itulah yang keluar selepas publish.",
+            },
             { name: "keterangan", title: "Keterangan (opsyenal)", type: "string" },
           ],
           preview: { select: { title: "keterangan", media: "gambar" } },
@@ -90,10 +97,12 @@ export default {
     { name: "popupTajuk", title: "Tajuk Popup", type: "string", group: "popup" },
     {
       name: "popupGambar",
-      title: "Gambar Popup",
+      title: "Gambar Popup (portrait 1080×1450)",
       type: "image",
-      options: { hotspot: true },
+      options: { hotspot: { previews: [{ title: "Popup 1080×1450", aspectRatio: 1080 / 1450 }] } },
       group: "popup",
+      description:
+        "Muat naik gambar (elok saiz 1080×1450 atau lebih besar). Klik ikon crop pada gambar → pratonton \"Popup 1080×1450\" menunjukkan TEPAT apa yang akan dipaparkan di homepage. Gerakkan kawasan crop / titik fokus untuk pilih sudut — itulah yang keluar selepas publish (bukan agak-agak).",
     },
     {
       name: "popupPautan",

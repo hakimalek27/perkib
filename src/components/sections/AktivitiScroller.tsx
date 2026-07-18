@@ -25,7 +25,7 @@ export function AktivitiScroller({ items, lajuSaat = 42 }: { items: ScrollerItem
         {loop.map((it, i) => (
           <figure
             key={i}
-            className="relative h-36 w-56 shrink-0 overflow-hidden rounded-xl border border-line-dark md:h-44 md:w-72"
+            className="relative h-[140px] w-56 shrink-0 overflow-hidden rounded-xl border border-line-dark md:h-[180px] md:w-72"
             aria-hidden={i >= items.length}
           >
             <Image

@@ -72,13 +72,17 @@ function getFreshClient(): SanityClient | null {
 
 const builder = projectId ? imageUrlBuilder({ projectId, dataset }) : null;
 
-function urlForSquare(src: unknown, size: number): string | undefined {
+// Imej nisbah TETAP (w×h) dengan fit:crop → builder @sanity/image-url HORMAT
+// crop rectangle + hotspot yang di-set editor (WYSIWYG: apa yang di-crop dalam
+// Studio pada nisbah ini = apa yang dipapar). Ini corak yang betul untuk semua
+// imej bernisbah tetap (popup, jalur, kad pegawai/AJK).
+function urlForRatio(src: unknown, w: number, h: number): string | undefined {
   if (!src || !builder) return undefined;
   try {
     return builder
       .image(src as { _type: string; asset: { _ref: string } })
-      .width(size)
-      .height(size)
+      .width(w)
+      .height(h)
       .fit("crop")
       .auto("format")
       .url();
@@ -87,18 +91,8 @@ function urlForSquare(src: unknown, size: number): string | undefined {
   }
 }
 
-// Imej lebar tetap (nisbah asal dikekalkan) — untuk jalur aktiviti + popup banner.
-function urlForWidth(src: unknown, width: number): string | undefined {
-  if (!src || !builder) return undefined;
-  try {
-    return builder
-      .image(src as { _type: string; asset: { _ref: string } })
-      .width(width)
-      .auto("format")
-      .url();
-  } catch {
-    return undefined;
-  }
+function urlForSquare(src: unknown, size: number): string | undefined {
+  return urlForRatio(src, size, size);
 }
 
 export function isCmsEnabled(): boolean {
@@ -559,7 +553,8 @@ export async function getPaparanUtama(): Promise<PaparanUtama | null> {
     );
     if (!doc) return null;
     const scroller: ScrollerItem[] = (doc.scrollerGambar ?? [])
-      .map((s) => ({ url: urlForWidth(s.gambar, 640) ?? "", keterangan: s.keterangan }))
+      // Jalur nisbah 16:10 (720×450) — hormat crop/hotspot editor.
+      .map((s) => ({ url: urlForRatio(s.gambar, 720, 450) ?? "", keterangan: s.keterangan }))
       .filter((s) => s.url.length > 0);
     const kekerapan: PopupKekerapan = (["sesi", "harian", "setiap"] as const).includes(
       doc.popupKekerapan as PopupKekerapan
@@ -576,7 +571,8 @@ export async function getPaparanUtama(): Promise<PaparanUtama | null> {
       scrollerLajuSaat,
       popupAktif: Boolean(doc.popupAktif) && Boolean(doc.popupGambar || doc.popupTajuk) && belumTamat,
       popupTajuk: doc.popupTajuk,
-      popupGambar: urlForWidth(doc.popupGambar, 900),
+      // Popup portrait 1080×1450 — hormat crop/hotspot editor (WYSIWYG).
+      popupGambar: urlForRatio(doc.popupGambar, 1080, 1450),
       popupPautan: doc.popupPautan,
       popupButang: doc.popupButang,
       popupKekerapan: kekerapan,

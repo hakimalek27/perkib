@@ -66,7 +66,12 @@ export function PopupBanner({ data }: { data: PaparanUtama }) {
       aria-label={data.popupTajuk ?? "Hebahan PERKIB"}
     >
       <div className="absolute inset-0 bg-obsidian/70 backdrop-blur-sm" onClick={tutup} aria-hidden />
-      <div className="page-enter relative w-full max-w-lg overflow-hidden rounded-2xl border border-accent/30 bg-card shadow-2xl">
+      {/* Poster portrait 1080×1450 besar. Lebar dihadkan oleh tinggi viewport supaya
+          keseluruhan kad (imej + strip butang) tak melimpah skrin; nisbah kekal 1080:1450. */}
+      <div
+        className="page-enter relative w-[92vw] overflow-hidden rounded-2xl border border-accent/30 bg-card shadow-2xl"
+        style={{ maxWidth: "min(28rem, calc((94svh - 6rem) * 1080 / 1450))" }}
+      >
         <button
           ref={closeRef}
           onClick={tutup}
@@ -76,12 +81,12 @@ export function PopupBanner({ data }: { data: PaparanUtama }) {
           <X className="size-5" />
         </button>
         {data.popupGambar && (
-          <div className="relative aspect-[4/3] w-full bg-muted">
+          <div className="relative aspect-[1080/1450] w-full bg-muted">
             <Image
               src={data.popupGambar}
               alt={data.popupTajuk ?? "Hebahan PERKIB"}
               fill
-              sizes="512px"
+              sizes="(max-width: 640px) 92vw, 28rem"
               className="object-cover"
               priority
             />
