@@ -476,3 +476,25 @@ Hakim: popup **kecil sangat** → besarkan 1080×1450; dan dalam Sanity, crop me
 - `tsc` + `eslint` hijau; build bersih; **E2E Playwright 16/16 LULUS** live (tiada regresi — officer cards tak diubah). Bukti URL `rect=`/`fit=crop` live. Visual popup 3 saiz.
 - Deploy: tar-pipe 12M → `standalone.v38new` → cp `.env.local` (1326B) → backup **`standalone.bak-20260717-v38`** → swap → pm2 restart. `main @ 51424f3` (push sync). Route 200, pm2 online tiada ralat. Rollback: `standalone.bak-20260717-v38`.
 - ⚠️ Selepas deploy, klien hard refresh (Ctrl+Shift+R). **Baki Hakim:** set crop di Studio pada pratonton nisbah bertajuk → publish → WYSIWYG.
+
+# v3.9 — Popup Banner Sticky (Portal ke document.body) (19 Julai 2026)
+
+Hakim: "popup banner tadi x sticky… bila masuk homepage, banner dah ada kt bawah, kena skrol baru nampak, apstu skrol atas balik xnampak la banner tu… dia x ikut pandangan user." Popup sepatutnya modal lekat di tengah viewport & ikut skrol.
+
+## Punca (ejen Explore + git history)
+- Overlay popup `fixed inset-0 z-[200]` (betul) TAPI di-mount di `page.tsx:70` dalam pembalut `template.tsx:14` `<div className="page-enter">`.
+- `.page-enter` (`globals.css:390-395`) = `animation: page-enter 0.25s var(--ease) both`, keyframes `transform: translateY(12px)→none`. **`animation-fill-mode: both`** kekalkan elemen sebagai **containing block** untuk anak `position:fixed` (Chromium) walau animasi tamat (0.25s) → `fixed` popup resolve relatif kotak kandungan halaman, BUKAN viewport → muncul di bawah (kena skrol), skrol atas hilang. Delay 1200ms popup tak menyelamatkan (containing block kekal).
+- **Punca IDENTIK bug Studio blank (`3ce30ff`):** fix itu skip `.page-enter` utk /studio + guna `h-screen` di studio/layout — kedua-dua remedi tak pernah dikenakan pada popup homepage.
+- Popup TIADA portal (`grep createPortal` = 0 match) → tak terlepas pembalut.
+- Kad DALAM popup (`PopupBanner.tsx:72` `page-enter`) = descendant overlay → tak jejas fixed; cuma animasi masuk kad + containing block utk butang tutup `absolute`-nya sendiri (dikehendaki).
+
+## Fix — PopupBanner.tsx sahaja (+17/-2)
+- Import `createPortal` dari `react-dom`. Bungkus overlay: `return createPortal(<div className="fixed inset-0 …">…</div>, document.body)` → overlay jadi anak terus `<body>`, terlepas `.page-enter` → `fixed inset-0` kembali relatif viewport (tengah skrin, ikut skrol, muncul serta-merta).
+- Tiada guard `mounted`: `open` hanya `true` dalam effect (setTimeout, client) → bila createPortal dicapai, pasti di client & `document.body` wujud; SSR/hidrasi awal `open=false`→null (padan). (Cubaan `mounted` mula-mula ditolak eslint `react-hooks/set-state-in-effect` → dibuang, memang tak perlu.)
+- scroll-lock badan (`document.body.style.overflow = "hidden"`) semasa buka.
+
+## Verifikasi & Deploy
+- `tsc` + `eslint` hijau; build bersih. **Bukti LIVE (Playwright perkib.my):** desktop 1440×900 + mobile 390×844 → `[role="dialog"]` parent = `<body>` ✓, tiada ancestor `.page-enter` ✓, skrol 775/599px → **`dyMove=0`** (overlay kekal fixed) ✓, kad center viewport ✓. Screenshot: popup portrait penuh di tengah selepas skrol.
+- **E2E:** 15/16 lulus; 1 gagal (accordion /soalan-lazim `gridTemplateRows`="0px") = **flake pemasaan** (baca grid sebelum transisi CSS selesai) — disahkan lulus **3/3** ulangan berasingan; TAK berkait perubahan (popup tiada di /soalan-lazim). Efektif 16/16.
+- Deploy: tar-pipe 12M → `.stage/standalone` → cp `.env.local` (22 baris, chmod 600) → backup **`standalone.bak-20260719-v39`** → swap → pm2 restart+save. `main @ 4ef6423` (push sync). Route 200 (7 laluan), pm2 online. Rollback: `standalone.bak-20260719-v39`.
+- **Nota scroll-lock:** aras `body` (layout skrol via `<html>`) → latar boleh skrol sikit di belakang backdrop; popup tetap kekal. Kelakuan modal biasa. Follow-up pilihan: kunci `documentElement` + pampasan scrollbar.
