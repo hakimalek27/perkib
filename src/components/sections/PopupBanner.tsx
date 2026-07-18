@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { X } from "lucide-react";
@@ -55,10 +56,23 @@ export function PopupBanner({ data }: { data: PaparanUtama }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, tutup]);
 
+  // Kunci skrol badan semasa modal buka — latar tak bergerak di belakang popup.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   if (!open) return null;
   const external = data.popupPautan?.startsWith("http");
 
-  return (
+  // Portal ke document.body → overlay jadi anak terus <body>, terlepas ancestor
+  // `.page-enter` (transform → containing block) yang memecahkan position:fixed.
+  // `open` hanya true dalam effect (client) → document.body pasti wujud di sini.
+  return createPortal(
     <div
       className="fixed inset-0 z-[200] flex items-center justify-center p-4"
       role="dialog"
@@ -111,6 +125,7 @@ export function PopupBanner({ data }: { data: PaparanUtama }) {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
