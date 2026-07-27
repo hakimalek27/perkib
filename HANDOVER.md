@@ -1,6 +1,20 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-28 · **Status:** ✅ **v4.0 DEPLOYED & LIVE** — slide deck interaktif `/slide/sembelihan-2026`. Sebelum: v3.9 (popup sticky) (`main @ 9b573cf`).
+**Kemas kini:** 2026-07-28 · **Status:** ✅ **v4.0.1 DEPLOYED & LIVE** — slide deck interaktif `/slide/sembelihan-2026` + fix seretan halaman (`main @ b56bc48`). Sebelum: v3.9 (popup sticky).
+
+## 🔁 Punca berulang — rujuk DAHULU sebelum mendiagnosis
+| Simptom | Punca sebenar | Rujukan |
+|---|---|---|
+| `position:fixed` runtuh / tak ikut viewport (Studio blank · popup tak sticky · chrome `/slide`) | Ancestor `.page-enter` (`animation … both` + keyframes `transform`) jadi **containing block** | `3ce30ff` · `4ef6423` · v4.0 |
+| Paparan beranjak/terseret dalam UI skrin penuh | `scrollIntoView` menskrol **semua ancestor termasuk tetingkap** | `aae54c4` (v4.0.1) |
+| Data lama muncul di HTML live walau Sanity bersih | `.next/cache/fetch-cache` basi → **WAJIB `rm -rf .next`** sebelum build | v3.3 (FAQ azanmalek) |
+| "Failed to find Server Action" selepas deploy | Klien pegang action ID lama → **hard refresh Ctrl+Shift+R** | v3.4 |
+| Klik/screenshot Chrome MCP timeout | Tab automasi background/hidden → Chrome gantung hidrasi. DOM boleh baca. **Guna Playwright headless** | v3.2, v3.6, v3.7 |
+| Ralat TS pelik pertengahan edit | Diagnostik inline basi → **ground truth `npx tsc --noEmit`** | v3.6, v3.7 |
+| Balasan WhatsApp tak konsisten | Webhook buat kerja rangkaian **sebelum ACK** → guna `after()` dari `next/server` | `8c094e8` |
+| Push GitHub 401 | Env harness `GH_TOKEN`/`GITHUB_TOKEN` expired mengatasi keyring → `env -u GH_TOKEN -u GITHUB_TOKEN git -c credential.helper='!gh auth git-credential' push` | v3 |
+
+> Katalog penuh (40 item, v1→v4.0.1) disimpan kekal dalam memori projek: `perkib-pelajaran-teknikal`.
 
 ## 🆕 v4.0 (28 Julai 2026) — DEPLOYED (slide deck galaxy 3D)
 Halaman persembahan penuh-skrin **https://perkib.my/slide/sembelihan-2026** untuk modul latihan "Penyembelihan Halal" (Mohd Jabal B Abdul Rahim). Backup: `standalone.bak-20260728-slide2`.
@@ -40,7 +54,7 @@ Halaman persembahan penuh-skrin **https://perkib.my/slide/sembelihan-2026** untu
 | 5 | Amaran **hydration mismatch** | `Math.sin` untuk habuk emas beza sedikit V8 SSR vs browser | **Bulatkan** nilai pseudo-rawak (deterministik) — bukan `setState` dlm effect (dilarang lint projek) |
 | 6 | Layout `fixed` pecah / chrome laman muncul | `.page-enter` transform jadi containing block (sama punca Studio blank `3ce30ff`) | Skip `/slide` dlm `template.tsx` + `Header.hideChrome` + `SiteFooterGate` |
 | 7 | **Halaman terseret ke kiri** makin lanjut slaid | `scrollIntoView` menskrol tetingkap (kesan terkumpul) | `nav.scrollTo` + kunci `overflow` html/body — lihat v4.0.1 |
-| 8 | Dev server ralat chunk turbopack | `rm -rf .next` semasa dev hidup | Matikan node → `rm -rf .next` → `npm run dev` semula | (popup banner kini "sticky" — lekat di tengah viewport & ikut skrol; dulu muncul di bawah kandungan, kena skrol baru nampak, hilang bila skrol atas). Sebelum: v3.8 (popup besar 1080×1450 + crop WYSIWYG) (`main @ 4ef6423`).
+| 8 | Dev server ralat chunk turbopack | `rm -rf .next` semasa dev hidup | Matikan node → `rm -rf .next` → `npm run dev` semula |
 
 ## 🆕 v3.9 (19 Julai 2026) — DEPLOYED (popup banner sticky — baiki `fixed` positioning)
 Hakim: "popup banner tadi x sticky… bila masuk homepage, banner dah ada kt bawah, kena skrol baru nampak, apstu skrol atas balik xnampak la banner tu… dia x ikut pandangan user." Deploy: build BERSIH → tar-pipe → kekal `.env.local` → backup **`standalone.bak-20260719-v39`** → pm2 restart. Commit `4ef6423`. **E2E 15/16 lulus + 1 flake pemasaan disahkan (accordion /soalan-lazim lulus 3/3 ulangan) = efektif 16/16.**
