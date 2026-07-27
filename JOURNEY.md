@@ -498,3 +498,34 @@ Hakim: "popup banner tadi x sticky… bila masuk homepage, banner dah ada kt baw
 - **E2E:** 15/16 lulus; 1 gagal (accordion /soalan-lazim `gridTemplateRows`="0px") = **flake pemasaan** (baca grid sebelum transisi CSS selesai) — disahkan lulus **3/3** ulangan berasingan; TAK berkait perubahan (popup tiada di /soalan-lazim). Efektif 16/16.
 - Deploy: tar-pipe 12M → `.stage/standalone` → cp `.env.local` (22 baris, chmod 600) → backup **`standalone.bak-20260719-v39`** → swap → pm2 restart+save. `main @ 4ef6423` (push sync). Route 200 (7 laluan), pm2 online. Rollback: `standalone.bak-20260719-v39`.
 - **Nota scroll-lock:** aras `body` (layout skrol via `<html>`) → latar boleh skrol sikit di belakang backdrop; popup tetap kekal. Kelakuan modal biasa. Follow-up pilihan: kunci `documentElement` + pampasan scrollbar.
+
+---
+
+# v4.0 — Slide Deck Galaxy 3D "Penyembelihan Halal" (28 Julai 2026)
+
+Hakim minta halaman slaid di `perkib.my/slide/sembelihan-2026` daripada modul latihan PERKIB — "jangan macam slide biasa, statik je tekan keluar" — mahu **animasi galaxy, berubah-ubah, 3D, cantik & menarik**.
+
+## Perubahan arah pertengahan kerja (penting)
+Versi pertama (`8e0e9ea`) menulis **semula** kandungan 60 slaid menjadi komponen React (kad kaca, stat, senarai) + galaxy. Hakim betulkan: *"slide tu bagi la sama sebijik macam file, sbab gambar2 tu penting. animasi 3d tu je yg awak buat"*. Maka pendekatan ditukar (`9b573cf`): **slaid asal dirender jadi imej**, animasi kekal sebagai pembalut sahaja. Pelajaran: bila sumber ialah bahan rasmi (dalil, rajah, anotasi), **fidelity mengatasi kreativiti reka bentuk**.
+
+## Cabaran teknikal — mengekstrak slaid daripada fail sumber
+Fail `Penyembelihan Halal - PERKIB.html` (20MB) bukan HTML biasa: kandungan disimpan dalam **string JS ter-escape** (`</h2>`) dan imej dijana sebagai **`blob:` URL** pada runtime — jadi regex/parse teks gagal (0 padanan). Penyelesaian: proses melalui **browser sebenar** (Playwright) dan baca DOM/`fetch(blob)`.
+
+Empat kaedah tangkapan dicuba sebelum berjaya:
+1. **Toggle `visibility`** — sebahagian slaid keluar putih.
+2. **Susun menegak** (`position:relative`) — anak `absolute` bertindih; kandungan bercampur antara slaid.
+3. **Print mode** (`emulateMedia({media:'print'})`) — layout kemas 60×1080px TAPI lapisan SVG anotasi global (bulatan merah/kuning) **bocor ke slaid lain** (muncul atas slaid tajuk).
+4. ✅ **Navigasi deck sendiri + tangkap elemen slaid aktif** — tekan `ArrowRight`, cari `<section>` dengan `opacity==1`, screenshot **elemen itu** pada viewport 2560×1440. Chrome deck (`<deck-stage>` bar tepi/bawah) terkecuali automatik kerana di luar kotak slaid; anotasi kekal betul pada slaidnya. → `sharp` webp 1760px q78 = **3.2MB untuk 60 slaid**.
+
+## Shell galaxy (tambahan, bukan pengganti)
+`SembelihanSlides.tsx` + `slides.css`: starfield warp 3D (canvas rAF, **memecut** setiap tukar slaid supaya terasa "melompat" antara bintang), 3 nebula drift + hue-rotate, cincin girih berpusing perlahan, habuk emas terapung, vignette. Slaid dibingkai emas dengan bayang dalam — seperti panel melayang dalam kosmos. Peralihan `rotateY`+`translateZ`+blur.
+
+Kawalan: kekunci (←/→/Home/End/F), leret, roda, auto-main, **nav 8 bab** (Pembukaan → Penutup) yang auto-skrol ke bab aktif, bar progres, skrin penuh. Prestasi: hanya **±2 slaid** dirender + pramuat jiran. A11y: `alt` setiap slaid, `prefers-reduced-motion` matikan semua animasi.
+
+## Cabaran lain
+- **Mismatch hidrasi** habuk emas — `Math.sin` beza sedikit antara V8 SSR vs browser. Fix: **bulatkan** nilai pseudo-rawak (4 dp) supaya deterministik (bukan `useState`+effect, kerana lint projek larang setState dalam effect).
+- **Chrome laman** (Header/Footer/`.page-enter`) perlu disembunyikan untuk `/slide` — corak sama seperti fix Studio blank (`3ce30ff`): `transform` pada ancestor memecahkan `position:fixed`.
+- **Dev cache turbopack rosak** selepas `rm -rf .next` semasa dev server hidup → bersih + mula semula.
+
+## Deployment v4.0 (28 Jul)
+Build bersih → standalone 57M → tar-pipe 18M → `standalone.new` → cp `.env.local` → backup **`standalone.bak-20260728-slide2`** → swap → `pm2 restart`. `main @ 9b573cf`. **Disahkan LIVE:** route 200, 60 imej slaid 200, DOM tanpa header/footer, navigasi (klik/bab/kekunci) berfungsi, 0 ralat konsol, mobile OK.

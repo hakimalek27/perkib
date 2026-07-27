@@ -1,6 +1,27 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-19 · **Status:** ✅ **v3.9 DEPLOYED & LIVE di https://perkib.my** (popup banner kini "sticky" — lekat di tengah viewport & ikut skrol; dulu muncul di bawah kandungan, kena skrol baru nampak, hilang bila skrol atas). Sebelum: v3.8 (popup besar 1080×1450 + crop WYSIWYG) (`main @ 4ef6423`).
+**Kemas kini:** 2026-07-28 · **Status:** ✅ **v4.0 DEPLOYED & LIVE** — slide deck interaktif `/slide/sembelihan-2026`. Sebelum: v3.9 (popup sticky) (`main @ 9b573cf`).
+
+## 🆕 v4.0 (28 Julai 2026) — DEPLOYED (slide deck galaxy 3D)
+Halaman persembahan penuh-skrin **https://perkib.my/slide/sembelihan-2026** untuk modul latihan "Penyembelihan Halal" (Mohd Jabal B Abdul Rahim). Backup: `standalone.bak-20260728-slide2`.
+
+**⚠️ Prinsip utama (arahan Hakim):** *"slide kekal, mcm mana file, mcm tu la — gambar2 tu penting"*. Maka **60 slaid ASAL dirender menjadi imej** (webp 1760px, jumlah 3.2MB dalam `public/slide/sembelihan-2026/sNN.webp`) daripada fail sumber `Penyembelihan Halal - PERKIB.html`. Paparan **sama sebijik**: latar girih, foto amali, rajah anatomi, anotasi bulatan & garis penunjuk. **Animasi galaxy/3D ialah pembalut sahaja** — kandungan slaid TIDAK ditulis semula.
+
+**Cara render slaid (jika perlu jana semula — 4 kaedah dicuba):**
+1. ❌ `visibility` toggle → sebahagian slaid keluar putih.
+2. ❌ Susun menegak (`position:relative`) → kandungan bertindih (anak absolute).
+3. ❌ Print mode (`emulateMedia({media:'print'})`) → anotasi SVG global bocor ke slaid lain.
+4. ✅ **Navigasi deck sendiri** (`ArrowRight`) + **screenshot ELEMEN `<section>` aktif** (`opacity==1`) pada viewport 2560×1440 → chrome deck (`<deck-stage>`: bar tepi + bar bawah) terkecuali automatik, anotasi kekal betul. Kemudian `sharp` → webp 1760px q78.
+> Nota fail sumber: HTML 20MB, kandungan dalam string ter-escape JS (`</h2>`), imej sebagai `blob:` URL runtime → mesti proses melalui browser/DOM, bukan regex.
+
+**Shell galaxy** (`src/app/slide/sembelihan-2026/`): `SembelihanSlides.tsx` (klien) + `slides.css` + `deck-data.tsx` (tajuk 60 slaid + 8 bab).
+- Starfield warp 3D (canvas rAF; **memecut** setiap tukar slaid), 3 lapisan nebula drift + hue-rotate, cincin girih berpusing, habuk emas (nilai **dibulatkan** → elak mismatch hidrasi).
+- Peralihan slaid 3D: `rotateY` + `translateZ` + blur; slaid dibingkai emas + bayang, melayang atas galaxy.
+- Kawalan: kekunci ←/→/Home/End/**F** (skrin penuh), leret, roda tetikus, auto-main 9s, **nav 8 bab** (auto-skrol ke bab aktif), bar progres.
+- Prestasi/a11y: render **±2 slaid sahaja** + pramuat jiran, `alt` setiap slaid, `prefers-reduced-motion` matikan animasi.
+- **Chrome laman disembunyikan untuk `/slide`** — `Header.hideChrome`, `SiteFooterGate`, dan `template.tsx` skip `.page-enter` (corak sama `/studio`; elak `transform` memecahkan layout `fixed`).
+
+**Disahkan LIVE:** 60 slaid 200 (s00 62KB · s26 92KB · s59 54KB), DOM `header=false/footer=false`, 60 `.sb-slide`, klik anak panah / lompat bab / kekunci End berfungsi, **0 ralat konsol**, paparan mobile OK. (popup banner kini "sticky" — lekat di tengah viewport & ikut skrol; dulu muncul di bawah kandungan, kena skrol baru nampak, hilang bila skrol atas). Sebelum: v3.8 (popup besar 1080×1450 + crop WYSIWYG) (`main @ 4ef6423`).
 
 ## 🆕 v3.9 (19 Julai 2026) — DEPLOYED (popup banner sticky — baiki `fixed` positioning)
 Hakim: "popup banner tadi x sticky… bila masuk homepage, banner dah ada kt bawah, kena skrol baru nampak, apstu skrol atas balik xnampak la banner tu… dia x ikut pandangan user." Deploy: build BERSIH → tar-pipe → kekal `.env.local` → backup **`standalone.bak-20260719-v39`** → pm2 restart. Commit `4ef6423`. **E2E 15/16 lulus + 1 flake pemasaan disahkan (accordion /soalan-lazim lulus 3/3 ulangan) = efektif 16/16.**
