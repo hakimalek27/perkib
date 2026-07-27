@@ -65,7 +65,8 @@ export function Header() {
     on: false,
   });
 
-  const hideChrome = pathname.startsWith("/admin") || pathname.startsWith("/studio");
+  const hideChrome =
+    pathname.startsWith("/admin") || pathname.startsWith("/studio") || pathname.startsWith("/slide");
   const hideSticky = pathname.startsWith("/saguhati/mohon"); // elak bertindih butang wizard
 
   useEffect(() => {
