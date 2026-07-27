@@ -2,30 +2,19 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight, Play, Pause, Home, Moon, Sparkles } from "lucide-react";
-import { SLIDES, CHAPTERS, type Slide, type Kad } from "./deck-data";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause,
+  Sparkles,
+  Maximize2,
+  Minimize2,
+} from "lucide-react";
+import { SLIDE_COUNT as N, TAJUK, CHAPTERS, src } from "./deck-data";
 import "./slides.css";
 
-const N = SLIDES.length;
-
-/* ── Motif ── */
-
-function Crescent({ size = 96 }: { size?: number }) {
-  return (
-    <svg className="sb-crescent" width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
-      <defs>
-        <radialGradient id="sbCr" cx="42%" cy="38%" r="70%">
-          <stop offset="0" stopColor="#fbeec8" />
-          <stop offset="0.55" stopColor="#d9bc82" />
-          <stop offset="1" stopColor="#9a7838" />
-        </radialGradient>
-      </defs>
-      <path d="M66 12a40 40 0 1 0 0 76 32 32 0 1 1 0-76Z" fill="url(#sbCr)" stroke="#f2dca6" strokeWidth="1.2" />
-    </svg>
-  );
-}
-
+/* Corak girih berpusing di latar (motif Islamik). */
 function Girih() {
   const cells = [];
   for (let gy = 0; gy < 6; gy++) {
@@ -50,184 +39,7 @@ function Girih() {
   );
 }
 
-/* ── Blok kandungan ── */
-
-function Kicker({ children }: { children: React.ReactNode }) {
-  return <span className="sb-eyebrow sb-anim">{children}</span>;
-}
-
-function Cards({ cards, cols }: { cards: Kad[]; cols: 2 | 3 | 4 }) {
-  return (
-    <div className={`sb-grid sb-grid-${cols} sb-anim`}>
-      {cards.map((c, i) => (
-        <div className={`sb-card ${c.tone ? `sb-tone-${c.tone}` : ""}`} key={i}>
-          {c.ar && <div className="sb-arabic sb-card-ar">{c.ar}</div>}
-          {c.n && <div className="sb-card-num">{c.n}</div>}
-          {c.h && <div className="sb-card-h">{c.h}</div>}
-          {c.b && <div className="sb-card-b">{c.b}</div>}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function Photos({ src }: { src: string[] }) {
-  return (
-    <div className={`sb-photos sb-photos-${Math.min(src.length, 3)} sb-anim`}>
-      {src.map((s) => (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img key={s} src={s} alt="" className="sb-photo" loading="lazy" decoding="async" />
-      ))}
-    </div>
-  );
-}
-
-function Body({ s }: { s: Slide }) {
-  switch (s.k) {
-    case "title":
-      return (
-        <div className="sb-inner">
-          <div className="sb-anim">
-            <Crescent size={100} />
-          </div>
-          <Kicker>{s.kicker}</Kicker>
-          <h1 className="sb-title sb-anim">
-            {s.t1}
-            <br />
-            {s.t2}
-          </h1>
-          <p className="sb-lead sb-anim">{s.sub}</p>
-          <div className="sb-badge sb-anim">
-            <Moon size={14} /> {s.by}
-          </div>
-        </div>
-      );
-
-    case "divider":
-      return (
-        <div className="sb-inner">
-          <Kicker>{s.part}</Kicker>
-          <h2 className="sb-title sb-anim sb-title-md">{s.h}</h2>
-          {s.items && (
-            <div className="sb-chips sb-anim">
-              {s.items.map((it, i) => (
-                <span className="sb-chip" key={i}>
-                  {s.items!.length > 1 && <b>{String(i + 1).padStart(2, "0")}</b>} {it}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      );
-
-    case "cards":
-      return (
-        <div className="sb-inner">
-          <Kicker>{s.kicker}</Kicker>
-          {s.h && <h2 className="sb-h sb-anim">{s.h}</h2>}
-          {s.lead && <p className="sb-lead sb-anim">{s.lead}</p>}
-          <Cards cards={s.cards} cols={s.cols} />
-          {s.note && <p className="sb-note sb-anim">* {s.note}</p>}
-        </div>
-      );
-
-    case "list":
-      return (
-        <div className="sb-inner">
-          <Kicker>{s.kicker}</Kicker>
-          {s.h && <h2 className="sb-h sb-anim">{s.h}</h2>}
-          {s.lead && <p className="sb-lead sb-anim">{s.lead}</p>}
-          <ul className={`sb-list sb-anim ${s.x ? "sb-list-x" : ""}`}>
-            {s.items.map((it) => (
-              <li key={it}>{it}</li>
-            ))}
-          </ul>
-          {s.note && <p className="sb-note sb-anim">* {s.note}</p>}
-        </div>
-      );
-
-    case "quote":
-      return (
-        <div className="sb-inner">
-          <Kicker>{s.kicker}</Kicker>
-          {s.intro && <p className="sb-body sb-anim sb-intro">{s.intro}</p>}
-          <div className="sb-arch sb-anim">
-            {s.ar && <p className="sb-arabic">{s.ar}</p>}
-            <p className="sb-quote-text">{s.text}</p>
-            {s.src && <p className="sb-src">{s.src}</p>}
-          </div>
-        </div>
-      );
-
-    case "img":
-      return (
-        <div className="sb-inner">
-          <Kicker>{s.kicker}</Kicker>
-          {s.h && <h2 className="sb-h sb-anim">{s.h}</h2>}
-          {s.lead && <p className="sb-body sb-anim">{s.lead}</p>}
-          <Photos src={s.src} />
-          {s.cap && <p className="sb-note sb-anim">{s.cap}</p>}
-        </div>
-      );
-
-    case "split":
-      return (
-        <div className="sb-inner">
-          <Kicker>{s.kicker}</Kicker>
-          <h2 className="sb-h sb-anim">{s.h}</h2>
-          <div className="sb-split sb-anim">
-            <div className="sb-split-media">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={s.src[0]} alt="" className="sb-photo" loading="lazy" decoding="async" />
-            </div>
-            <ul className="sb-list sb-split-list">
-              {s.items.map((it) => (
-                <li key={it.h}>
-                  <b>{it.h}</b> — {it.b}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      );
-
-    case "stat":
-      return (
-        <div className="sb-inner">
-          <Kicker>{s.kicker}</Kicker>
-          <h2 className="sb-h sb-anim">{s.h}</h2>
-          <div className={`sb-grid sb-grid-${s.stats.length === 1 ? 2 : s.stats.length} sb-anim sb-stats`}>
-            {s.stats.map((st) => (
-              <div className="sb-card sb-stat" key={st.v + st.u}>
-                <div className="sb-stat-v">{st.v}</div>
-                <div className="sb-stat-u">{st.u}</div>
-                <div className="sb-card-b">{st.b}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-
-    case "end":
-      return (
-        <div className="sb-inner">
-          <div className="sb-anim">
-            <Crescent size={86} />
-          </div>
-          <h2 className="sb-title sb-anim sb-title-md">{s.h}</h2>
-          <p className="sb-lead sb-anim">{s.by}</p>
-          <p className="sb-body sb-anim">{s.org}</p>
-          <p className="sb-src sb-anim">{s.sub}</p>
-          <Link href="/" className="sb-badge sb-anim sb-badge-link">
-            <Home size={14} /> perkib.my
-          </Link>
-        </div>
-      );
-  }
-}
-
-/* Habuk emas — nilai pseudo-rawak DIBULATKAN supaya deterministik merentas
-   V8 (SSR vs browser) → elak ketaksepadanan hidrasi. */
+/* Habuk emas — nilai dibulatkan supaya deterministik (elak mismatch hidrasi). */
 const round2 = (n: number) => Math.round(n * 100) / 100;
 const MOTES = Array.from({ length: 16 }, (_, i) => {
   const r = (m: number) => {
@@ -243,12 +55,13 @@ const MOTES = Array.from({ length: 16 }, (_, i) => {
   };
 });
 
-/* ── Komponen utama ── */
-
 export function SembelihanSlides() {
   const [cur, setCur] = useState(0);
   const [auto, setAuto] = useState(false);
+  const [full, setFull] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const babRef = useRef<HTMLElement>(null);
   const boostRef = useRef(1);
   const touchRef = useRef<{ x: number; y: number } | null>(null);
   const wheelLock = useRef(0);
@@ -260,13 +73,25 @@ export function SembelihanSlides() {
   const go = useCallback((n: number) => {
     setCur((c) => {
       const nx = Math.max(0, Math.min(N - 1, n));
-      if (nx !== c) boostRef.current = 6;
+      if (nx !== c) boostRef.current = 6; // pecut galaxy setiap tukar slaid
       return nx;
     });
   }, []);
   const next = useCallback(() => go(curRef.current + 1), [go]);
   const prev = useCallback(() => go(curRef.current - 1), [go]);
 
+  // Pramuat slaid berhampiran supaya peralihan mulus.
+  useEffect(() => {
+    for (const d of [1, 2, -1]) {
+      const i = cur + d;
+      if (i >= 0 && i < N) {
+        const im = new Image();
+        im.src = src(i);
+      }
+    }
+  }, [cur]);
+
+  // Papan kekunci
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)) {
@@ -277,11 +102,22 @@ export function SembelihanSlides() {
         prev();
       } else if (e.key === "Home") go(0);
       else if (e.key === "End") go(N - 1);
+      else if (e.key.toLowerCase() === "f") {
+        if (document.fullscreenElement) void document.exitFullscreen();
+        else void rootRef.current?.requestFullscreen();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [next, prev, go]);
 
+  useEffect(() => {
+    const onFs = () => setFull(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", onFs);
+    return () => document.removeEventListener("fullscreenchange", onFs);
+  }, []);
+
+  // Auto-main
   useEffect(() => {
     if (!auto) return;
     const id = setInterval(() => {
@@ -331,7 +167,7 @@ export function SembelihanSlides() {
       cy = 0,
       dpr = 1;
     type Star = { x: number; y: number; z: number; pz: number; c: string };
-    const N_STAR = reduce ? 90 : 320;
+    const N_STAR = reduce ? 80 : 300;
     const stars: Star[] = [];
     const rnd = (a: number, b: number) => a + Math.random() * (b - a);
     const mk = (): Star => ({
@@ -349,7 +185,7 @@ export function SembelihanSlides() {
       canvas.height = Math.max(1, h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       cx = w / 2;
-      cy = h * 0.45;
+      cy = h / 2;
     };
     resize();
     for (let i = 0; i < N_STAR; i++) {
@@ -364,7 +200,7 @@ export function SembelihanSlides() {
       ctx.fillRect(0, 0, w, h);
       const boost = boostRef.current;
       boostRef.current += (1 - boostRef.current) * 0.06;
-      const base = reduce ? 0.0006 : 0.0015;
+      const base = reduce ? 0.0006 : 0.0014;
       for (const s of stars) {
         s.pz = s.z;
         s.z -= base * boost;
@@ -402,13 +238,18 @@ export function SembelihanSlides() {
     };
   }, []);
 
+  const babAktif = CHAPTERS.reduce((acc, c, i) => (cur >= c.mula ? i : acc), 0);
+  useEffect(() => {
+    const el = babRef.current?.children[babAktif] as HTMLElement | undefined;
+    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [babAktif]);
+
   const stateFor = (i: number) =>
     i === cur ? "active" : i === cur - 1 ? "before" : i === cur + 1 ? "after" : "far";
 
-  const babAktif = CHAPTERS.reduce((acc, c, i) => (cur >= c.mula ? i : acc), 0);
-
   return (
     <div
+      ref={rootRef}
       className="sb-root"
       onWheel={onWheel}
       onTouchStart={onTouchStart}
@@ -443,10 +284,20 @@ export function SembelihanSlides() {
         ))}
       </div>
 
+      {/* Pentas 3D — slaid ASAL (imej 16:9) melayang dalam galaxy */}
       <div className="sb-stage">
-        {SLIDES.map((s, i) => (
+        {Array.from({ length: N }, (_, i) => (
           <section key={i} className="sb-slide" data-state={stateFor(i)} aria-hidden={i !== cur}>
-            {Math.abs(i - cur) <= 1 && <Body s={s} />}
+            {Math.abs(i - cur) <= 2 && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={src(i)}
+                alt={`Slaid ${i + 1}: ${TAJUK[i] ?? ""}`}
+                className="sb-deck-img"
+                draggable={false}
+                decoding="async"
+              />
+            )}
           </section>
         ))}
       </div>
@@ -479,7 +330,7 @@ export function SembelihanSlides() {
           >
             {auto ? <Pause size={15} /> : <Play size={15} />}
           </button>
-          <nav className="sb-chapters" aria-label="Bab">
+          <nav className="sb-chapters" aria-label="Bab" ref={babRef}>
             {CHAPTERS.map((c, i) => (
               <button
                 key={c.nama}
@@ -492,9 +343,19 @@ export function SembelihanSlides() {
               </button>
             ))}
           </nav>
+          <button
+            className="sb-btn"
+            onClick={() =>
+              document.fullscreenElement ? document.exitFullscreen() : rootRef.current?.requestFullscreen()
+            }
+            aria-label={full ? "Keluar skrin penuh" : "Skrin penuh"}
+            title={full ? "Keluar skrin penuh (F)" : "Skrin penuh (F)"}
+          >
+            {full ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+          </button>
         </div>
 
-        <span className="sb-hint">← → atau leret · tekan untuk terus</span>
+        <span className="sb-hint">← → atau leret · F untuk skrin penuh</span>
       </div>
     </div>
   );
