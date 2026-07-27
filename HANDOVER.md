@@ -21,7 +21,26 @@ Halaman persembahan penuh-skrin **https://perkib.my/slide/sembelihan-2026** untu
 - Prestasi/a11y: render **±2 slaid sahaja** + pramuat jiran, `alt` setiap slaid, `prefers-reduced-motion` matikan animasi.
 - **Chrome laman disembunyikan untuk `/slide`** — `Header.hideChrome`, `SiteFooterGate`, dan `template.tsx` skip `.page-enter` (corak sama `/studio`; elak `transform` memecahkan layout `fixed`).
 
-**Disahkan LIVE:** 60 slaid 200 (s00 62KB · s26 92KB · s59 54KB), DOM `header=false/footer=false`, 60 `.sb-slide`, klik anak panah / lompat bab / kekunci End berfungsi, **0 ralat konsol**, paparan mobile OK. (popup banner kini "sticky" — lekat di tengah viewport & ikut skrol; dulu muncul di bawah kandungan, kena skrol baru nampak, hilang bila skrol atas). Sebelum: v3.8 (popup besar 1080×1450 + crop WYSIWYG) (`main @ 4ef6423`).
+**Disahkan LIVE:** 60 slaid 200 (s00 62KB · s26 92KB · s59 54KB), DOM `header=false/footer=false`, 60 `.sb-slide`, klik anak panah / lompat bab / kekunci End berfungsi, **0 ralat konsol**, paparan mobile OK.
+
+### 🐛 v4.0.1 — Fix "halaman terseret ke kiri" (`aae54c4`)
+**Gejala (dilapor Hakim):** slaid pertama elok di tengah, tetapi makin lanjut slaid, seluruh paparan terseret ke kiri — bar atas "PERKIB · PENYEMBELIHAN HALAL" terpotong, nav bab jadi "ukun".
+**Punca:** auto-skrol nav bab guna `el.scrollIntoView({ inline: "center" })`. Fungsi itu menskrol **semua ancestor termasuk TETINGKAP** → setiap tukar bab menganjak dokumen mendatar (kesan **terkumpul**).
+**Fix:** kira `scrollLeft` sendiri → `nav.scrollTo({left, behavior:"smooth"})` (bar bab sahaja) + kunci `overflow:hidden` pada `html`/`body` selagi deck dipapar (pulih semasa unmount).
+**Bukti:** `window.scrollX` kekal **0** merentas 8 bab + slaid 60 + End/Home; `brandLeft` kekal 32px; hanya `navScrollLeft` berubah (0→128).
+> ⚠️ **Pelajaran:** dalam UI skrin penuh (`position:fixed`), **jangan** guna `scrollIntoView` — guna `scrollTo` pada bekas sasaran sahaja.
+
+### 📋 Masalah & Penyelesaian (v4.0 — rujukan cepat)
+| # | Masalah | Punca | Penyelesaian |
+|---|---|---|---|
+| 1 | Kandungan fail sumber tak boleh diparse (regex 0 padanan) | HTML 20MB: teks dalam string JS ter-escape (`</h2>`), imej sebagai `blob:` URL runtime | Proses melalui **browser sebenar** (Playwright DOM / `fetch(blob)`), bukan regex |
+| 2 | Slaid keluar **putih** semasa tangkapan | Trik `visibility` toggle mengganggu render deck | Tukar kaedah (lihat #4) |
+| 3 | Kandungan **bertindih** antara slaid | Susun menegak (`position:relative`) memecahkan anak `absolute` | Tukar kaedah (lihat #4) |
+| 4 | **Anotasi bulatan bocor** ke slaid lain | Print mode: lapisan SVG anotasi global tersalah letak | ✅ **Navigasi deck sendiri (`ArrowRight`) + screenshot ELEMEN `<section>` aktif** (`opacity==1`) pada viewport 2560×1440 — chrome `<deck-stage>` terkecuali automatik |
+| 5 | Amaran **hydration mismatch** | `Math.sin` untuk habuk emas beza sedikit V8 SSR vs browser | **Bulatkan** nilai pseudo-rawak (deterministik) — bukan `setState` dlm effect (dilarang lint projek) |
+| 6 | Layout `fixed` pecah / chrome laman muncul | `.page-enter` transform jadi containing block (sama punca Studio blank `3ce30ff`) | Skip `/slide` dlm `template.tsx` + `Header.hideChrome` + `SiteFooterGate` |
+| 7 | **Halaman terseret ke kiri** makin lanjut slaid | `scrollIntoView` menskrol tetingkap (kesan terkumpul) | `nav.scrollTo` + kunci `overflow` html/body — lihat v4.0.1 |
+| 8 | Dev server ralat chunk turbopack | `rm -rf .next` semasa dev hidup | Matikan node → `rm -rf .next` → `npm run dev` semula | (popup banner kini "sticky" — lekat di tengah viewport & ikut skrol; dulu muncul di bawah kandungan, kena skrol baru nampak, hilang bila skrol atas). Sebelum: v3.8 (popup besar 1080×1450 + crop WYSIWYG) (`main @ 4ef6423`).
 
 ## 🆕 v3.9 (19 Julai 2026) — DEPLOYED (popup banner sticky — baiki `fixed` positioning)
 Hakim: "popup banner tadi x sticky… bila masuk homepage, banner dah ada kt bawah, kena skrol baru nampak, apstu skrol atas balik xnampak la banner tu… dia x ikut pandangan user." Deploy: build BERSIH → tar-pipe → kekal `.env.local` → backup **`standalone.bak-20260719-v39`** → pm2 restart. Commit `4ef6423`. **E2E 15/16 lulus + 1 flake pemasaan disahkan (accordion /soalan-lazim lulus 3/3 ulangan) = efektif 16/16.**
