@@ -529,3 +529,14 @@ Kawalan: kekunci (←/→/Home/End/F), leret, roda, auto-main, **nav 8 bab** (Pe
 
 ## Deployment v4.0 (28 Jul)
 Build bersih → standalone 57M → tar-pipe 18M → `standalone.new` → cp `.env.local` → backup **`standalone.bak-20260728-slide2`** → swap → `pm2 restart`. `main @ 9b573cf`. **Disahkan LIVE:** route 200, 60 imej slaid 200, DOM tanpa header/footer, navigasi (klik/bab/kekunci) berfungsi, 0 ralat konsol, mobile OK.
+
+## Fix v4.0.1 — halaman terseret ke kiri (28 Jul, susulan)
+Hakim lapor (dengan 4 screenshot): slaid pertama elok di tengah, tetapi makin lanjut slaid, seluruh paparan **terseret ke kiri** — bar atas "PERKIB · PENYEMBELIHAN HALAL" terpotong, nav bab jadi "ukun".
+
+**Punca:** effect auto-skrol nav bab menggunakan `el.scrollIntoView({ inline: "center" })`. `scrollIntoView` menskrol **semua** ancestor yang boleh skrol — termasuk **tetingkap** — jadi setiap pertukaran bab menganjak dokumen mendatar sedikit demi sedikit (kesan terkumpul; sebab itu makin lama makin teruk).
+
+**Fix:** kira `scrollLeft` sendiri lalu `nav.scrollTo({left, behavior:'smooth'})` → hanya bar bab yang skrol. Tambah jaminan: kunci `overflow:hidden` pada `html`/`body` selagi deck dipaparkan (dipulihkan semasa unmount).
+
+**Disahkan LIVE:** `window.scrollX` kekal **0** merentas kesemua 8 bab, slaid 60, End dan Home; kedudukan bar jenama kekal 32px (sebelum ini beranjak); hanya `navScrollLeft` berubah (0→128). Commit `aae54c4`.
+
+> **Pelajaran:** dalam UI skrin-penuh (`position:fixed`), elak `scrollIntoView` — guna `scrollTo` pada bekas yang dimaksudkan sahaja.
