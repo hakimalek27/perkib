@@ -239,10 +239,29 @@ export function SembelihanSlides() {
   }, []);
 
   const babAktif = CHAPTERS.reduce((acc, c, i) => (cur >= c.mula ? i : acc), 0);
+  // Skrol bar bab SAHAJA (kira scrollLeft sendiri). JANGAN guna scrollIntoView —
+  // ia menskrol ancestor termasuk tetingkap → seluruh halaman terseret ke kiri.
   useEffect(() => {
-    const el = babRef.current?.children[babAktif] as HTMLElement | undefined;
-    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    const nav = babRef.current;
+    const el = nav?.children[babAktif] as HTMLElement | undefined;
+    if (!nav || !el) return;
+    nav.scrollTo({ left: el.offsetLeft - nav.clientWidth / 2 + el.offsetWidth / 2, behavior: "smooth" });
   }, [babAktif]);
+
+  // Jaminan tambahan: kunci skrol dokumen selagi deck dipaparkan (deck = skrin penuh).
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevH = html.style.overflow;
+    const prevB = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    window.scrollTo(0, 0);
+    return () => {
+      html.style.overflow = prevH;
+      body.style.overflow = prevB;
+    };
+  }, []);
 
   const stateFor = (i: number) =>
     i === cur ? "active" : i === cur - 1 ? "before" : i === cur + 1 ? "after" : "far";
