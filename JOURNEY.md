@@ -578,3 +578,35 @@ Keputusan UX yang diambil dengan sengaja:
 
 ## Deployment v4.1 (28 Jul)
 Build bersih → standalone **105M** (naik daripada 57M; video 50M + poster 324K) → tar-pipe **64M** → `ubuntu@43.133.34.55` → cp `.env.local` (22 baris, 1326B) → backup **`standalone.bak-prev`** → swap → `pm2 restart perkib` + save. `main @ ef79854` (push sync). Ruang cakera pelayan selepas deploy: **4.7G bebas (88% digunakan)** — masih selesa, tetapi 8 backup lama patut dipangkas suatu masa nanti.
+
+---
+
+# v4.2 — Pembetulan 5 Slaid (29 Julai 2026)
+
+Hakim membekalkan fail deck sumber yang dikemas kini (`PenyembelihanHalal-PERKIB.html`) dengan arahan tepat: *"update slide no 1, 60, 53, 16, 8, swap je slide tu dgn yg ada skrg, jangan kacau benda lain… animation apa sume kekalkan"*.
+
+## Semakan sebelum menyentuh apa-apa
+Fail baharu melaporkan **80 `<section>`** berbanding jangkaan 60 — pada mulanya kelihatan seperti struktur berubah. Diagnosis dengan menavigasi deck (kaedah v4.0) mendedahkan **60 slaid sebenar** (indeks 0–59); 20 section lagi ialah elemen **bersarang** di dalam slaid. Tiada perubahan struktur.
+
+Setiap slaid sasaran juga disahkan **tajuknya sepadan** dengan slaid sedia ada sebelum ditukar — supaya tidak tersalah ganti:
+
+| Page | Fail | Tajuk (disahkan padan) | Pembetulan |
+|---|---|---|---|
+| 1 | `s00` | Modul Latihan PERKIB | atribusi *"Disampaikan oleh Mohd Jabal B Abdul Rahim"* → *"Disediakan oleh Pertubuhan Kebajikan Imam dan Bilal MAIWP (PERKIB)"* |
+| 8 | `s07` | Dalil — Alat Sembelihan | teks Arab hadith Rafi' bin Khadij: koma Arab (`،`) ditambah + i'rab dibetulkan (`فَعَظْمٍ` → `فَعَظْمٌ`) |
+| 16 | `s15` | Kalimah Sembelihan | kemas kini kalimah |
+| 53 | `s52` | Hukum Janin 1/2 | petikan Sunan Abu Dawud |
+| 60 | `s59` | Terima Kasih | penutup guna nama organisasi |
+
+## Pelaksanaan
+Tangkapan guna **kaedah sama seperti v4.0** supaya 5 slaid ini konsisten sepenuhnya dengan 55 yang lain: navigasi deck sendiri (`Home` → `ArrowRight` sehingga indeks sasaran, dengan pengesahan `opacity==1` setiap langkah) → screenshot **elemen `<section>` aktif** pada viewport 2560×1440 → `sharp` webp 1760px q78. Ditangkap ke folder sementara dan **diperiksa secara visual** dahulu (banding lama vs baharu) sebelum menggantikan fail sebenar.
+
+Diff akhir: **tepat 5 fail webp** — `5 files changed, 0 insertions(+), 0 deletions(-)`. Tiada perubahan pada komponen, CSS, animasi, video, susunan slaid atau navigasi. Satu komen kod dalam `deck-data.tsx` yang menamakan penyampai lama turut dikemas kini kerana ia menjadi tidak tepat (komen sahaja, tidak dipapar).
+
+## Verifikasi
+- **Checksum silang**: bagi setiap 5 slaid, `sha256(lokal) == sha256(live) != sha256(lama)` → benar-benar diganti di produksi; dan 5 slaid kawalan (`s01`, `s30`, `s45`, `s48`, `s58`) disahkan **tidak berubah**.
+- Navigasi LIVE: slaid 1/8/16/53/60 memaparkan fail betul dengan kaunter tepat (`08 / 60`, `16 / 60`, `53 / 60`, `60 / 60`), `scrollX` kekal 0, 69 item deck utuh, 0 ralat konsol.
+- **E2E 18/18 lulus** terhadap perkib.my; 7 route 200; video `206`.
+
+## Deployment v4.2 (29 Jul)
+Build bersih → tar-pipe → cp `.env.local` (22 baris) → backup `standalone.bak-prev` → swap → `pm2 restart`. `main @ 0734057`.

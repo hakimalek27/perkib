@@ -1,6 +1,24 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-28 · **Status:** ✅ **v4.1 DEPLOYED & LIVE** — 9 video amali disisip sebagai slaid dalam deck `/slide/sembelihan-2026` (`main @ ef79854`). Sebelum: v4.0.1 (fix seretan halaman), v3.9 (popup sticky).
+**Kemas kini:** 2026-07-29 · **Status:** ✅ **v4.2 DEPLOYED & LIVE** — pembetulan 5 slaid deck (1, 8, 16, 53, 60) (`main @ 0734057`). Sebelum: v4.1 (9 video amali dalam deck), v4.0.1 (fix seretan halaman).
+
+## 🆕 v4.2 (29 Julai 2026) — DEPLOYED (pembetulan 5 slaid)
+Hakim bekalkan fail deck dikemas kini (`PenyembelihanHalal-PERKIB.html`) — **ganti 5 slaid sahaja**, semua yang lain kekal.
+
+| Page | Fail | Pembetulan |
+|---|---|---|
+| 1 | `s00.webp` | atribusi → *"Disediakan oleh Pertubuhan Kebajikan Imam dan Bilal MAIWP (PERKIB)"* (dulu nama individu) |
+| 8 | `s07.webp` | teks Arab hadith Rafi' bin Khadij — koma Arab + i'rab (`فَعَظْمٍ`→`فَعَظْمٌ`) |
+| 16 | `s15.webp` | kalimah sembelihan |
+| 53 | `s52.webp` | hukum janin — petikan Sunan Abu Dawud |
+| 60 | `s59.webp` | penutup guna nama organisasi |
+
+- ⚠️ Fail sumber baharu lapor **80 `<section>`** — tetapi hanya **60 slaid sebenar** (selebihnya bersarang). Disahkan dengan navigasi deck sebelum tangkap.
+- Tajuk setiap slaid sasaran **disahkan padan** dengan yang sedia ada sebelum ganti (elak tersalah slaid).
+- Kaedah tangkapan **sama seperti v4.0** (navigasi deck + screenshot elemen `<section>` aktif 2560×1440 → sharp webp 1760 q78) supaya konsisten dengan 55 slaid lain.
+- Diff: **tepat 5 webp** (`5 files changed, 0 insertions, 0 deletions`) — animasi, video, susunan, navigasi semua TIDAK disentuh.
+- **Bukti:** checksum `lokal == live != lama` bagi kelima-lima; 5 slaid kawalan (`s01/s30/s45/s48/s58`) disahkan **tidak berubah**; E2E **18/18**; kaunter & `scrollX=0` betul.
+- Untuk jana semula: `node` skrip navigasi deck — lihat JOURNEY v4.2 / bab v4.0.
 
 ## 🔁 Punca berulang — rujuk DAHULU sebelum mendiagnosis
 | Simptom | Punca sebenar | Rujukan |
