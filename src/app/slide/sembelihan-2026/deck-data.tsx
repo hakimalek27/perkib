@@ -1,4 +1,4 @@
-/* Slaid "Penyembelihan Halal" — modul latihan PERKIB (Mohd Jabal B Abdul Rahim).
+/* Slaid "Penyembelihan Halal" — modul latihan PERKIB.
    Setiap slaid dirender daripada deck asal (1920×1080 → webp) supaya paparan
    KEKAL SAMA seperti fail asal. Animasi galaxy/3D ialah pembalut sahaja. */
 
