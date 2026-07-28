@@ -203,9 +203,14 @@ test.describe("PERKIB v4.1 — slaid video dalam deck (LIVE)", () => {
     // 60 slaid asal + 9 video amali = 69 item.
     await expect(page.locator(".sb-slide")).toHaveCount(69);
 
-    // Navigasi ke video pertama (selepas slaid page 32).
-    for (let i = 0; i < 32; i++) await page.keyboard.press("ArrowRight");
+    // Lompat ke bab "Haiwan & Situasi" (slaid page 31) — deterministik,
+    // kemudian dua langkah: page 32 → video pertama.
     const aktif = page.locator('.sb-slide[data-state="active"]');
+    await page.getByRole("button", { name: "Haiwan & Situasi" }).click();
+    await expect(aktif.locator("img")).toHaveAttribute("src", /s30\.webp/);
+    await page.keyboard.press("ArrowRight");
+    await expect(aktif.locator("img")).toHaveAttribute("src", /s31\.webp/);
+    await page.keyboard.press("ArrowRight");
     await expect(aktif.locator("video")).toHaveAttribute("src", /kuasai-1\.mp4/);
     await expect(page.locator(".sb-count")).toContainText("m/s 32");
     await expect(aktif.locator(".sb-video-label")).toContainText(/video 1\/5/i);

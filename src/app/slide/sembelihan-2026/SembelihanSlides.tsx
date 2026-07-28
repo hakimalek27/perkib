@@ -488,7 +488,7 @@ export function SembelihanSlides() {
         </div>
 
         <span className="sb-hint">
-          ← → atau leret · <b>Enter</b> main video · F skrin penuh
+          ← → leret · <b>Enter</b> video · <b>F</b> skrin penuh
         </span>
       </div>
     </div>

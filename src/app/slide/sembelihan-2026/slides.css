@@ -762,6 +762,9 @@
   letter-spacing: 0.05em;
 }
 @media (max-width: 780px) { .sb-hint { display: none; } }
+/* Hint lebih panjang sejak v4.1 (Enter main video) — sembunyikan bila ruang
+   sempit supaya tidak berhimpit dengan bar bab di tengah. */
+@media (max-width: 1180px) { .sb-hint { display: none; } }
 
 /* ── Kurangkan gerakan ── */
 @media (prefers-reduced-motion: reduce) {
