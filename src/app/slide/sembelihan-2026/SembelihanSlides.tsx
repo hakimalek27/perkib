@@ -10,8 +10,19 @@ import {
   Sparkles,
   Maximize2,
   Minimize2,
+  RotateCcw,
 } from "lucide-react";
-import { SLIDE_COUNT as N, TAJUK, CHAPTERS, src } from "./deck-data";
+import type { DeckItem } from "./deck-data";
+import {
+  SLIDE_COUNT,
+  TAJUK,
+  CHAPTERS_ITEM,
+  ITEMS,
+  TOTAL as N,
+  src,
+  videoSrc,
+  videoPoster,
+} from "./deck-data";
 import "./slides.css";
 
 /* Corak girih berpusing di latar (motif Islamik). */
@@ -55,6 +66,74 @@ const MOTES = Array.from({ length: 16 }, (_, i) => {
   };
 });
 
+type ItemVideo = Extract<DeckItem, { jenis: "video" }>;
+
+/* Slaid video — rakaman amali sebenar, dibingkai emas atas galaxy.
+   Tiada autoplay (elak kejutan audio semasa presenter melintasi slaid);
+   presenter tekan ▶ atau Enter. Kawalan native muncul selepas main pertama. */
+function VideoSlaid({ item, aktif }: { item: ItemVideo; aktif: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [main, setMain] = useState(false);
+  const [tamat, setTamat] = useState(false);
+  const [pernah, setPernah] = useState(false);
+
+  // Auto-jeda sebaik sahaja slaid ini bukan lagi slaid aktif.
+  useEffect(() => {
+    if (!aktif) ref.current?.pause();
+  }, [aktif]);
+
+  const toggle = () => {
+    const v = ref.current;
+    if (!v) return;
+    if (v.paused) void v.play();
+    else v.pause();
+  };
+
+  return (
+    <div className="sb-video-wrap">
+      <span className="sb-video-label">
+        <Play size={12} /> Video {item.ke}/{item.jumlah} · {item.label}
+        <em className="sb-video-ms">m/s {item.page}</em>
+      </span>
+
+      <div className="sb-video-box">
+        <video
+          ref={ref}
+          className="sb-video"
+          style={{ "--ar": item.w / item.h } as CSSProperties}
+          src={videoSrc(item.fail)}
+          poster={videoPoster(item.fail)}
+          preload="metadata"
+          playsInline
+          controls={pernah}
+          controlsList="nodownload"
+          onPlay={() => {
+            setMain(true);
+            setTamat(false);
+            setPernah(true);
+          }}
+          onPause={() => setMain(false)}
+          onEnded={() => {
+            setMain(false);
+            setTamat(true);
+          }}
+        />
+        {(!pernah || tamat) && !main && (
+          <button
+            type="button"
+            className="sb-video-play"
+            onClick={toggle}
+            aria-label={tamat ? "Main semula video" : "Main video"}
+          >
+            {tamat ? <RotateCcw size={30} /> : <Play size={30} />}
+            <span>{tamat ? "Main semula" : "Main"}</span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function SembelihanSlides() {
   const [cur, setCur] = useState(0);
   const [auto, setAuto] = useState(false);
@@ -80,16 +159,22 @@ export function SembelihanSlides() {
   const next = useCallback(() => go(curRef.current + 1), [go]);
   const prev = useCallback(() => go(curRef.current - 1), [go]);
 
-  // Pramuat slaid berhampiran supaya peralihan mulus.
+  // Pramuat slaid imej berhampiran supaya peralihan mulus (video: preload metadata sahaja).
   useEffect(() => {
     for (const d of [1, 2, -1]) {
-      const i = cur + d;
-      if (i >= 0 && i < N) {
+      const it = ITEMS[cur + d];
+      if (it?.jenis === "imej") {
         const im = new Image();
-        im.src = src(i);
+        im.src = src(it.idx);
       }
     }
   }, [cur]);
+
+  /* Video pada slaid aktif (jika ada) — untuk kekunci Enter & guard auto-main. */
+  const videoAktif = useCallback(
+    () => rootRef.current?.querySelector<HTMLVideoElement>('.sb-slide[data-state="active"] video') ?? null,
+    []
+  );
 
   // Papan kekunci
   useEffect(() => {
@@ -100,6 +185,13 @@ export function SembelihanSlides() {
       } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) {
         e.preventDefault();
         prev();
+      } else if (e.key === "Enter") {
+        const v = videoAktif();
+        if (v) {
+          e.preventDefault();
+          if (v.paused) void v.play();
+          else v.pause();
+        }
       } else if (e.key === "Home") go(0);
       else if (e.key === "End") go(N - 1);
       else if (e.key.toLowerCase() === "f") {
@@ -109,7 +201,7 @@ export function SembelihanSlides() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev, go]);
+  }, [next, prev, go, videoAktif]);
 
   useEffect(() => {
     const onFs = () => setFull(Boolean(document.fullscreenElement));
@@ -117,18 +209,21 @@ export function SembelihanSlides() {
     return () => document.removeEventListener("fullscreenchange", onFs);
   }, []);
 
-  // Auto-main
+  // Auto-main — jangan tinggalkan slaid video yang sedang bermain.
   useEffect(() => {
     if (!auto) return;
     const id = setInterval(() => {
+      const v = videoAktif();
+      if (v && !v.paused && !v.ended) return;
       if (curRef.current >= N - 1) setAuto(false);
       else next();
     }, 9000);
     return () => clearInterval(id);
-  }, [auto, next]);
+  }, [auto, next, videoAktif]);
 
   const onWheel = useCallback(
     (e: React.WheelEvent) => {
+      if ((e.target as HTMLElement).closest(".sb-video-box")) return;
       const now = Date.now();
       if (now - wheelLock.current < 700 || Math.abs(e.deltaY) < 24) return;
       wheelLock.current = now;
@@ -139,6 +234,11 @@ export function SembelihanSlides() {
   );
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
+    // Jangan cetus leret bila pengguna menggunakan kawalan video (seek/volume).
+    if ((e.target as HTMLElement).closest(".sb-video-box")) {
+      touchRef.current = null;
+      return;
+    }
     touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   }, []);
   const onTouchEnd = useCallback(
@@ -238,7 +338,7 @@ export function SembelihanSlides() {
     };
   }, []);
 
-  const babAktif = CHAPTERS.reduce((acc, c, i) => (cur >= c.mula ? i : acc), 0);
+  const babAktif = CHAPTERS_ITEM.reduce((acc, c, i) => (cur >= c.mula ? i : acc), 0);
   // Skrol bar bab SAHAJA (kira scrollLeft sendiri). JANGAN guna scrollIntoView —
   // ia menskrol ancestor termasuk tetingkap → seluruh halaman terseret ke kiri.
   useEffect(() => {
@@ -305,18 +405,21 @@ export function SembelihanSlides() {
 
       {/* Pentas 3D — slaid ASAL (imej 16:9) melayang dalam galaxy */}
       <div className="sb-stage">
-        {Array.from({ length: N }, (_, i) => (
+        {ITEMS.map((it, i) => (
           <section key={i} className="sb-slide" data-state={stateFor(i)} aria-hidden={i !== cur}>
-            {Math.abs(i - cur) <= 2 && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={src(i)}
-                alt={`Slaid ${i + 1}: ${TAJUK[i] ?? ""}`}
-                className="sb-deck-img"
-                draggable={false}
-                decoding="async"
-              />
-            )}
+            {Math.abs(i - cur) <= 2 &&
+              (it.jenis === "imej" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={src(it.idx)}
+                  alt={`Slaid ${it.page}: ${TAJUK[it.idx] ?? ""}`}
+                  className="sb-deck-img"
+                  draggable={false}
+                  decoding="async"
+                />
+              ) : (
+                <VideoSlaid item={it} aktif={i === cur} />
+              ))}
           </section>
         ))}
       </div>
@@ -326,10 +429,20 @@ export function SembelihanSlides() {
       <div className="sb-ui">
         <div className="sb-top">
           <span className="sb-brand">
-            <Sparkles size={16} /> PERKIB · PENYEMBELIHAN HALAL
+            <Sparkles size={16} />
+            <span className="sb-brand-t">PERKIB · PENYEMBELIHAN HALAL</span>
           </span>
           <span className="sb-count">
-            {String(cur + 1).padStart(2, "0")} / {N}
+            {ITEMS[cur].jenis === "video" ? (
+              <>
+                m/s {ITEMS[cur].page} · <b>V{(ITEMS[cur] as ItemVideo).ke}</b>/
+                {(ITEMS[cur] as ItemVideo).jumlah}
+              </>
+            ) : (
+              <>
+                {String(ITEMS[cur].page).padStart(2, "0")} / {SLIDE_COUNT}
+              </>
+            )}
           </span>
         </div>
 
@@ -350,7 +463,7 @@ export function SembelihanSlides() {
             {auto ? <Pause size={15} /> : <Play size={15} />}
           </button>
           <nav className="sb-chapters" aria-label="Bab" ref={babRef}>
-            {CHAPTERS.map((c, i) => (
+            {CHAPTERS_ITEM.map((c, i) => (
               <button
                 key={c.nama}
                 className="sb-chapter"
@@ -374,7 +487,9 @@ export function SembelihanSlides() {
           </button>
         </div>
 
-        <span className="sb-hint">← → atau leret · F untuk skrin penuh</span>
+        <span className="sb-hint">
+          ← → atau leret · <b>Enter</b> main video · F skrin penuh
+        </span>
       </div>
     </div>
   );

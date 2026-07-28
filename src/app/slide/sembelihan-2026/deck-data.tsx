@@ -79,3 +79,91 @@ export const CHAPTERS = [
 ];
 
 export const src = (i: number) => `/slide/sembelihan-2026/s${String(i).padStart(2, "0")}.webp`;
+export const videoSrc = (fail: string) => `/slide/sembelihan-2026/video/${fail}`;
+export const videoPoster = (fail: string) =>
+  `/slide/sembelihan-2026/video/poster/${fail.replace(/\.mp4$/, ".webp")}`;
+
+/* ── Video amali ──────────────────────────────────────────────────────────
+   Rakaman sebenar yang disisip sebagai slaid TERSENDIRI selepas slaid induk.
+   Kunci = indeks slaid (0-based); `page` = nombor bercetak pada slaid (indeks+1).
+   Nota: video "haiwan yang mampu dikuasai" dinamakan "page 34" pada fail asal,
+   tetapi topik itu berada pada page 32 ("Haiwan yang mampu dikuasai") — page 34
+   ialah "Situasi Sembelihan" (bangkai). Diletak ikut TOPIK, bukan nama fail.
+   Dimensi (w×h) direkod tepat dari metadata fail supaya bingkai boleh dikunci
+   dengan `aspect-ratio` sebenar — sifar anjakan layout & sifar jalur hitam. */
+type VideoInfo = { fail: string; w: number; h: number };
+const VIDEO_SISIP: Record<number, { label: string; senarai: VideoInfo[] }> = {
+  31: {
+    label: "Haiwan yang mampu dikuasai",
+    senarai: [
+      { fail: "kuasai-1.mp4", w: 362, h: 640 },
+      { fail: "kuasai-2.mp4", w: 640, h: 360 },
+      { fail: "kuasai-3.mp4", w: 352, h: 640 },
+      { fail: "kuasai-4.mp4", w: 352, h: 640 },
+      { fail: "kuasai-5.mp4", w: 848, h: 478 },
+    ],
+  },
+  45: {
+    label: "Sunat — Menajamkan mata pisau",
+    senarai: [{ fail: "pisau-1.mp4", w: 480, h: 864 }],
+  },
+  48: {
+    label: "Perkara Haram dalam Sembelihan",
+    senarai: [
+      { fail: "haram-1.mp4", w: 406, h: 720 },
+      { fail: "haram-2.mp4", w: 480, h: 848 },
+      { fail: "haram-3.mp4", w: 640, h: 352 },
+    ],
+  },
+};
+
+export type DeckItem =
+  | { jenis: "imej"; idx: number; page: number }
+  | {
+      jenis: "video";
+      fail: string;
+      label: string;
+      page: number;
+      ke: number;
+      jumlah: number;
+      w: number;
+      h: number;
+    };
+
+/* Susunan sebenar deck: 60 slaid asal + video disisip selepas slaid induknya. */
+export const ITEMS: DeckItem[] = (() => {
+  const out: DeckItem[] = [];
+  for (let i = 0; i < SLIDE_COUNT; i++) {
+    out.push({ jenis: "imej", idx: i, page: i + 1 });
+    const sisip = VIDEO_SISIP[i];
+    if (sisip) {
+      sisip.senarai.forEach((v, k) =>
+        out.push({
+          jenis: "video",
+          fail: v.fail,
+          w: v.w,
+          h: v.h,
+          label: sisip.label,
+          page: i + 1,
+          ke: k + 1,
+          jumlah: sisip.senarai.length,
+        })
+      );
+    }
+  }
+  return out;
+})();
+
+export const TOTAL = ITEMS.length;
+
+/* Indeks item bagi setiap slaid imej — untuk memetakan bab tanpa offset manual. */
+const ITEM_BAGI_SLAID = new Map<number, number>();
+ITEMS.forEach((it, i) => {
+  if (it.jenis === "imej") ITEM_BAGI_SLAID.set(it.idx, i);
+});
+
+/* Bab dalam ruang ITEM (bukan ruang slaid) — dikira automatik. */
+export const CHAPTERS_ITEM = CHAPTERS.map((c) => ({
+  nama: c.nama,
+  mula: ITEM_BAGI_SLAID.get(c.mula) ?? 0,
+}));

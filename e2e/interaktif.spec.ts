@@ -196,3 +196,50 @@ test.describe("PERKIB v3.6 — marker Claude Design (LIVE)", () => {
     expect(aktif).toBeTruthy();
   });
 });
+
+test.describe("PERKIB v4.1 — slaid video dalam deck (LIVE)", () => {
+  test("video amali disisip selepas page 32 + main/jeda + slaid asal utuh", async ({ page }) => {
+    await page.goto("/slide/sembelihan-2026");
+    // 60 slaid asal + 9 video amali = 69 item.
+    await expect(page.locator(".sb-slide")).toHaveCount(69);
+
+    // Navigasi ke video pertama (selepas slaid page 32).
+    for (let i = 0; i < 32; i++) await page.keyboard.press("ArrowRight");
+    const aktif = page.locator('.sb-slide[data-state="active"]');
+    await expect(aktif.locator("video")).toHaveAttribute("src", /kuasai-1\.mp4/);
+    await expect(page.locator(".sb-count")).toContainText("m/s 32");
+    await expect(aktif.locator(".sb-video-label")).toContainText(/video 1\/5/i);
+
+    // Butang main → video bermain; tukar slaid → auto-jeda.
+    await aktif.locator(".sb-video-play").click();
+    await expect
+      .poll(async () =>
+        page.evaluate(
+          () => document.querySelector<HTMLVideoElement>('.sb-slide[data-state="active"] video')?.paused
+        )
+      )
+      .toBe(false);
+    await page.keyboard.press("ArrowRight");
+    await expect
+      .poll(async () => page.evaluate(() => [...document.querySelectorAll("video")].every((v) => v.paused)))
+      .toBe(true);
+
+    // Slaid ASAL kekal utuh selepas video (regresi fidelity).
+    await page.keyboard.press("ArrowLeft");
+    await page.keyboard.press("ArrowLeft");
+    await expect(aktif.locator("img")).toHaveAttribute("src", /s31\.webp/);
+
+    // Regresi v4.0.1 — dokumen tidak boleh terseret mendatar.
+    await page.locator(".sb-chapter").last().click();
+    expect(await page.evaluate(() => window.scrollX)).toBe(0);
+  });
+
+  test("aset video + poster dihidangkan", async ({ request }) => {
+    const v = await request.get("/slide/sembelihan-2026/video/kuasai-1.mp4", {
+      headers: { Range: "bytes=0-1023" },
+    });
+    expect([200, 206]).toContain(v.status());
+    const p = await request.get("/slide/sembelihan-2026/video/poster/kuasai-1.webp");
+    expect(p.status()).toBe(200);
+  });
+});

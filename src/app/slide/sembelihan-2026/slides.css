@@ -413,6 +413,116 @@
   .sb-deck-img { max-height: calc(100vh - 7rem); border-radius: 8px; }
 }
 
+/* ── Slaid VIDEO (rakaman amali) ───────────────────────────────────────── */
+.sb-video-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  max-width: 100%;
+  max-height: 100%;
+}
+.sb-video-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.34rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(198, 162, 93, 0.4);
+  background: rgba(13, 17, 23, 0.72);
+  backdrop-filter: blur(8px);
+  color: #e8dfcd;
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: clamp(0.66rem, 1.3vw, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: min(92vw, 46rem);
+}
+.sb-video-label svg { color: #c6a25d; flex: none; }
+.sb-video-ms {
+  font-style: normal;
+  color: #c6a25d;
+  padding-left: 0.55rem;
+  margin-left: 0.15rem;
+  border-left: 1px solid rgba(198, 162, 93, 0.32);
+}
+
+/* Kotak mengecut TEPAT pada saiz video (nisbah sebenar di-set inline pada .sb-video)
+   → tiada anjakan layout sebelum metadata, tiada jalur hitam dalam bingkai emas. */
+.sb-video-box {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #05070c;
+  border: 1px solid rgba(198, 162, 93, 0.35);
+  box-shadow: 0 40px 110px -30px rgba(0, 0, 0, 0.92), 0 0 60px -20px rgba(198, 162, 93, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+/* `--ar` (nisbah w/h) di-set inline dari dimensi sebenar fail.
+   Video rakaman telefon beresolusi rendah — DIBESARKAN mengisi ruang persembahan
+   (tinggi tersedia, atau lebar 94vw bagi landskap), nisbah dikekalkan. */
+.sb-video {
+  display: block;
+  aspect-ratio: var(--ar);
+  height: min(calc(100vh - 11rem), calc(94vw / var(--ar)));
+  width: auto;
+  object-fit: contain;
+  background: #05070c;
+}
+
+/* Butang main besar — hanya sebelum main pertama & selepas tamat. */
+.sb-video-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 0;
+  cursor: pointer;
+  color: #f7f3eb;
+  background: radial-gradient(circle at 50% 50%, rgba(13, 17, 23, 0.34), rgba(5, 7, 12, 0.62));
+  backdrop-filter: blur(1.5px);
+  font-family: var(--font-bricolage), sans-serif;
+  font-size: clamp(0.8rem, 1.6vw, 0.98rem);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: background 0.3s ease;
+}
+.sb-video-play svg {
+  width: clamp(52px, 8vw, 74px);
+  height: clamp(52px, 8vw, 74px);
+  padding: clamp(12px, 1.8vw, 18px);
+  border-radius: 999px;
+  color: #0d1117;
+  background: linear-gradient(155deg, #e2c684, #c6a25d);
+  box-shadow: 0 0 0 1px rgba(247, 243, 235, 0.28), 0 18px 44px -12px rgba(198, 162, 93, 0.75);
+  animation: sb-pulse 2.8s ease-in-out infinite;
+}
+.sb-video-play:hover { background: radial-gradient(circle at 50% 50%, rgba(13, 17, 23, 0.2), rgba(5, 7, 12, 0.5)); }
+.sb-video-play:hover svg { transform: scale(1.06); }
+.sb-video-play:focus-visible { outline: 2px solid #c6a25d; outline-offset: -6px; }
+@keyframes sb-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(247, 243, 235, 0.28), 0 18px 44px -12px rgba(198, 162, 93, 0.75); }
+  50% { box-shadow: 0 0 0 1px rgba(247, 243, 235, 0.4), 0 18px 60px -6px rgba(198, 162, 93, 0.95); }
+}
+@media (max-width: 780px) {
+  .sb-video-box { border-radius: 8px; }
+  .sb-video { height: min(calc(100vh - 9.5rem), calc(94vw / var(--ar))); }
+  .sb-video-label { letter-spacing: 0.02em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sb-video-play svg { animation: none; }
+}
+
 /* ── Blok tambahan (foto, split, stat, chip) ── */
 .sb-title-md { font-size: clamp(1.9rem, 5.2vw, 3.6rem); }
 .sb-card-ar { font-size: clamp(1.5rem, 3vw, 2rem); text-align: center; line-height: 1.4; }
@@ -545,6 +655,16 @@
   font-size: clamp(0.72rem, 1.4vw, 0.9rem);
   color: #b7b0a2;
   letter-spacing: 0.1em;
+  white-space: nowrap;
+  flex: none;
+}
+.sb-count b { color: var(--sb-gold); font-weight: 700; }
+/* Telefon: kekalkan bar atas satu baris (kaunter video lebih panjang). */
+.sb-brand svg { flex: none; }
+.sb-brand-t { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+@media (max-width: 560px) {
+  .sb-brand { letter-spacing: 0.06em; min-width: 0; }
+  .sb-top { gap: 0.6rem; }
 }
 .sb-arrow {
   position: absolute;
