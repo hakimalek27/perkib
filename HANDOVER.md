@@ -1,6 +1,6 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-28 · **Status:** ✅ **v4.0.1 DEPLOYED & LIVE** — slide deck interaktif `/slide/sembelihan-2026` + fix seretan halaman (`main @ b56bc48`). Sebelum: v3.9 (popup sticky).
+**Kemas kini:** 2026-07-28 · **Status:** ✅ **v4.1 DEPLOYED & LIVE** — 9 video amali disisip sebagai slaid dalam deck `/slide/sembelihan-2026` (`main @ ef79854`). Sebelum: v4.0.1 (fix seretan halaman), v3.9 (popup sticky).
 
 ## 🔁 Punca berulang — rujuk DAHULU sebelum mendiagnosis
 | Simptom | Punca sebenar | Rujukan |
@@ -14,7 +14,42 @@
 | Balasan WhatsApp tak konsisten | Webhook buat kerja rangkaian **sebelum ACK** → guna `after()` dari `next/server` | `8c094e8` |
 | Push GitHub 401 | Env harness `GH_TOKEN`/`GITHUB_TOKEN` expired mengatasi keyring → `env -u GH_TOKEN -u GITHUB_TOKEN git -c credential.helper='!gh auth git-credential' push` | v3 |
 
-> Katalog penuh (40 item, v1→v4.0.1) disimpan kekal dalam memori projek: `perkib-pelajaran-teknikal`.
+> Katalog penuh (v1→v4.1) disimpan kekal dalam memori projek: `perkib-pelajaran-teknikal`.
+
+## 🆕 v4.1 (28 Julai 2026) — DEPLOYED (9 video amali dalam deck)
+Rakaman amali sebenar dimasukkan ke dalam slide deck sebagai **slaid tersendiri** selepas slaid induknya — presenter hanya tekan **→** untuk masuk ke video. Deck kini **69 item** (60 slaid asal + 9 video). Backup: `standalone.bak-prev`. Commit `e32d285` (+ `6dbc47d`, `ef79854` polish). **E2E 18/18 lulus LIVE.**
+
+**Pemetaan (keputusan Hakim):**
+| Selepas slaid | Video | Orientasi |
+|---|---|---|
+| **page 32** "Haiwan yang mampu dikuasai" (`s31`) | `kuasai-1..5.mp4` (41s · 57s · 16s · 26s · 2m30s) | P·L·P·P·L |
+| **page 46** "Perkara Sunat 2/2" (`s45`) | `pisau-1.mp4` (4s) | P |
+| **page 49** "Perkara Haram" (`s48`) | `haram-1..3.mp4` (30s · 22s · 31s) | P·P·L |
+
+> ⚠️ Nama fail asal tertulis "page 34" untuk kumpulan pertama, tetapi page 34 = "Situasi Sembelihan" (bangkai). Video diletak **ikut TOPIK di page 32** — disahkan Hakim.
+
+**Reka bentuk (`deck-data.tsx` + `SembelihanSlides.tsx` + `slides.css`):**
+- Model **`ITEMS`** (`imej` | `video`) menggantikan gelung `SLIDE_COUNT`; `TOTAL = 69`. **`CHAPTERS_ITEM` dikira automatik** daripada indeks slaid → tiada offset manual (kalis silap bila video ditambah/dibuang).
+- **Tiada autoplay** — elak kejutan audio semasa presenter melintasi slaid. Butang ▶ emas besar, atau kekunci **Enter**. Kawalan native muncul **selepas** main pertama (seek/volume); **auto-jeda** sebaik slaid ditukar; `onEnded` → "↺ Main semula".
+- **Auto-main 9s tidak meninggalkan** video yang sedang bermain. Leret/roda **tidak mencuri** kawalan video (`closest(".sb-video-box")`).
+- Kaunter atas-kanan: slaid imej → `32 / 60` (selari nombor bercetak), slaid video → `m/s 32 · V1/5`. Chip label atas bingkai.
+- Video **DIBESARKAN mengisi ruang** persembahan (rakaman telefon 352–848px) — `height: min(ruang, 94vw/var(--ar))` + `aspect-ratio` daripada dimensi **sebenar** fail (direkod dalam `deck-data`) → nisbah tepat, sifar anjakan layout, sifar jalur hitam.
+- **Poster** bingkai pertama dijana (`scripts/gen-video-posters.mjs`, 324KB) → bingkai bermaklumat sebelum ditekan.
+- Slaid asal 60 **TIDAK disentuh** (prinsip fidelity v4.0 kekal).
+
+**Disahkan LIVE:** E2E 18/18 · video **206 Partial Content** (seek + iOS Safari) · poster 200 · nisbah paparan = nisbah intrinsik · desktop 1440 / laptop 1280 / mobile 390 semua muat tanpa tindihan · `scrollX` kekal **0** (regresi v4.0.1 selamat) · 0 ralat konsol.
+
+### 📋 Masalah & Penyelesaian (v4.1)
+| # | Masalah | Punca | Penyelesaian |
+|---|---|---|---|
+| 1 | Video nampak **kecil** di tengah skrin | `max-width`/`max-height` sahaja **tidak membesarkan** elemen media — ia hanya mengehadkan | `height: min(ruangTinggi, 94vw / var(--ar))` + `aspect-ratio` → mengisi ruang, nisbah kekal |
+| 2 | Risiko **jalur hitam** dalam bingkai | `aspect-ratio` + `height` tetap + `max-width`: bila max-width mengapit, nisbah TIDAK dikira semula | Kotak `inline-block` yang **mengecut ikut** video; saiz ditetapkan pada elemen video sendiri |
+| 3 | Playwright tak boleh main `.mp4` | Chromium bundle **tiada dekoder H.264** | `chromium.launch({ channel: "chrome" })` untuk ujian video & jana poster |
+| 4 | Ujian E2E video **flaky** | 32 × `ArrowRight` berturut-turut tanpa jeda | Navigasi **deterministik**: klik bab → 2 langkah dengan pengesahan antara |
+| 5 | Hint kekunci **berhimpit** bar bab | Hint dipanjangkan ("Enter video"); bar bab berpusat & lebar pada laptop | Pendekkan + sembunyikan di bawah **1400px** |
+| 6 | Bar atas membalut 2 baris di telefon | Kaunter video (`m/s 32 · V1/5`) lebih panjang daripada `32 / 60` | `white-space: nowrap` + `flex:none` pada kaunter; teks jenama dibungkus span dengan ellipsis |
+
+**Baki Hakim v4.1:** hard refresh (Ctrl+Shift+R) → buka `/slide/sembelihan-2026`, tekan bab "Haiwan & Situasi" lalu → dua kali → video pertama; tekan **Enter** atau klik ▶. Semak juga video di page 46 & 49.
 
 ## 🆕 v4.0 (28 Julai 2026) — DEPLOYED (slide deck galaxy 3D)
 Halaman persembahan penuh-skrin **https://perkib.my/slide/sembelihan-2026** untuk modul latihan "Penyembelihan Halal" (Mohd Jabal B Abdul Rahim). Backup: `standalone.bak-20260728-slide2`.

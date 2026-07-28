@@ -540,3 +540,41 @@ Hakim lapor (dengan 4 screenshot): slaid pertama elok di tengah, tetapi makin la
 **Disahkan LIVE:** `window.scrollX` kekal **0** merentas kesemua 8 bab, slaid 60, End dan Home; kedudukan bar jenama kekal 32px (sebelum ini beranjak); hanya `navScrollLeft` berubah (0→128). Commit `aae54c4`.
 
 > **Pelajaran:** dalam UI skrin-penuh (`position:fixed`), elak `scrollIntoView` — guna `scrollTo` pada bekas yang dimaksudkan sahaja.
+
+---
+
+# v4.1 — Video Amali dalam Deck Slaid (28 Julai 2026)
+
+Hakim menyediakan **9 rakaman video amali** dan meminta kajian dahulu: *"cuba awak kaji teliti cara atau kaedah, atau tempat, kat mana sesuai letak video2 tu… samada letak slepas page tu atau letak kt page tu terus. mana yg sesuai dan nampak elegant"*.
+
+## Kajian sebelum pelan (bukan andaian)
+- **Metadata setiap fail** dibaca melalui Shell COM Windows (ffmpeg/ffprobe **tiada** di mesin): durasi, dimensi, kadar bit. Dapatan penting — video ialah **campuran orientasi** (6 potret, 3 landskap; 352–848px) dan **sudah terkompres** H.264 0.7–1.6 Mbps → **tiada re-encode diperlukan**.
+- **Slaid sasaran dibuka dan dilihat** (`s31`, `s33`, `s45`, `s48`) untuk mengesahkan pemetaan nama fail ↔ topik. Dapatan kritikal: nama fail kumpulan pertama tertulis **"page 34"**, tetapi page 34 ialah *"Situasi Sembelihan"* (bangkai) — topik "Haiwan yang mampu dikuasai" sebenarnya di **page 32**. Dikemukakan kepada Hakim; beliau pilih **ikut topik**.
+- Dua pilihan reka bentuk dipersembahkan dengan mockup ASCII: **slaid video sisipan** vs **pill → lightbox**. Hakim pilih **slaid sisipan** (aliran present paling mudah: tekan → sahaja).
+
+## Pelaksanaan
+Model deck ditukar daripada gelung indeks (`SLIDE_COUNT`) kepada senarai **`ITEMS`** bertaip (`imej` | `video`). Video disisip selepas slaid induk berdasarkan **indeks slaid**, dan **`CHAPTERS_ITEM` dikira automatik** daripada peta indeks — supaya menambah/membuang video tidak pernah merosakkan navigasi bab (tiada offset manual yang mudah tersilap).
+
+Keputusan UX yang diambil dengan sengaja:
+- **Tiada autoplay.** Presenter kerap melintasi slaid; audio yang tiba-tiba berbunyi adalah gangguan. Butang ▶ emas + kekunci **Enter**.
+- **Kawalan native hanya selepas main pertama** — paparan awal bersih (poster + butang), tetapi seek/volume tersedia sebaik sahaja diperlukan.
+- **Auto-jeda** sebaik slaid ditukar; **auto-main tidak meninggalkan** video yang sedang bermain; leret/roda **tidak mencuri** kawalan video.
+- Kaunter membezakan konteks: `32 / 60` (slaid, selari nombor bercetak) vs `m/s 32 · V1/5` (video).
+
+## Cabaran & penyelesaian
+- **Video nampak kecil.** Percubaan pertama guna `max-width`/`max-height` sahaja — video dipaparkan pada saiz asal (362×640, 640×360) di tengah skrin 1440×900. Sebabnya `max-*` hanya **mengehadkan**, tidak **membesarkan**. Diselesaikan dengan `height: min(ruangTinggi, 94vw / var(--ar))` + `aspect-ratio`, dengan `--ar` daripada dimensi **sebenar** fail yang direkod dalam `deck-data` → potret 640→724px, landskap 640→1287px lebar, nisbah tepat.
+- **Perangkap `aspect-ratio`.** Cubaan awal meletakkan `aspect-ratio` pada kotak dengan `height` tetap + `max-width`: apabila `max-width` mengapit, nisbah **tidak** dikira semula → jalur hitam. Diselesaikan dengan kotak `inline-block` yang mengecut mengikut video, dan saiz ditetapkan pada elemen video sendiri.
+- **Playwright tidak boleh main MP4.** Chromium yang dibundel tiada dekoder **H.264**. Diselesaikan dengan `channel: "chrome"` (Chrome sebenar dipasang) — untuk ujian *dan* untuk menjana poster bingkai pertama (9/9 berjaya, 324KB).
+- **Ujian E2E flaky.** Versi pertama menekan `ArrowRight` 32 kali berturut-turut → sekali gagal, lulus pada retry. Ditulis semula secara **deterministik**: klik bab "Haiwan & Situasi" → dua langkah dengan pengesahan `s30` → `s31` → video. Disahkan **3/3** ulangan.
+- **Sesak ruang UI.** Hint kekunci yang dipanjangkan berhimpit dengan bar bab pada laptop 1280 (bar bab berpusat dan lebar) — ambang `1180px` tidak memadai, dinaikkan ke **1400px** selepas ujian responsif mendedahkannya. Kaunter video yang lebih panjang juga menyebabkan bar atas membalut di telefon → `nowrap` + ellipsis pada teks jenama.
+- **Skrip ujian di luar repo** tidak nampak `node_modules` (ERR_MODULE_NOT_FOUND) → dijalankan dari dalam repo sebagai fail `tmp-*` yang dibuang selepas siap.
+
+## Verifikasi
+- `tsc` + `eslint` (0 ralat) + build bersih (`azanmalek` = 0).
+- **Suite dev khusus 31/31 lulus**: kiraan 69 item, kaunter, label, main/jeda, auto-jeda, Enter, dimensi intrinsik, nisbah paparan = nisbah sebenar, pembesaran, slaid asal utuh, bab → `s35`, mobile, poster, 0 ralat konsol.
+- **E2E projek 18/18 lulus LIVE** (2 ujian v4.1 baharu; accordion `/soalan-lazim` sekali flaky — lulus **5/5** berasingan, flake pemasaan terdokumentasi sejak v3.9, tiada kaitan).
+- **Responsif LIVE 21/21**: desktop 1440 / laptop 1280 / mobile 390 — video sepenuhnya dalam skrin, tiada tindihan bar atas/bawah, `scrollX` kekal **0** (regresi v4.0.1 selamat).
+- Aset: video **206 Partial Content** (seek + iOS Safari), poster 200.
+
+## Deployment v4.1 (28 Jul)
+Build bersih → standalone **105M** (naik daripada 57M; video 50M + poster 324K) → tar-pipe **64M** → `ubuntu@43.133.34.55` → cp `.env.local` (22 baris, 1326B) → backup **`standalone.bak-prev`** → swap → `pm2 restart perkib` + save. `main @ ef79854` (push sync). Ruang cakera pelayan selepas deploy: **4.7G bebas (88% digunakan)** — masih selesa, tetapi 8 backup lama patut dipangkas suatu masa nanti.
