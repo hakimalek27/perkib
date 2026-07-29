@@ -610,3 +610,46 @@ Diff akhir: **tepat 5 fail webp** — `5 files changed, 0 insertions(+), 0 delet
 
 ## Deployment v4.2 (29 Jul)
 Build bersih → tar-pipe → cp `.env.local` (22 baris) → backup `standalone.bak-prev` → swap → `pm2 restart`. `main @ 0734057`.
+
+---
+
+# Operasi Pelayan — Pembersihan Storan + SSL jawi.cc (28–29 Julai 2026)
+
+Selepas v4.1, ruang cakera pelayan Tencent (`43.133.34.55`, dikongsi **6 laman**) tinggal **4.8G / 88% penuh** kerana aset video menaikkan saiz standalone dari 57M → 105M. Hakim: *"teliti balik storan server, tgk mana yg perlu dibuang… pastikan yg dibuang xda effect pada sistem."*
+
+## Prinsip: audit dahulu, kategorikan mengikut pemilik
+Pelayan ini bukan milik PERKIB sahaja — ia menghos wassap.wehdah.my (gateway WhatsApp yang **PERKIB sendiri bergantung padanya**), resit, papaprint, persadagemilang dan bpp. Maka setiap calon disemak: siapa pemiliknya, dan adakah ada servis yang bergantung padanya.
+
+Semakan kebergantungan yang dibuat sebelum memadam apa-apa:
+- `systemctl list-units --state=running` + `ExecStart` setiap servis → **`wassap-engine` aktif**, tetapi binarinya di `~/wassap-multi-tenant/engine/bin/engine`, **bukan** `~/go/bin`.
+- `grep -rl '/home/ubuntu/go' /etc/systemd/system/*.service` → **kosong** (tiada servis bergantung pada cache Go).
+- `grep -rl playwright /var/www/*/package.json` → **`resit.wehdah.my`** menggunakannya ⇒ `/var/www/.cache/ms-playwright` (641M) **dikecualikan**.
+- Skrip `/usr/local/sbin/server-backup.sh` dibaca: `KEEP_DAYS=14` dengan rotasi automatik ⇒ `/var/backups/server` (2.8G) ialah **sistem backup sihat** untuk laman lain, **bukan sampah**.
+
+## Yang dibuang (≈8.3G)
+| Item | Saiz | Justifikasi |
+|---|---|---|
+| 15 backup `standalone.bak-*` perkib (14–19 Jul) + tgz v1 | 822M | Hasil deploy sendiri; kod ada di git. Kekal **4 terkini** untuk rollback |
+| `~/go/pkg` module cache | 4.6G | Cache muat-turun. Binari Go **statik** ⇒ semua alat kekal berfungsi |
+| Journal systemd (pangkas ke 200M) | 888M | Log arkib; journald direka untuk dipangkas |
+| `~/.bun/install` | 1.2G | Cache pakej |
+| Snapshot migrasi Mac 2026 | 354M | Config sudah hidup di sistem; DB ada backup harian |
+| `~/.cache/go-build`, apt & npm cache, sisa `/tmp` | ~900M | Semua dijana semula automatik |
+
+**Keputusan Hakim** (via soalan berstruktur): buang **cache sahaja**, kekalkan binari alat pentest. Hasil: **4.8G → 13G bebas (88% → 66%)**. Disahkan selepas itu: 9 servis `active`, PM2 online, 9 laman menjawab, alat pentest masih berjalan (`ffuf 2.1.0-dev`).
+
+## SSL jawi.cc — masalah ayam-telur Cloudflare
+Semasa pengesahan pasca-pembersihan, `jawi.cc` memulangkan **526**. Langkah pertama ialah **membuktikan ia bukan akibat pembersihan**: `/etc/letsencrypt/live/` disenaraikan (5 sijil utuh), `nginx -t` lulus, dan origin diuji terus (`curl -k --resolve`) → **200**. Puncanya lama: domain akar `jawi.cc` **tidak pernah** ada sijil — hanya `bpp.jawi.cc`.
+
+Halangan: zon berada di belakang **proxy Cloudflare** dengan mode Full(Strict). HTTP-01 tidak boleh digunakan — Cloudflare perlu sijil sah di origin untuk menyambung, tetapi cabaran ACME mesti melalui Cloudflare. Kitaran tertutup.
+
+**Penyelesaian — DNS-01.** Ternyata infrastrukturnya sudah ada: plugin `dns-cloudflare` terpasang, kredensial `/root/.secrets/cloudflare.ini` wujud, dan `bpp.jawi.cc` **sudah** menggunakan kaedah itu (`grep -l dns-cloudflare /etc/letsencrypt/renewal/*.conf`) — bukti token sah untuk zon `jawi.cc`.
+
+Urutan yang diambil: backup config nginx → `certbot --dry-run` (elak rate limit LE) → terbit sijil sebenar (`jawi.cc` + `www`, luput 26 Okt 2026) → cipta server block **301 → `https://bpp.jawi.cc`** (pilihan Hakim; app BPP tidak disentuh) → **`nginx -t` sebelum `systemctl reload`** (reload, bukan restart — sifar downtime untuk 6 laman).
+
+**Disahkan:** `jawi.cc`/`www`/`http://` semua **301 → bpp.jawi.cc → 200** (526 hilang); `certbot renew --dry-run` lulus untuk **kesemua 6 sijil**; `certbot.timer` enabled.
+
+## Pelajaran
+- **Backup automatik ≠ sampah** — baca skrip dan dasar retention sebelum membuat kesimpulan tentang direktori besar.
+- **Sahkan sebelum menyalahkan kerja sendiri** — sesuatu yang rosak sejurus selepas pembersihan belum tentu disebabkannya.
+- **Domain di belakang proxy Cloudflare ⇒ guna DNS-01**, dan semak dahulu sama ada zon itu sudah pernah menggunakannya.

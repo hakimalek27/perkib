@@ -2,6 +2,21 @@
 
 **Kemas kini:** 2026-07-29 · **Status:** ✅ **v4.2 DEPLOYED & LIVE** — pembetulan 5 slaid deck (1, 8, 16, 53, 60) (`main @ 0734057`). Sebelum: v4.1 (9 video amali dalam deck), v4.0.1 (fix seretan halaman).
 
+## 🖥️ Operasi pelayan (28–29 Julai 2026) — storan + SSL
+**Ruang cakera: 4.8G → 13G bebas (88% → 66%).** Dibuang: 15 backup `standalone.bak-*` lama (822M — **kekal 4 terkini sahaja**), `~/go/pkg` cache (4.6G), journal dipangkas ke 200M (888M), `~/.bun/install` (1.2G), snapshot migrasi Mac 2026 (354M), cache go-build/apt/npm, sisa `/tmp`.
+
+🚫 **JANGAN buang** (disemak & dikecualikan): `/var/backups/server` (2.8G — cron backup **automatik** laman lain, `KEEP_DAYS=14` dalam `/usr/local/sbin/server-backup.sh`) · `/var/www/.cache/ms-playwright` (641M — dipakai `resit.wehdah.my`) · `~/go/bin` + `~/.local/pipx` (binari alat; **cache** boleh, binari jangan) · `~/wassap-multi-tenant` (servis `wassap-engine` aktif — gateway WhatsApp yang PERKIB bergantung padanya).
+
+> Semakan wajib sebelum padam apa-apa di pelayan kongsi: `systemctl list-units --state=running` + `ExecStart`; `grep -rl <path> /etc/systemd/system/*.service`; `grep -rl playwright /var/www/*/package.json`; baca skrip backup untuk dasar retention.
+
+**SSL `jawi.cc` (baharu):** domain akar dulu **526** kerana tiada sijil (hanya `bpp.jawi.cc` ada) — **bukan** akibat pembersihan. Zon di belakang **proxy Cloudflare** ⇒ HTTP-01 mustahil (ayam-telur), guna **DNS-01**:
+```
+sudo certbot certonly --dns-cloudflare \
+  --dns-cloudflare-credentials /root/.secrets/cloudflare.ini \
+  --dns-cloudflare-propagation-seconds 30 -d jawi.cc -d www.jawi.cc --dry-run
+```
+Sijil luput 26 Okt 2026 + server block **301 → `https://bpp.jawi.cc`**. Backup config: `/root/nginx-backup/`. **Sentiasa `nginx -t` sebelum `systemctl reload nginx`** (reload, bukan restart). `certbot renew --dry-run` lulus untuk 6 sijil.
+
 ## 🆕 v4.2 (29 Julai 2026) — DEPLOYED (pembetulan 5 slaid)
 Hakim bekalkan fail deck dikemas kini (`PenyembelihanHalal-PERKIB.html`) — **ganti 5 slaid sahaja**, semua yang lain kekal.
 
