@@ -38,7 +38,7 @@ const PANDUAN = [
   {
     icon: Maximize2,
     tajuk: "Skrin penuh",
-    teks: "Tekan kekunci F atau butang skrin penuh — sesuai untuk pembentangan di dewan atau bilik kuliah.",
+    teks: "Tekan kekunci F atau butang skrin penuh. Slaid akan memenuhi skrin dan semua kawalan disorok — gerakkan tetikus ke tepi skrin (bawah, kiri, kanan atau atas) untuk memunculkannya semula.",
   },
   {
     icon: Play,

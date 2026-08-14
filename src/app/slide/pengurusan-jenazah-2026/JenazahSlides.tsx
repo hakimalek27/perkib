@@ -52,6 +52,10 @@ export function JenazahSlides() {
   const [auto, setAuto] = useState(false);
   const [full, setFull] = useState(false);
   const [seret, setSeret] = useState(false);
+  // Zon tepi skrin yang sedang dihampiri tetikus — hanya bermakna dalam skrin
+  // penuh, di mana semua kawalan disorok supaya slaid betul-betul penuh.
+  const [zon, setZon] = useState({ atas: false, bawah: false, kiri: false, kanan: false });
+  const [paksaChrome, setPaksaChrome] = useState(false);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -120,11 +124,66 @@ export function JenazahSlides() {
     else rootRef.current?.requestFullscreen?.();
   }, []);
 
+  /* ── Skrin penuh + kawalan auto-sorok ─────────────────────────────────── */
+  // Sebaik masuk skrin penuh, kawalan ditunjukkan ~2s supaya pengguna tahu ia
+  // wujud, kemudian disorok sehingga tetikus menghampiri tepi skrin.
+  const chromeTimerRef = useRef<number | undefined>(undefined);
   useEffect(() => {
-    const onFs = () => setFull(Boolean(document.fullscreenElement));
+    const onFs = () => {
+      const aktif = Boolean(document.fullscreenElement);
+      setFull(aktif);
+      window.clearTimeout(chromeTimerRef.current);
+      setPaksaChrome(aktif);
+      if (aktif) {
+        chromeTimerRef.current = window.setTimeout(() => setPaksaChrome(false), 2200);
+      }
+    };
     document.addEventListener("fullscreenchange", onFs);
-    return () => document.removeEventListener("fullscreenchange", onFs);
+    return () => {
+      document.removeEventListener("fullscreenchange", onFs);
+      window.clearTimeout(chromeTimerRef.current);
+    };
   }, []);
+
+  // Jarak dari tepi yang mencetuskan kawalan (px).
+  const TEPI = 130;
+  useEffect(() => {
+    if (!full) return;
+    const onMove = (e: PointerEvent) => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setZon((z) => {
+        const baru = {
+          atas: e.clientY < TEPI * 0.7,
+          bawah: e.clientY > h - TEPI,
+          kiri: e.clientX < TEPI,
+          kanan: e.clientX > w - TEPI,
+        };
+        return baru.atas === z.atas && baru.bawah === z.bawah && baru.kiri === z.kiri && baru.kanan === z.kanan
+          ? z
+          : baru;
+      });
+    };
+    // Skrin sentuh: ketik memaparkan kawalan selama 2.5s.
+    const onTouch = () => {
+      setPaksaChrome(true);
+      window.setTimeout(() => setPaksaChrome(false), 2500);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("touchstart", onTouch, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("touchstart", onTouch);
+    };
+  }, [full]);
+
+  // Dalam skrin penuh: papar hanya bahagian yang dihampiri (atau semasa grid
+  // dibuka / sebaik masuk skrin penuh). Di luar skrin penuh: sentiasa papar.
+  const tunjukSemua = !full || paksaChrome || grid;
+  const tunjukDock = tunjukSemua || zon.bawah;
+  const tunjukAtas = tunjukSemua || zon.atas;
+  const tunjukKiri = tunjukSemua || zon.kiri;
+  const tunjukKanan = tunjukSemua || zon.kanan;
 
   /* ── Kekunci ──────────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -313,6 +372,7 @@ export function JenazahSlides() {
     <div
       ref={rootRef}
       className="jz-root"
+      data-full={full ? "1" : "0"}
       onWheel={onWheel}
       role="region"
       aria-label="Persembahan Kursus Intensif Pengurusan Jenazah"
@@ -369,7 +429,7 @@ export function JenazahSlides() {
 
       {/* ── Kawalan ──────────────────────────────────────────────────────── */}
       <div className="jz-ui">
-        <div className="jz-top">
+        <div className="jz-top" data-tunjuk={tunjukAtas ? "1" : "0"}>
           <Link href="/slide" className="jz-brand" title="Kembali ke senarai Slaid & Modul PERKIB">
             <Moon size={15} />
             <span className="jz-brand-t">PERKIB · PENGURUSAN JENAZAH</span>
@@ -382,11 +442,18 @@ export function JenazahSlides() {
           </span>
         </div>
 
-        <button className="jz-arrow jz-arrow-l" onClick={prev} disabled={cur === 0} aria-label="Slaid sebelum">
+        <button
+          className="jz-arrow jz-arrow-l"
+          data-tunjuk={tunjukKiri ? "1" : "0"}
+          onClick={prev}
+          disabled={cur === 0}
+          aria-label="Slaid sebelum"
+        >
           <ChevronLeft size={20} />
         </button>
         <button
           className="jz-arrow jz-arrow-r"
+          data-tunjuk={tunjukKanan ? "1" : "0"}
           onClick={next}
           disabled={cur === SLIDE_COUNT - 1}
           aria-label="Slaid seterusnya"
@@ -394,7 +461,7 @@ export function JenazahSlides() {
           <ChevronRight size={20} />
         </button>
 
-        <div className="jz-bottom">
+        <div className="jz-bottom" data-tunjuk={tunjukDock ? "1" : "0"}>
           <button
             className="jz-btn"
             onClick={() => setAuto((a) => !a)}

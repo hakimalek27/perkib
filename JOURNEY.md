@@ -716,3 +716,17 @@ Untuk 131 slaid, bar bab sahaja tidak mencukupi, jadi ditambah **grid semua slai
 - **Fail "bundled" ialah aplikasi, bukan dokumen.** Kiraan, saiz dan teksnya hanya benar selepas ia selesai membongkar dirinya dalam pelayar — dan "selesai" mesti dikesan, bukan diandaikan dengan `waitForTimeout`.
 - **`innerText` mengembalikan kosong untuk elemen tersembunyi.** Tajuk yang diekstrak dari slaid `display:none` bergabung tanpa ruang ("MENGURUSKANJENAZAH"). Paparkan dahulu, kemudian baca.
 - **Ukur sebelum menangkap.** Apa-apa deck yang menskala dirinya perlu diukur, bukan dipaksa.
+
+# v4.4.1 — Skrin penuh yang benar-benar penuh (14 Ogos 2026, malam)
+
+Maklum balas Hakim selepas mencuba deck: *"kalau fullscreen pun x besar sgt"* — dan kawalan di bawah menghalang tayangan sebenar.
+
+Dua sebab slaid tidak penuh: `.jz-stage` mengekalkan padding untuk kawalan, dan `.jz-frame` mengira lebarnya sebagai `(100vh − 7rem) × 1.7753` supaya muat bersama dock. Kedua-duanya betul untuk mod tetingkap, salah untuk skrin penuh. Penyelesaian: keadaan `data-full="1"` pada root menukar padding kepada 0 dan bingkai kepada `100vw × 100vh` tanpa border, radius atau bayang; latar girih/cahaya/vignette diredupkan supaya tiada apa-apa bersaing dengan slaid. Diukur: **76% → 100% luas skrin**.
+
+Auto-sorok pula bukan pemasa, tetapi **zon tepi**: satu pendengar `pointermove` menanda sama ada kursor berada dalam 130px dari bawah, kiri, kanan atau atas, dan setiap kumpulan kawalan mendapat `data-tunjuk` sendiri. Gerak ke bawah — dock naik. Gerak ke kiri — anak panah kiri masuk. Gerak ke tengah — semuanya hilang. Kawalan turut dipaparkan 2.2 saat sebaik masuk skrin penuh supaya pengguna tahu ia wujud, dan ketikan pada skrin sentuh memaparkannya 2.5 saat.
+
+Ujian E2E untuk ini mengukur perkara sebenar, bukan kelas CSS: lebar imej berbanding viewport, dan `opacity` setiap kawalan selepas menggerakkan tetikus ke setiap tepi. `requestFullscreen` memerlukan gesture pengguna, jadi ujian mengklik butang skrin penuh dan bukannya memanggil API terus.
+
+## Pelajaran
+- **Nilai reka bentuk yang betul untuk satu mod boleh salah untuk mod lain.** Padding dan pengiraan tinggi yang menjadikan deck kemas dalam tetingkap ialah punca ia tidak penuh dalam skrin penuh — jawapannya keadaan berasingan, bukan kompromi di tengah.
+- **Auto-sorok berasaskan zon mengalahkan pemasa.** Pembentang tidak mahu kawalan muncul kerana masa berlalu; mereka mahu ia muncul kerana mereka menghala ke sana.

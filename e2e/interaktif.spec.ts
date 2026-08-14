@@ -380,6 +380,44 @@ test.describe("PERKIB v4.4 — deck Pengurusan Jenazah (LIVE)", () => {
     await expect(nilai).toHaveText("100%");
   });
 
+  test("skrin penuh: slaid penuhi skrin + kawalan auto-sorok ikut tepi", async ({ page }) => {
+    await page.goto("/slide/pengurusan-jenazah-2026");
+    const img = page.locator('.jz-slide[data-state="active"] img');
+    const vp = page.viewportSize()!;
+    const sebelum = (await img.boundingBox())!;
+    expect(sebelum.width).toBeLessThan(vp.width * 0.95);
+
+    // Klik butang = gesture pengguna, jadi requestFullscreen dibenarkan.
+    await page.getByRole("button", { name: /Skrin penuh/ }).click();
+    await expect.poll(() => page.evaluate(() => Boolean(document.fullscreenElement))).toBe(true);
+
+    // Slaid kini memenuhi skrin.
+    const selepas = (await img.boundingBox())!;
+    expect(selepas.width).toBeGreaterThanOrEqual(vp.width - 2);
+
+    const opacity = (sel: string) =>
+      page.locator(sel).evaluate((el) => getComputedStyle(el).opacity);
+
+    // Tetikus di tengah → semua kawalan tersorok (selepas paparan awal ~2.2s).
+    await page.mouse.move(vp.width / 2, vp.height / 2);
+    await expect.poll(() => opacity(".jz-bottom"), { timeout: 6000 }).toBe("0");
+    expect(await opacity(".jz-arrow-r")).toBe("0");
+    expect(await opacity(".jz-top")).toBe("0");
+
+    // Tepi bawah → dock muncul; tepi kanan → anak panah kanan muncul.
+    await page.mouse.move(vp.width / 2, vp.height - 20);
+    await expect.poll(() => opacity(".jz-bottom")).toBe("1");
+    await page.mouse.move(vp.width - 15, vp.height / 2);
+    await expect.poll(() => opacity(".jz-arrow-r")).toBe("1");
+    await expect.poll(() => opacity(".jz-bottom")).toBe("0");
+
+    // Keluar skrin penuh → kawalan kembali sepenuhnya.
+    await page.keyboard.press("f");
+    await expect.poll(() => page.evaluate(() => Boolean(document.fullscreenElement))).toBe(false);
+    await expect.poll(() => opacity(".jz-bottom")).toBe("1");
+    expect(await opacity(".jz-arrow-r")).toBe("1");
+  });
+
   test("aset slaid + thumbnail + OG dihidangkan", async ({ request }) => {
     for (const p of [
       "/slide/pengurusan-jenazah-2026/s000.webp",

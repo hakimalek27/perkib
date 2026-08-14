@@ -12,13 +12,14 @@ Sumber: `Kursus Pengurusan Jenazah (standalone).html` (fail "bundled" 8MB — ka
 | Kesamaan dengan sumber | **Disahkan piksel demi piksel** untuk kesemua 131 slaid (tangkap semula sumber → banding dengan webp): purata beza **0.04%**, maksimum **0.32%** — artifak mampatan sahaja, tiada perubahan kandungan. Skrip: `scratchpad/sahkan-sama.mjs`. Perbandingan **mesti guna pipeline yang sama** (viewport + DSF); jika tidak, perbezaan antialias disalah tafsir sebagai perubahan kandungan (percubaan pertama "gagal" 119 slaid atas sebab ini). |
 | Route | `src/app/slide/pengurusan-jenazah-2026/` — `deck-data.ts` (**dijana automatik**: 131 tajuk + 9 bab), `JenazahSlides.tsx`, `slides.css`, `page.tsx`. |
 | Tema | **Khusyuk** (pilihan Hakim): obsidian dalam, girih statik, dua cahaya emas "bernafas" 11–13s, transisi reda-naik 620ms. Sengaja **bukan** galaxy 3D seperti deck Sembelihan. |
+| Skrin penuh (v4.4.1) | Slaid **memenuhi 100% skrin** (dulu 76%): padding stage → 0, bingkai → `100vw × 100vh` tanpa border/bayang, latar hiasan diredupkan. **Semua kawalan auto-sorok** — dock, anak panah, bar jenama hilang; muncul hanya bila tetikus dalam **130px** dari tepi berkenaan (bawah → dock, kiri/kanan → anak panah, atas → jenama). Kawalan dipaparkan 2.2s sebaik masuk skrin penuh; skrin sentuh: ketik memaparkannya 2.5s. |
 | Kawalan | Zum **100–400%** (butang, `+ − 0`, dwi-klik, Ctrl+skrol, cubit 2 jari) · **pan seret** dengan had tepi · **grid semua slaid** (`G`) + carian tajuk/nombor · bar 9 bab · auto-main 9s · skrin penuh (`F`) · leret pada telefon. |
 | Senarai & penemuan | Didaftarkan dalam `src/content/slides.ts` (muncul di `/slide` sebagai deck **pertama**), masuk sitemap, OG khusus `/og/slide-pengurusan-jenazah-2026.png`. Panduan `/slide` dikemas kini: 6 kad (tambah Zum & geser, Semua slaid). |
 | Atribusi | Kad senarai memaparkan *"Bahan: Seksyen Pengurusan Jenazah, Bahagian Dakwah JAWI"* (medan `sumber` baharu dalam registry). |
 
 - **Kandungan slaid tidak disentuh langsung** — tiada teks/gambar ditulis semula. Tajuk yang dijana hanya untuk grid, carian dan teks alt (di luar slaid).
-- E2E: **28 ujian** (4 baharu untuk deck ini). 28/28 lulus LIVE.
-- Backup rollback: `standalone.bak-20260814-panduan` (terkini), `-20260814-jenazah`, `-20260814-navslide`, `standalone.bak-prev`.
+- E2E: **29 ujian** (5 baharu untuk deck ini, termasuk ujian skrin penuh yang mengukur saiz slaid dan opacity setiap kawalan mengikut kedudukan tetikus). 29/29 lulus LIVE.
+- Backup rollback: `standalone.bak-20260814-fullscreen` (terkini), `-20260814-jenazah`, `-20260814-panduan`, `standalone.bak-prev`.
 
 ## 🆕 v4.3 (14 Ogos 2026) — DEPLOYED (deck boleh ditemui orang awam)
 Masalah: deck `/slide/sembelihan-2026` hanya boleh dicapai oleh sesiapa yang **sudah tahu URL-nya** — tiada pautan dari mana-mana, tiada dalam sitemap.
