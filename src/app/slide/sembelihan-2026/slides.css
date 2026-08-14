@@ -661,6 +661,10 @@
 .sb-count b { color: var(--sb-gold); font-weight: 700; }
 /* Telefon: kekalkan bar atas satu baris (kaunter video lebih panjang). */
 .sb-brand svg { flex: none; }
+/* Jenama sebagai pautan keluar ke /slide — kekal halus, tiada garis bawah. */
+a.sb-brand { text-decoration: none; transition: opacity 0.2s ease; }
+a.sb-brand:hover { opacity: 0.75; }
+a.sb-brand:focus-visible { outline: 2px solid var(--sb-gold); outline-offset: 4px; border-radius: 4px; }
 .sb-brand-t { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 @media (max-width: 560px) {
   .sb-brand { letter-spacing: 0.06em; min-width: 0; }

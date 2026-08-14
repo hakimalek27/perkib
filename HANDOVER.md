@@ -1,6 +1,22 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-07-29 · **Status:** ✅ **v4.2 DEPLOYED & LIVE** — pembetulan 5 slaid deck (1, 8, 16, 53, 60) (`main @ 0734057`). Sebelum: v4.1 (9 video amali dalam deck), v4.0.1 (fix seretan halaman).
+**Kemas kini:** 2026-08-14 · **Status:** ✅ **v4.3 DEPLOYED & LIVE** — halaman senarai awam `/slide` + pautan dari laman utama. Sebelum: v4.2 (pembetulan 5 slaid deck), v4.1 (9 video amali dalam deck), v4.0.1 (fix seretan halaman).
+
+## 🆕 v4.3 (14 Ogos 2026) — DEPLOYED (deck boleh ditemui orang awam)
+Masalah: deck `/slide/sembelihan-2026` hanya boleh dicapai oleh sesiapa yang **sudah tahu URL-nya** — tiada pautan dari mana-mana, tiada dalam sitemap.
+
+| Perkara | Butiran |
+|---|---|
+| `src/content/slides.ts` | **Registry deck** — satu sumber kebenaran. Kiraan slaid/video/bab **diimport dari `deck-data`** deck berkenaan supaya angka tidak pernah basi. Tambah deck baharu = tambah satu entri. |
+| `src/app/slide/page.tsx` | Halaman senarai awam "Slaid & Modul" — `PageHero` + kad deck (kover, kiraan 60 slaid / 9 video / 8 bab, cip bab, butang **Buka Deck**) + seksyen "Cara Menggunakan Deck" (navigasi, video, skrin penuh, bab). |
+| Gate chrome | `Header.tsx`, `SiteFooterGate.tsx`, `template.tsx`: `startsWith("/slide")` → **`"/slide/"`**. Kesan: senarai `/slide` dapat header+footer laman biasa; deck `/slide/<slug>` kekal skrin penuh tanpa chrome. |
+| Laman utama | Kad ke-5 dalam grid "Akses Pantas" (glyph `dokumen`) → `/slide`. Grid 3×2 kini penuh sempurna (dulu 1 slot kosong). |
+| Penemuan | `/slide` + setiap deck masuk **`sitemap.xml`** (dijana dari registry); OG image khusus deck **`/og/slide-sembelihan-2026.png`** (1200×630, dijana dari `s00.webp` guna sharp) untuk pratonton WhatsApp/Facebook. |
+| Jalan keluar deck | Jenama `PERKIB · PENYEMBELIHAN HALAL` di bar atas deck kini **pautan ke `/slide`** (`a.sb-brand` + CSS hover/focus). Penting untuk pelawat yang tiba terus dari pautan kongsi. |
+
+- **Deck itu sendiri tidak disentuh** — 60 slaid + 9 video, animasi, navigasi semua kekal (arahan tetap: *"slide kekal, macam mana file, macam tu la"*).
+- E2E: **22 ujian** (4 baharu: senarai↔deck, chrome gating, kad home, sitemap+OG). Semua lulus LIVE; accordion `/soalan-lazim` flaky seperti biasa — disahkan 5/5 dengan `-g "accordion" --repeat-each=5`.
+- Backup rollback: `standalone.bak-20260814-slideindex`.
 
 ## 🖥️ Operasi pelayan (28–29 Julai 2026) — storan + SSL
 **Ruang cakera: 4.8G → 13G bebas (88% → 66%).** Dibuang: 15 backup `standalone.bak-*` lama (822M — **kekal 4 terkini sahaja**), `~/go/pkg` cache (4.6G), journal dipangkas ke 200M (888M), `~/.bun/install` (1.2G), snapshot migrasi Mac 2026 (354M), cache go-build/apt/npm, sisa `/tmp`.

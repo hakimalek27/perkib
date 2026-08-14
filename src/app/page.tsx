@@ -46,6 +46,7 @@ const QUICK: { glyph: GlyphName; title: string; desc: string; href: string; cta:
   { glyph: "semak", title: "Semak Status", desc: "Jejak permohonan anda dari penghantaran hingga pembayaran.", href: "/saguhati/semak", cta: "Semak" },
   { glyph: "pegawai", title: "Maklumat Pegawai", desc: "Ketua Imam, Timbalan dan Bilal mengikut zon dan masjid.", href: "/pegawai", cta: "Cari pegawai" },
   { glyph: "masjid", title: "Direktori Masjid", desc: "94 masjid tersusun mengikut lapan zon rasmi JAWI.", href: "/direktori-masjid", cta: "Lihat direktori" },
+  { glyph: "dokumen", title: "Slaid & Modul", desc: "Deck pembentangan dan modul latihan PERKIB — dilayari terus dalam pelayar.", href: "/slide", cta: "Lihat slaid" },
 ];
 
 export default async function HomePage() {

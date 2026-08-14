@@ -8,8 +8,9 @@ import { usePathname } from "next/navigation";
 // Reduced-motion: tiada (dikendali .page-enter dlm globals).
 export default function Template({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  // Studio & slide TIDAK dibalut .page-enter — transform animasinya mencipta
+  // Studio & deck slaid TIDAK dibalut .page-enter — transform animasinya mencipta
   // containing block yang memecahkan layout `fixed` (Studio & galaxy slide full-screen).
-  if (pathname?.startsWith("/studio") || pathname?.startsWith("/slide")) return <>{children}</>;
+  // Senarai /slide ialah halaman biasa, jadi ia kekal dapat transisi masuk.
+  if (pathname?.startsWith("/studio") || pathname?.startsWith("/slide/")) return <>{children}</>;
   return <div className="page-enter">{children}</div>;
 }

@@ -248,3 +248,43 @@ test.describe("PERKIB v4.1 — slaid video dalam deck (LIVE)", () => {
     expect(p.status()).toBe(200);
   });
 });
+
+test.describe("PERKIB v4.3 — senarai slaid awam (LIVE)", () => {
+  test("/slide papar kad deck + header/footer laman (chrome KEKAL)", async ({ page }) => {
+    await page.goto("/slide");
+    await expect(page.getByRole("heading", { name: /Bahan Pembentangan PERKIB/i })).toBeVisible();
+    // Chrome laman mesti hadir di senarai (berbeza dengan deck skrin penuh).
+    await expect(page.locator("header").first()).toBeVisible();
+    await expect(page.locator("footer").first()).toBeAttached();
+    // Kad deck: tajuk + kiraan sebenar dari registry.
+    await expect(page.getByRole("heading", { name: "Penyembelihan Halal" })).toBeVisible();
+    await expect(page.getByText("60", { exact: true }).first()).toBeVisible();
+    // Butang buka deck → deck sebenar.
+    await page.getByRole("link", { name: "Buka Deck", exact: true }).click();
+    await expect(page).toHaveURL(/\/slide\/sembelihan-2026$/);
+    await expect(page.locator(".sb-slide")).toHaveCount(69);
+  });
+
+  test("deck kekal tanpa chrome + jenama pautan balik ke /slide", async ({ page }) => {
+    await page.goto("/slide/sembelihan-2026");
+    await expect(page.locator("header")).toHaveCount(0);
+    await page.locator("a.sb-brand").click();
+    await expect(page).toHaveURL(/\/slide$/);
+  });
+
+  test("laman utama ada kad Slaid & Modul → /slide", async ({ page }) => {
+    await page.goto("/");
+    const kad = page.getByRole("link", { name: /Slaid & Modul/i }).first();
+    await expect(kad).toHaveAttribute("href", "/slide");
+  });
+
+  test("penemuan awam: sitemap + OG deck", async ({ request }) => {
+    const sm = await request.get("/sitemap.xml");
+    expect(sm.status()).toBe(200);
+    const xml = await sm.text();
+    expect(xml).toContain("/slide");
+    expect(xml).toContain("/slide/sembelihan-2026");
+    const og = await request.get("/og/slide-sembelihan-2026.png");
+    expect(og.status()).toBe(200);
+  });
+});

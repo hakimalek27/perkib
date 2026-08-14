@@ -65,8 +65,12 @@ export function Header() {
     on: false,
   });
 
+  // Deck slaid (/slide/<slug>) ialah UI skrin penuh tersendiri — chrome disorok.
+  // Halaman senarai /slide pula halaman laman biasa, jadi header KEKAL dipapar.
   const hideChrome =
-    pathname.startsWith("/admin") || pathname.startsWith("/studio") || pathname.startsWith("/slide");
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/studio") ||
+    pathname.startsWith("/slide/");
   const hideSticky = pathname.startsWith("/saguhati/mohon"); // elak bertindih butang wizard
 
   useEffect(() => {

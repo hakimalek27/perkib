@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import Link from "next/link";
 import {
   ChevronLeft,
   ChevronRight,
@@ -428,10 +429,12 @@ export function SembelihanSlides() {
 
       <div className="sb-ui">
         <div className="sb-top">
-          <span className="sb-brand">
+          {/* Jenama = jalan keluar deck: kembali ke senarai slaid PERKIB.
+              Penting untuk pelawat yang tiba terus dari pautan kongsi. */}
+          <Link href="/slide" className="sb-brand" title="Kembali ke senarai Slaid & Modul PERKIB">
             <Sparkles size={16} />
             <span className="sb-brand-t">PERKIB · PENYEMBELIHAN HALAL</span>
-          </span>
+          </Link>
           <span className="sb-count">
             {ITEMS[cur].jenis === "video" ? (
               <>

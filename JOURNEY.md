@@ -653,3 +653,29 @@ Urutan yang diambil: backup config nginx → `certbot --dry-run` (elak rate limi
 - **Backup automatik ≠ sampah** — baca skrip dan dasar retention sebelum membuat kesimpulan tentang direktori besar.
 - **Sahkan sebelum menyalahkan kerja sendiri** — sesuatu yang rosak sejurus selepas pembersihan belum tentu disebabkannya.
 - **Domain di belakang proxy Cloudflare ⇒ guna DNS-01**, dan semak dahulu sama ada zon itu sudah pernah menggunakannya.
+
+# v4.3 — Deck Boleh Ditemui Orang Awam (14 Ogos 2026)
+
+Deck "Penyembelihan Halal" sudah hidup sejak 28 Julai, tetapi hanya boleh dicapai oleh sesiapa yang **sudah memegang URL-nya**. Tiada pautan dari laman, tiada dalam sitemap, tiada pratonton kongsi yang bermakna. Permintaan Hakim: *"saya nak orang lain boleh akses dan tahu kewujudan page dan slide tu"*.
+
+## Keputusan reka bentuk (soalan berstruktur kepada Hakim)
+- Label awam **"Slaid & Modul"**, URL kekal `/slide`.
+- Pautan di laman utama = **kad ke-5 dalam grid "Akses Pantas"** (bukan seksyen featured baharu). Grid itu memang ada satu slot kosong — kad kelima menjadikannya 3×2 penuh.
+- **Terbuka penuh + diindeks Google** (sitemap + OG), bukan "tersembunyi tapi boleh dicapai".
+
+## Perubahan
+1. **Registry `src/content/slides.ts`** — senarai deck sebagai data. Kiraan slaid/video/bab **diimport terus dari `deck-data`** deck itu, jadi angka pada senarai mustahil basi bila kandungan deck berubah. Sitemap juga dijana daripada registry yang sama.
+2. **Halaman `/slide`** — hero + kad deck (kover `s00.webp`, kiraan, cip bab, butang Buka Deck) + panduan "Cara Menggunakan Deck" yang menerangkan kawalan **sebenar** deck (← → ↑ ↓ Space PageUp/PageDown, Home/End, Enter untuk video, F skrin penuh, bar bab) — disemak terhadap pengendali kekunci dalam `SembelihanSlides.tsx`, bukan direka.
+3. **Gate chrome jadi lebih tepat** — tiga tempat (`Header`, `SiteFooterGate`, `template`) menyorok header/footer/transisi untuk apa-apa yang bermula dengan `/slide`. Ditukar kepada **`/slide/`** (dengan sengkang). Senarai `/slide` kini halaman laman biasa; deck `/slide/<slug>` kekal skrin penuh.
+4. **Jalan keluar dari deck** — jenama di bar atas deck jadi pautan ke `/slide`. Pelawat yang tiba dari pautan WhatsApp kini ada jalan masuk ke laman.
+5. **OG image deck** — `/og/slide-sembelihan-2026.png` 1200×630 dijana dari `s00.webp` (sharp, `fit: contain`, latar obsidian). webp mentah 1760×991 bukan pilihan selamat untuk pratonton WhatsApp.
+
+## Pengesahan
+- `tsc --noEmit` bersih · lint 0 ralat · build bersih (`/slide` prerender statik).
+- Diuji dahulu pada **standalone setempat** (port 3010): header hadir di `/slide` (`<header>` = 1), tiada di deck (= 0), sitemap mengandungi kedua-dua laluan, OG 200.
+- Tangkapan skrin desktop + mobile disemak sebelum deploy — kover kad ditukar kepada `object-contain` + latar obsidian supaya slaid tidak dipotong dan tiada ruang putih janggal.
+- Selepas deploy: 8 route 200, video amali masih **206** (Range), **E2E 22 ujian lulus LIVE** (4 baharu). Accordion `/soalan-lazim` gagal sekali — flaky yang dikenali, disahkan 5/5 dengan `--repeat-each=5`.
+
+## Pelajaran
+- **Prefix path adalah API.** `startsWith("/slide")` yang asalnya betul menjadi salah pada saat sebuah halaman indeks wujud di bawah prefix yang sama. Bila menambah halaman induk pada segmen yang sudah "dikhaskan", semak semua gate yang menggunakan prefix itu — di sini ada tiga, dan terlepas satu bermakna halaman tanpa header atau deck dengan header.
+- **Kiraan dalam salinan pemasaran mesti datang dari sumbernya.** "60 slaid · 9 video" ditulis sebagai import, bukan nombor yang ditaip.
