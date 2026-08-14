@@ -18,6 +18,7 @@ const NAV_UTAMA = [
   { label: "Visi & Misi", href: "/visi-misi" },
   { label: "AJK", href: "/ajk" },
   { label: "Program", href: "/program" },
+  { label: "Slaid & Modul", href: "/slide" },
 ];
 
 const NAV_PERKHIDMATAN = [

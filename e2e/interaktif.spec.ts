@@ -278,6 +278,31 @@ test.describe("PERKIB v4.3 — senarai slaid awam (LIVE)", () => {
     await expect(kad).toHaveAttribute("href", "/slide");
   });
 
+  test("pautan menu header + footer → /slide (tanpa perlu skrol)", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    // Nav desktop: label pendek "Slaid", mesti kelihatan tanpa skrol.
+    const navSlaid = page.locator("header nav a[href='/slide']");
+    await expect(navSlaid).toBeVisible();
+    await expect(navSlaid).toHaveText("Slaid");
+    // Nav tidak boleh melimpah keluar viewport (tambahan item ke-9).
+    const box = await page.locator("header nav").first().boundingBox();
+    expect(box!.x + box!.width).toBeLessThanOrEqual(1280);
+    // Footer.
+    await expect(page.locator("footer a[href='/slide']").first()).toHaveText("Slaid & Modul");
+    await navSlaid.click();
+    await expect(page).toHaveURL(/\/slide$/);
+  });
+
+  test("menu mobile ada Slaid & Modul", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Menu" }).click();
+    const item = page.getByRole("link", { name: "Slaid & Modul", exact: true });
+    await expect(item).toBeVisible();
+    await expect(item).toHaveAttribute("href", "/slide");
+  });
+
   test("penemuan awam: sitemap + OG deck", async ({ request }) => {
     const sm = await request.get("/sitemap.xml");
     expect(sm.status()).toBe(200);

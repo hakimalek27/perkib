@@ -26,6 +26,9 @@ const NAV: NavItem[] = [
   { label: "Direktori Masjid", href: "/direktori-masjid" },
   { label: "Pegawai", href: "/pegawai" },
   { label: "Program", href: "/program" },
+  // Label pendek "Slaid" pada nav desktop supaya baris nav tidak sesak pada 1280px;
+  // halaman & menu mobile kekal "Slaid & Modul".
+  { label: "Slaid", href: "/slide" },
   { label: "Derma", href: "/derma" },
   { label: "Hubungi", href: "/hubungi" },
 ];
@@ -39,6 +42,7 @@ const FLAT_LINKS: NavLink[] = [
   { label: "Direktori Masjid", href: "/direktori-masjid" },
   { label: "Pegawai", href: "/pegawai" },
   { label: "Program", href: "/program" },
+  { label: "Slaid & Modul", href: "/slide" },
   { label: "Keahlian", href: "/keahlian" },
   { label: "Saguhati", href: "/saguhati" },
   { label: "Derma", href: "/derma" },

@@ -11,12 +11,13 @@ Masalah: deck `/slide/sembelihan-2026` hanya boleh dicapai oleh sesiapa yang **s
 | `src/app/slide/page.tsx` | Halaman senarai awam "Slaid & Modul" — `PageHero` + kad deck (kover, kiraan 60 slaid / 9 video / 8 bab, cip bab, butang **Buka Deck**) + seksyen "Cara Menggunakan Deck" (navigasi, video, skrin penuh, bab). |
 | Gate chrome | `Header.tsx`, `SiteFooterGate.tsx`, `template.tsx`: `startsWith("/slide")` → **`"/slide/"`**. Kesan: senarai `/slide` dapat header+footer laman biasa; deck `/slide/<slug>` kekal skrin penuh tanpa chrome. |
 | Laman utama | Kad ke-5 dalam grid "Akses Pantas" (glyph `dokumen`) → `/slide`. Grid 3×2 kini penuh sempurna (dulu 1 slot kosong). |
+| Menu (14 Ogos, tambahan) | **Nav desktop** label pendek **"Slaid"** (antara Program & Derma — nav 9 item, berakhir pada 1031px daripada 1280px, tidak sesak) · **menu mobile** `FLAT_LINKS` "Slaid & Modul" · **footer** lajur PERTUBUHAN "Slaid & Modul". Orang jumpa tanpa perlu skrol laman utama. |
 | Penemuan | `/slide` + setiap deck masuk **`sitemap.xml`** (dijana dari registry); OG image khusus deck **`/og/slide-sembelihan-2026.png`** (1200×630, dijana dari `s00.webp` guna sharp) untuk pratonton WhatsApp/Facebook. |
 | Jalan keluar deck | Jenama `PERKIB · PENYEMBELIHAN HALAL` di bar atas deck kini **pautan ke `/slide`** (`a.sb-brand` + CSS hover/focus). Penting untuk pelawat yang tiba terus dari pautan kongsi. |
 
 - **Deck itu sendiri tidak disentuh** — 60 slaid + 9 video, animasi, navigasi semua kekal (arahan tetap: *"slide kekal, macam mana file, macam tu la"*).
-- E2E: **22 ujian** (4 baharu: senarai↔deck, chrome gating, kad home, sitemap+OG). Semua lulus LIVE; accordion `/soalan-lazim` flaky seperti biasa — disahkan 5/5 dengan `-g "accordion" --repeat-each=5`.
-- Backup rollback: `standalone.bak-20260814-slideindex`.
+- E2E: **24 ujian** (6 baharu: senarai↔deck, chrome gating, kad home, menu header+footer pada 1280px, menu mobile, sitemap+OG). **24/24 lulus LIVE**. (Accordion `/soalan-lazim` flaky sekali-sekala — disahkan 5/5 dengan `-g "accordion" --repeat-each=5`.)
+- Backup rollback: `standalone.bak-20260814-navslide` (terkini), `-20260814-slideindex`, `-20260728-video`, `standalone.bak-prev`.
 
 ## 🖥️ Operasi pelayan (28–29 Julai 2026) — storan + SSL
 **Ruang cakera: 4.8G → 13G bebas (88% → 66%).** Dibuang: 15 backup `standalone.bak-*` lama (822M — **kekal 4 terkini sahaja**), `~/go/pkg` cache (4.6G), journal dipangkas ke 200M (888M), `~/.bun/install` (1.2G), snapshot migrasi Mac 2026 (354M), cache go-build/apt/npm, sisa `/tmp`.

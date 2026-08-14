@@ -676,6 +676,12 @@ Deck "Penyembelihan Halal" sudah hidup sejak 28 Julai, tetapi hanya boleh dicapa
 - Tangkapan skrin desktop + mobile disemak sebelum deploy — kover kad ditukar kepada `object-contain` + latar obsidian supaya slaid tidak dipotong dan tiada ruang putih janggal.
 - Selepas deploy: 8 route 200, video amali masih **206** (Range), **E2E 22 ujian lulus LIVE** (4 baharu). Accordion `/soalan-lazim` gagal sekali — flaky yang dikenali, disahkan 5/5 dengan `--repeat-each=5`.
 
+## Tambahan hari sama — pautan menu (petang 14 Ogos)
+Hakim minta orang boleh jumpa tanpa perlu skrol laman utama. Ditambah ke **tiga** tempat: nav desktop, menu mobile (`FLAT_LINKS`) dan footer (lajur PERTUBUHAN).
+
+Nav desktop guna label pendek **"Slaid"**, bukan "Slaid & Modul" — item ke-9 pada bar yang sudah padat. Diuji pada viewport **1280px** (kes paling ketat sebelum breakpoint `xl` menukar ke hamburger): nav berakhir pada **1031px**, jauh daripada butang "Mohon Saguhati". Ujian E2E mengunci jaminan itu — ia mengukur `boundingBox()` nav dan gagal jika melimpah, supaya penambahan item nav pada masa depan tidak diam-diam memecahkan header.
+
 ## Pelajaran
 - **Prefix path adalah API.** `startsWith("/slide")` yang asalnya betul menjadi salah pada saat sebuah halaman indeks wujud di bawah prefix yang sama. Bila menambah halaman induk pada segmen yang sudah "dikhaskan", semak semua gate yang menggunakan prefix itu — di sini ada tiga, dan terlepas satu bermakna halaman tanpa header atau deck dengan header.
 - **Kiraan dalam salinan pemasaran mesti datang dari sumbernya.** "60 slaid · 9 video" ditulis sebagai import, bukan nombor yang ditaip.
+- **Bar nav ada bajet ruang.** Menambah item ke nav yang hampir penuh ialah perubahan layout, bukan perubahan senarai — uji pada viewport tersempit yang masih memaparkan nav penuh, dan kunci had itu dengan ujian.
