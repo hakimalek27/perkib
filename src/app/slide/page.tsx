@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Play, Presentation, Maximize2, Keyboard } from "lucide-react";
+import { ArrowRight, Play, Presentation, Maximize2, Keyboard, ZoomIn, LayoutGrid } from "lucide-react";
 import { PageHero } from "@/components/layout/PageHero";
 import { Reveal } from "@/components/Reveal";
 import { DECKS } from "@/content/slides";
@@ -26,14 +26,24 @@ const PANDUAN = [
     teks: "Klik anak panah kiri/kanan, atau guna kekunci ← → ↑ ↓, Space dan PageUp/PageDown. Home ke slaid pertama, End ke slaid akhir.",
   },
   {
-    icon: Play,
-    tajuk: "Video amali",
-    teks: "Video tidak dimainkan sendiri. Tekan butang ▶ atau kekunci Enter untuk main; ia berhenti automatik apabila anda beralih slaid.",
+    icon: ZoomIn,
+    tajuk: "Zum & geser",
+    teks: "Deck Pengurusan Jenazah boleh dizum sehingga 400%: butang + −, kekunci + − 0, dwi-klik, Ctrl+skrol atau cubit dua jari. Seret untuk menggeser semasa dizum.",
+  },
+  {
+    icon: LayoutGrid,
+    tajuk: "Semua slaid",
+    teks: "Tekan G atau butang grid untuk melihat semua slaid sekali gus, cari mengikut tajuk atau nombor, dan lompat terus ke slaid itu.",
   },
   {
     icon: Maximize2,
     tajuk: "Skrin penuh",
     teks: "Tekan kekunci F atau butang skrin penuh — sesuai untuk pembentangan di dewan atau bilik kuliah.",
+  },
+  {
+    icon: Play,
+    tajuk: "Video amali",
+    teks: "Dalam deck Penyembelihan Halal, video tidak dimainkan sendiri. Tekan ▶ atau Enter untuk main; ia berhenti automatik apabila anda beralih slaid.",
   },
   {
     icon: Keyboard,
@@ -104,12 +114,14 @@ export default function SlideIndexPage() {
                             {d.jumlahSlaid}
                           </dd>
                         </div>
-                        <div>
-                          <dt className="text-xs text-muted-foreground">Video amali</dt>
-                          <dd className="font-display text-lg font-bold tabular-nums text-ink">
-                            {d.jumlahVideo}
-                          </dd>
-                        </div>
+                        {d.jumlahVideo > 0 && (
+                          <div>
+                            <dt className="text-xs text-muted-foreground">Video amali</dt>
+                            <dd className="font-display text-lg font-bold tabular-nums text-ink">
+                              {d.jumlahVideo}
+                            </dd>
+                          </div>
+                        )}
                         <div>
                           <dt className="text-xs text-muted-foreground">Bab</dt>
                           <dd className="font-display text-lg font-bold tabular-nums text-ink">
@@ -128,6 +140,10 @@ export default function SlideIndexPage() {
                           </li>
                         ))}
                       </ul>
+
+                      {d.sumber && (
+                        <p className="mt-5 text-xs text-muted-foreground">{d.sumber}</p>
+                      )}
 
                       <div className="mt-7">
                         <Link

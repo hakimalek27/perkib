@@ -1,6 +1,24 @@
 # HANDOVER — Laman Rasmi PERKIB (`perkib-web`)
 
-**Kemas kini:** 2026-08-14 · **Status:** ✅ **v4.3 DEPLOYED & LIVE** — halaman senarai awam `/slide` + pautan dari laman utama. Sebelum: v4.2 (pembetulan 5 slaid deck), v4.1 (9 video amali dalam deck), v4.0.1 (fix seretan halaman).
+**Kemas kini:** 2026-08-14 · **Status:** ✅ **v4.4 DEPLOYED & LIVE** — deck kedua `/slide/pengurusan-jenazah-2026` (131 slaid, zum/grid). Sebelum: v4.3 (senarai awam `/slide` + pautan menu), v4.2 (pembetulan 5 slaid deck), v4.1 (9 video amali dalam deck).
+
+## 🆕 v4.4 (14 Ogos 2026) — DEPLOYED (deck Pengurusan Jenazah)
+Sumber: `Kursus Pengurusan Jenazah (standalone).html` (fail "bundled" 8MB — kandungan dibongkar oleh JS semasa muat, jadi mesti dibuka dalam pelayar untuk dibaca).
+
+| Perkara | Butiran |
+|---|---|
+| Aset | **131 slaid** dirender pada **2560×1442 webp** (16.6MB) + **thumbnail 400px** (1.1MB) di `public/slide/pengurusan-jenazah-2026/`. Deck sumber menskala slaid ikut viewport, jadi skrip **mengukur lebar CSS dahulu** lalu menetapkan `deviceScaleFactor = 2560/lebar` — tanpa itu tangkapan hanya ~2200px. |
+| ⚠️ Kiraan slaid | `locator.count()` sejurus selepas muat pernah melaporkan **147** (DOM masih dibongkar). Skrip kini **menunggu kiraan stabil 3× berturut-turut** dan menegaskan 131 sebelum render. |
+| Kesamaan dengan sumber | **Disahkan piksel demi piksel** untuk kesemua 131 slaid (tangkap semula sumber → banding dengan webp): purata beza **0.04%**, maksimum **0.32%** — artifak mampatan sahaja, tiada perubahan kandungan. Skrip: `scratchpad/sahkan-sama.mjs`. Perbandingan **mesti guna pipeline yang sama** (viewport + DSF); jika tidak, perbezaan antialias disalah tafsir sebagai perubahan kandungan (percubaan pertama "gagal" 119 slaid atas sebab ini). |
+| Route | `src/app/slide/pengurusan-jenazah-2026/` — `deck-data.ts` (**dijana automatik**: 131 tajuk + 9 bab), `JenazahSlides.tsx`, `slides.css`, `page.tsx`. |
+| Tema | **Khusyuk** (pilihan Hakim): obsidian dalam, girih statik, dua cahaya emas "bernafas" 11–13s, transisi reda-naik 620ms. Sengaja **bukan** galaxy 3D seperti deck Sembelihan. |
+| Kawalan | Zum **100–400%** (butang, `+ − 0`, dwi-klik, Ctrl+skrol, cubit 2 jari) · **pan seret** dengan had tepi · **grid semua slaid** (`G`) + carian tajuk/nombor · bar 9 bab · auto-main 9s · skrin penuh (`F`) · leret pada telefon. |
+| Senarai & penemuan | Didaftarkan dalam `src/content/slides.ts` (muncul di `/slide` sebagai deck **pertama**), masuk sitemap, OG khusus `/og/slide-pengurusan-jenazah-2026.png`. Panduan `/slide` dikemas kini: 6 kad (tambah Zum & geser, Semua slaid). |
+| Atribusi | Kad senarai memaparkan *"Bahan: Seksyen Pengurusan Jenazah, Bahagian Dakwah JAWI"* (medan `sumber` baharu dalam registry). |
+
+- **Kandungan slaid tidak disentuh langsung** — tiada teks/gambar ditulis semula. Tajuk yang dijana hanya untuk grid, carian dan teks alt (di luar slaid).
+- E2E: **28 ujian** (4 baharu untuk deck ini). 28/28 lulus LIVE.
+- Backup rollback: `standalone.bak-20260814-panduan` (terkini), `-20260814-jenazah`, `-20260814-navslide`, `standalone.bak-prev`.
 
 ## 🆕 v4.3 (14 Ogos 2026) — DEPLOYED (deck boleh ditemui orang awam)
 Masalah: deck `/slide/sembelihan-2026` hanya boleh dicapai oleh sesiapa yang **sudah tahu URL-nya** — tiada pautan dari mana-mana, tiada dalam sitemap.

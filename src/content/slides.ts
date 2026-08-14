@@ -10,6 +10,10 @@ import {
   TOTAL as SEMBELIHAN_ITEM,
   CHAPTERS as SEMBELIHAN_BAB,
 } from "@/app/slide/sembelihan-2026/deck-data";
+import {
+  SLIDE_COUNT as JENAZAH_SLAID,
+  CHAPTERS as JENAZAH_BAB,
+} from "@/app/slide/pengurusan-jenazah-2026/deck-data";
 
 export type Deck = {
   slug: string;
@@ -28,9 +32,27 @@ export type Deck = {
   koverAlt: string;
   /** Imej Open Graph khusus deck (1200×630) untuk perkongsian WhatsApp/FB */
   og: string;
+  /** Atribusi bahan sumber, jika deck disediakan bersama pihak lain */
+  sumber?: string;
 };
 
 export const DECKS: Deck[] = [
+  {
+    slug: "pengurusan-jenazah-2026",
+    tajuk: "Kursus Intensif Pengurusan Jenazah",
+    eyebrow: "Modul Latihan",
+    tahun: "2026",
+    ringkasan:
+      "Kursus intensif pengurusan jenazah Wilayah Persekutuan — hukum dan tanggungjawab fardhu kifayah, tatacara memandikan, mengafankan, solat jenazah dan pengebumian, serta talkin, takziah, tahlil dan iddah kematian. Slaid boleh dizum untuk melihat rajah dan nas dengan jelas.",
+    jumlahSlaid: JENAZAH_SLAID,
+    jumlahVideo: 0,
+    jumlahItem: JENAZAH_SLAID,
+    bab: JENAZAH_BAB.map((b) => b.nama),
+    kover: "/slide/pengurusan-jenazah-2026/s000.webp",
+    koverAlt: "Slaid pembuka Kursus Intensif Pengurusan Jenazah Wilayah Persekutuan",
+    og: "/og/slide-pengurusan-jenazah-2026.png",
+    sumber: "Bahan: Seksyen Pengurusan Jenazah, Bahagian Dakwah JAWI",
+  },
   {
     slug: "sembelihan-2026",
     tajuk: "Penyembelihan Halal",

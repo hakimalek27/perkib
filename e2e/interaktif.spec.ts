@@ -259,8 +259,12 @@ test.describe("PERKIB v4.3 — senarai slaid awam (LIVE)", () => {
     // Kad deck: tajuk + kiraan sebenar dari registry.
     await expect(page.getByRole("heading", { name: "Penyembelihan Halal" })).toBeVisible();
     await expect(page.getByText("60", { exact: true }).first()).toBeVisible();
-    // Butang buka deck → deck sebenar.
-    await page.getByRole("link", { name: "Buka Deck", exact: true }).click();
+    // Butang buka deck → deck sebenar. (Ada beberapa deck, jadi pilih kad
+    // Penyembelihan Halal secara khusus.)
+    const kadSembelihan = page
+      .locator("article")
+      .filter({ has: page.getByRole("heading", { name: "Penyembelihan Halal" }) });
+    await kadSembelihan.getByRole("link", { name: "Buka Deck", exact: true }).click();
     await expect(page).toHaveURL(/\/slide\/sembelihan-2026$/);
     await expect(page.locator(".sb-slide")).toHaveCount(69);
   });
@@ -311,5 +315,88 @@ test.describe("PERKIB v4.3 — senarai slaid awam (LIVE)", () => {
     expect(xml).toContain("/slide/sembelihan-2026");
     const og = await request.get("/og/slide-sembelihan-2026.png");
     expect(og.status()).toBe(200);
+  });
+});
+
+test.describe("PERKIB v4.4 — deck Pengurusan Jenazah (LIVE)", () => {
+  test("131 slaid + navigasi + bab + grid lompat", async ({ page }) => {
+    await page.goto("/slide/pengurusan-jenazah-2026");
+    const meta = page.locator(".jz-meta");
+    await expect(meta).toContainText("001");
+    await expect(meta).toContainText("131");
+
+    // Navigasi kekunci — slaid asal (imej) bertukar mengikut turutan.
+    const aktif = page.locator('.jz-slide[data-state="active"] img');
+    await expect(aktif).toHaveAttribute("src", /s000\.webp/);
+    await page.keyboard.press("ArrowRight");
+    await expect(aktif).toHaveAttribute("src", /s001\.webp/);
+
+    // Bab melompat ke slaid yang betul (Tahlil bermula pada slaid 120).
+    await page.getByRole("button", { name: "Tahlil" }).click();
+    await expect(meta).toContainText("120");
+
+    // Grid: 131 kad + carian tajuk + lompat.
+    await page.keyboard.press("g");
+    await expect(page.locator(".jz-cell")).toHaveCount(131);
+    await page.locator(".jz-cari").fill("kubur");
+    const bil = await page.locator(".jz-cell").count();
+    expect(bil).toBeGreaterThan(0);
+    expect(bil).toBeLessThan(131);
+    await page.locator(".jz-cell").first().click();
+    await expect(page.locator(".jz-grid-wrap")).toHaveCount(0);
+
+    // Home mengembalikan ke slaid pertama; dokumen tidak terseret mendatar.
+    await page.keyboard.press("Home");
+    await expect(meta).toContainText("001");
+    expect(await page.evaluate(() => window.scrollX)).toBe(0);
+  });
+
+  test("zum masuk/keluar + pan + set semula", async ({ page }) => {
+    await page.goto("/slide/pengurusan-jenazah-2026");
+    const nilai = page.locator(".jz-zoom-val");
+    await expect(nilai).toHaveText("100%");
+
+    await page.getByRole("button", { name: /Zum masuk/ }).click();
+    await expect(nilai).not.toHaveText("100%");
+    const img = page.locator('.jz-slide[data-state="active"] img');
+    const t1 = await img.evaluate((el) => getComputedStyle(el).transform);
+    expect(t1).not.toBe("none");
+
+    // Seret memindahkan imej ketika dizum.
+    const box = await page.locator('.jz-slide[data-state="active"] .jz-frame').boundingBox();
+    await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box!.x + box!.width / 2 - 180, box!.y + box!.height / 2 - 90, { steps: 10 });
+    await page.mouse.up();
+    await expect
+      .poll(async () => img.evaluate((el) => getComputedStyle(el).transform))
+      .not.toBe(t1);
+
+    // '0' set semula zum; tukar slaid juga set semula.
+    await page.keyboard.press("0");
+    await expect(nilai).toHaveText("100%");
+    await page.getByRole("button", { name: /Zum masuk/ }).click();
+    await page.keyboard.press("ArrowRight");
+    await expect(nilai).toHaveText("100%");
+  });
+
+  test("aset slaid + thumbnail + OG dihidangkan", async ({ request }) => {
+    for (const p of [
+      "/slide/pengurusan-jenazah-2026/s000.webp",
+      "/slide/pengurusan-jenazah-2026/s130.webp",
+      "/slide/pengurusan-jenazah-2026/thumb/t000.webp",
+      "/og/slide-pengurusan-jenazah-2026.png",
+    ]) {
+      const r = await request.get(p);
+      expect(r.status(), p).toBe(200);
+    }
+  });
+
+  test("deck kedua muncul dalam senarai /slide + sitemap", async ({ page, request }) => {
+    await page.goto("/slide");
+    await expect(page.getByRole("heading", { name: /Kursus Intensif Pengurusan Jenazah/i })).toBeVisible();
+    await expect(page.locator("a[href='/slide/pengurusan-jenazah-2026']").first()).toBeVisible();
+    const sm = await request.get("/sitemap.xml");
+    expect(await sm.text()).toContain("/slide/pengurusan-jenazah-2026");
   });
 });

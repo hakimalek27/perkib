@@ -685,3 +685,34 @@ Nav desktop guna label pendek **"Slaid"**, bukan "Slaid & Modul" — item ke-9 p
 - **Prefix path adalah API.** `startsWith("/slide")` yang asalnya betul menjadi salah pada saat sebuah halaman indeks wujud di bawah prefix yang sama. Bila menambah halaman induk pada segmen yang sudah "dikhaskan", semak semua gate yang menggunakan prefix itu — di sini ada tiga, dan terlepas satu bermakna halaman tanpa header atau deck dengan header.
 - **Kiraan dalam salinan pemasaran mesti datang dari sumbernya.** "60 slaid · 9 video" ditulis sebagai import, bukan nombor yang ditaip.
 - **Bar nav ada bajet ruang.** Menambah item ke nav yang hampir penuh ialah perubahan layout, bukan perubahan senarai — uji pada viewport tersempit yang masih memaparkan nav penuh, dan kunci had itu dengan ujian.
+
+# v4.4 — Deck Kedua: Kursus Intensif Pengurusan Jenazah (14 Ogos 2026)
+
+Hakim menghantar `Kursus Pengurusan Jenazah (standalone).html` — 8MB, satu fail, kandungan **dipek** dan hanya dibongkar oleh JavaScript semasa halaman dimuat. Membacanya sebagai teks tidak berguna; ia mesti dibuka dalam pelayar sebenar.
+
+Arahan Hakim jelas dan diulang di tengah kerja: *"jgn ubah apa2 maklumat, gambar, teks dll semuanya dari sumber slide asal. pastikan slide asal sama dgn yg awak render ni."*
+
+## Dua perangkap dalam pengekstrakan
+1. **Kiraan slaid tidak stabil.** Pemeriksaan pertama melaporkan 131 section; larian render kemudian melaporkan **147**. Puncanya DOM masih dibongkar semasa dikira. Penyelesaian: tunggu sehingga kiraan **sama tiga kali berturut-turut**, kemudian tegaskan 131 sebelum sebarang render — jika tidak, deck boleh terhasil dengan slaid hantu atau tertinggal.
+2. **Deck menskala dirinya.** Slaid diisytiharkan 1920×1080 tetapi dirender pada 1732–2212px bergantung viewport, kerana pembalut mempunyai `transform: scale()` yang dikira semula pada setiap resize. Melawan transform itu gagal (deck menetapkannya semula). Penyelesaian yang berkesan: **ukur lebar CSS sebenar dahulu**, kemudian buka semula halaman dengan `deviceScaleFactor = 2560 / lebar` — menghasilkan tepat 2560×1442 setiap kali.
+
+## Membuktikan kesamaan, bukan mendakwanya
+Skrip pengesahan membuka semula fail sumber, menangkap semula setiap slaid, dan membandingkannya dengan webp yang disimpan (grayscale, blur 0.8px untuk memaafkan artifak webp, ambang 12/255).
+
+Percubaan pertama melaporkan **119 daripada 131 slaid "berbeza"** — sehingga 9%. Ia bukan kandungan yang berbeza: perbandingan itu menangkap sumber pada `deviceScaleFactor` 1 sedangkan webp dirender pada 1.157, jadi setiap tepi teks menghasilkan piksel yang tidak sepadan selepas penskalaan semula. Selepas menyamakan pipeline: **purata 0.04%, maksimum 0.32%, sifar slaid melebihi ambang**. Pengajarannya — sebelum mempercayai keputusan "gagal", periksa sama ada alat ukur itu sendiri adil.
+
+## Tema khusyuk
+Hakim memilih nada tenang, bukan galaxy 3D deck Sembelihan: obsidian dalam, corak girih **statik**, dua pusat cahaya emas yang bernafas 11–13 saat, dan transisi reda-naik 620ms. Topik kematian tidak sesuai dengan habuk berterbangan.
+
+## Zum seperti PowerPoint
+Permintaan khusus Hakim. Yang dibina: zum 100–400% melalui butang, kekunci `+ − 0`, dwi-klik, Ctrl+skrol dan cubit dua jari — semuanya **berpusat pada titik yang ditunjuk pengguna** (titik di bawah kursor kekal di situ selepas zum), dengan pan seret yang dihadkan supaya tepi imej tidak masuk ke dalam bingkai. Kerana slaid disimpan pada 2560px, zum 200% masih tajam — teks kecil pada label gambar pun terbaca.
+
+Untuk 131 slaid, bar bab sahaja tidak mencukupi, jadi ditambah **grid semua slaid** (`G`) dengan thumbnail 400px dan carian mengikut tajuk atau nombor.
+
+## Pengesahan
+`tsc` bersih · lint 0 ralat · build bersih · ujian interaktif setempat (navigasi, zum, pan, dwi-klik, grid, carian, bab, Home/End, pautan jenama) tanpa satu pun ralat konsol · **E2E 28/28 lulus LIVE**.
+
+## Pelajaran
+- **Fail "bundled" ialah aplikasi, bukan dokumen.** Kiraan, saiz dan teksnya hanya benar selepas ia selesai membongkar dirinya dalam pelayar — dan "selesai" mesti dikesan, bukan diandaikan dengan `waitForTimeout`.
+- **`innerText` mengembalikan kosong untuk elemen tersembunyi.** Tajuk yang diekstrak dari slaid `display:none` bergabung tanpa ruang ("MENGURUSKANJENAZAH"). Paparkan dahulu, kemudian baca.
+- **Ukur sebelum menangkap.** Apa-apa deck yang menskala dirinya perlu diukur, bukan dipaksa.
